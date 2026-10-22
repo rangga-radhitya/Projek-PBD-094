@@ -1,3 +1,4 @@
+-- Create DB
 CREATE DATABASE projek_pbd_094
 USE projek_pbd_094;
 
