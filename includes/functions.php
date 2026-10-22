@@ -4,8 +4,6 @@
 
 require __DIR__ . '/koneksi.php';
 
-session_start();
-
 // Error MySQL dilempar sebagai exception supaya bisa ditangkap dengan try/catch
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
@@ -28,27 +26,6 @@ function db(): mysqli
 function h($teks): string
 {
     return htmlspecialchars((string)$teks, ENT_QUOTES, 'UTF-8');
-}
-
-function redirect(string $url): void
-{
-    header('Location: ' . $url);
-    exit;
-}
-
-// Pesan sekali tampil (setelah simpan / hapus)
-function flash(string $jenis, string $teks): void
-{
-    $_SESSION['flash'] = [$jenis, $teks];
-}
-
-function tampil_flash(): void
-{
-    if (!empty($_SESSION['flash'])) {
-        [$jenis, $teks] = $_SESSION['flash'];
-        unset($_SESSION['flash']);
-        echo '<p class="pesan ' . h($jenis) . '" role="status">' . h($teks) . '</p>';
-    }
 }
 
 function tampil_header(string $judul, string $aktif = ''): void
