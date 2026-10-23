@@ -1,0 +1,64 @@
+:root {
+  --teks: #3b2a20;
+  --redup: #7a6858;
+  --garis: #e3d6c6;
+  --latar: #faf5ec;
+  --kartu: #ffffff;
+  --aksen: #8a4b1f;
+  --aksen-gelap: #5c3317;
+  --ok: #1e6b3a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--latar);
+  color: var(--teks);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+}
+
+.atas { background: var(--aksen-gelap); }
+.atas .isi {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .25rem 1.5rem;
+}
+.merek { color: #fff; font-weight: 700; padding: .8rem 0; }
+.atas nav { display: flex; flex-wrap: wrap; }
+.atas nav a {
+  color: #f0dcc6;
+  text-decoration: none;
+  padding: .85rem .8rem;
+  border-bottom: 3px solid transparent;
+}
+.atas nav a:hover { color: #fff; }
+.atas nav a.aktif { color: #fff; border-bottom-color: #f0c27a; }
+
+main { max-width: 1000px; margin: 0 auto; padding: 1.75rem 1.25rem 3rem; }
+h1 { font-size: 1.5rem; margin: 0 0 1.25rem; }
+a { color: var(--aksen); }
+
+.tabel-bungkus { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--kartu);
+  border: 1px solid var(--garis);
+  margin-top: 1rem;
+}
+th, td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--garis); vertical-align: middle; }
+th { background: #f3e8d8; font-weight: 600; white-space: nowrap; }
+td.angka, th.angka { text-align: right; }
+td.kosong { color: var(--redup); text-align: center; padding: 1.5rem; }
+
+.lencana { display: inline-block; padding: .05rem .55rem; border-radius: 99px; font-size: .85rem; border: 1px solid var(--garis); }
+.lencana.aktif { color: var(--ok); border-color: #b9dcc4; background: #eaf5ee; }
+.lencana.nonaktif { color: var(--redup); background: #f1ebe2; }
+
+:focus-visible { outline: 3px solid #d9a766; outline-offset: 2px; }
