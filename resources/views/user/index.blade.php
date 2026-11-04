@@ -1,0 +1,59 @@
+@extends('layouts.app')
+
+@section('judul', 'Data User')
+@section('grup', 'Master Data')
+@section('deskripsi', 'Akun pengguna aplikasi. Data dibaca dari view v_user (kolom password tidak pernah ditampilkan).')
+
+@section('aksi')
+  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah User">+ Tambah User</button>
+@endsection
+
+@section('isi')
+  <x-filter-bar :reset="route('user')">
+    <div class="grup-filter">
+      <label for="q">Cari username</label>
+      <input type="search" id="q" name="q" value="{{ $q }}" placeholder="Username">
+    </div>
+    <div class="grup-filter">
+      <label for="idrole">Role</label>
+      <select id="idrole" name="idrole">
+        <option value="">Semua role</option>
+        @foreach ($daftarRole as $role)
+          <option value="{{ $role->idrole }}" @selected($idrole === (string) $role->idrole)>{{ $role->nama_role }}</option>
+        @endforeach
+      </select>
+    </div>
+  </x-filter-bar>
+
+  <div class="tabel-bungkus">
+  <table>
+    <thead>
+      <tr><th class="angka">ID</th><th>Username</th><th>Role</th><th class="aksi">Aksi</th></tr>
+    </thead>
+    <tbody>
+    @forelse ($daftar as $r)
+      <tr>
+        <td class="angka">{{ $r->iduser }}</td>
+        <td>{{ $r->username }}</td>
+        <td>{{ $r->nama_role }}</td>
+        <td class="aksi">
+          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit User" data-nilai="{{ json_encode(['username' => $r->username, 'idrole' => $r->idrole]) }}">Edit</button>
+          <button type="button" class="tombol sekunder kecil" data-konfirmasi="Hapus user &quot;{{ $r->username }}&quot;? User yang sudah dipakai pada transaksi tidak boleh dihapus.">Hapus</button>
+        </td>
+      </tr>
+    @empty
+      <tr><td colspan="4" class="kosong">{{ ($q !== '' || $idrole !== '') ? 'Tidak ada user yang cocok dengan pencarian/filter.' : 'Belum ada data user.' }}</td></tr>
+    @endforelse
+    </tbody>
+  </table>
+  </div>
+  {{ $daftar->links('components.pagination') }}
+
+  @push('modal')
+    @include('partials.modal-form', ['id' => 'm-form', 'fields' => [
+      ['label' => 'Username', 'name' => 'username', 'wajib' => true, 'hint' => 'Maksimal 45 karakter.'],
+      ['label' => 'Password', 'name' => 'password', 'type' => 'password', 'hint' => 'Wajib saat tambah; kosongkan saat edit bila tidak diganti.'],
+      ['label' => 'Role', 'name' => 'idrole', 'type' => 'select', 'wajib' => true, 'options' => $daftarRole->pluck('nama_role', 'idrole')->all()],
+    ]])
+  @endpush
+@endsection
