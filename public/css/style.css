@@ -182,3 +182,21 @@ tfoot td { font-weight: 600; background: #faf3e6; }
   .sisi, .bar-atas, .kepala-aksi, .filter, .halaman-bar, .remah { display: none !important; }
   .badan { margin: 0; }
 }
+
+/* ---------- CRUD & form transaksi ---------- */
+.daftar-galat { margin: 0; padding-left: 1.1rem; }
+td.aksi form { display: inline; margin: 0; }
+td.aksi .tombol + form { margin-left: .25rem; }
+
+.form-transaksi table input,
+.form-transaksi table select { width: 100%; min-width: 5.5rem; }
+.form-transaksi td.aksi { text-align: center; }
+.form-transaksi .kolom-sempit { width: 5.5rem; }
+.form-transaksi .kolom-aksi { width: 3rem; }
+.form-transaksi .ringkas { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: .5rem 0 1rem; }
+.form-transaksi .ringkas div { min-width: 8rem; }
+.form-transaksi .ringkas dt { font-size: .8rem; color: var(--redup); }
+.form-transaksi .ringkas dd { margin: 0; font-weight: 600; }
+.pilih-baris { display: flex; gap: .6rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 1rem; }
+.pilih-baris .grup-filter { display: flex; flex-direction: column; }
+tr.baris-kosong { opacity: .55; }

@@ -1,12 +1,14 @@
 @extends('layouts.app')
 
 @section('judul', 'Data Penerimaan')
-@section('grup', 'Penerimaan')
-@section('deskripsi', 'Penerimaan barang berdasarkan pengadaan. Data dibaca dari tabel penerimaan.')
+@section('grup', 'Transaksi')
+@section('deskripsi', 'Penerimaan barang berdasarkan pengadaan. Stok masuk otomatis lewat trigger database.')
+
+@section('aksi')
+  <a class="tombol" href="{{ route('penerimaan.create') }}">+ Tambah Penerimaan</a>
+@endsection
 
 @section('isi')
-  <x-catatan>Kode <strong>status</strong> ditampilkan apa adanya karena arti kodenya belum ditetapkan. Pencatatan penerimaan baru belum tersedia pada tahap ini.</x-catatan>
-
   <x-filter-bar :reset="route('penerimaan.index')">
     <div class="grup-filter">
       <label for="q">Cari ID / vendor</label>
@@ -49,13 +51,21 @@
     @forelse ($daftar as $r)
       <tr>
         <td class="angka">{{ $r->idpenerimaan }}</td>
-        <td>{{ $r->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
+        <td>{{ $r->tanggal ?? '-' }}</td>
         <td>@if ($r->idpengadaan)<a href="{{ route('pengadaan.show', $r->idpengadaan) }}">#{{ $r->idpengadaan }}</a>@else - @endif</td>
-        <td>{{ $r->pengadaan?->vendor?->nama_vendor ?? '-' }}</td>
-        <td>{{ $r->user?->username ?? '-' }}</td>
+        <td>{{ $r->nama_vendor ?? '-' }}</td>
+        <td>{{ $r->username ?? '-' }}</td>
         <td><x-badge :teks="$r->status ?? '-'" /></td>
         <td class="angka">{{ $r->detail_count }}</td>
-        <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('penerimaan.show', $r->idpenerimaan) }}">Detail</a></td>
+        <td class="aksi">
+          <a class="tombol sekunder kecil" href="{{ route('penerimaan.show', $r->idpenerimaan) }}">Detail</a>
+          <form method="POST" action="{{ route('penerimaan.destroy', $r->idpenerimaan) }}">
+            @csrf
+            @method('DELETE')
+            <button type="button" class="tombol sekunder kecil"
+                    data-konfirmasi="Hapus penerimaan #{{ $r->idpenerimaan }}? Stok yang sudah masuk akan dikoreksi otomatis.">Hapus</button>
+          </form>
+        </td>
       </tr>
     @empty
       <tr><td colspan="8" class="kosong">{{ request()->hasAny(['q','idvendor','status','dari','sampai']) ? 'Tidak ada penerimaan yang cocok dengan pencarian/filter.' : 'Belum ada data penerimaan.' }}</td></tr>

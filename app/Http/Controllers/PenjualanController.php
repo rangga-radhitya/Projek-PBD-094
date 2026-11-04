@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Penjualan;
-use App\Models\Pengguna;
+use App\Services\PenggunaService;
+use App\Services\PenjualanService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use PDOException;
 
 class PenjualanController extends Controller
 {
-    // Daftar penjualan (READ saja)
+    public function __construct(
+        private PenjualanService $layanan,
+        private PenggunaService $pengguna
+    ) {}
+
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
@@ -17,27 +22,28 @@ class PenjualanController extends Controller
         $dari = $this->tanggal($request, 'dari');
         $sampai = $this->tanggal($request, 'sampai');
 
-        $daftar = Penjualan::query()
-            ->with(['user', 'margin'])
-            ->withCount('detail')
-            ->when($q !== '' && ctype_digit($q), fn ($w) => $w->where('idpenjualan', $q))
-            ->when($iduser !== '', fn ($w) => $w->where('iduser', $iduser))
-            ->when($dari !== '', fn ($w) => $w->whereDate('created_at', '>=', $dari))
-            ->when($sampai !== '', fn ($w) => $w->whereDate('created_at', '<=', $sampai))
-            ->orderByDesc('idpenjualan')
-            ->paginate(15)
-            ->withQueryString();
-
-        $daftarUser = Pengguna::orderBy('username')->get();
+        $daftar = $this->layanan->daftar($q, $iduser, $dari, $sampai, 15, $request);
+        $daftarUser = $this->pengguna->semua();
 
         return view('penjualan.index', compact('daftar', 'q', 'iduser', 'dari', 'sampai', 'daftarUser'));
     }
 
-    // Detail penjualan (READ saja)
     public function show(int $id): View
     {
-        $penjualan = Penjualan::with(['user', 'margin', 'detail.barang'])->findOrFail($id);
+        $penjualan = $this->layanan->cari($id);
 
-        return view('penjualan.show', compact('penjualan'));
+        abort_if($penjualan === null, 404);
+
+        $totalFungsi = null;
+
+        try {
+            $totalFungsi = $this->layanan->totalPenjualan($id);
+        } catch (PDOException $e) {
+            if (! PenjualanService::objekBelumTerpasang($e)) {
+                report($e);
+            }
+        }
+
+        return view('penjualan.show', compact('penjualan', 'totalFungsi'));
     }
 }

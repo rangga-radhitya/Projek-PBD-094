@@ -1,16 +1,24 @@
 @extends('layouts.app')
 
 @section('judul', 'Detail Pengadaan #'.$pengadaan->idpengadaan)
+@section('grup', 'Transaksi')
 @section('deskripsi', 'Informasi pesanan ke vendor beserta barang yang dipesan.')
 
 @section('breadcrumb')
-  <li>Pengadaan</li>
-  <li><a href="{{ route('pengadaan.index') }}">Data Pengadaan</a></li>
+  <li>Transaksi</li>
+  <li><a href="{{ route('pengadaan.index') }}">Pengadaan</a></li>
   <li aria-current="page">Pengadaan #{{ $pengadaan->idpengadaan }}</li>
 @endsection
 
 @section('aksi')
   <a class="tombol sekunder" href="{{ route('pengadaan.index') }}">&laquo; Kembali</a>
+  @if (empty($pengadaan->penerimaan))
+    <form method="POST" action="{{ route('pengadaan.destroy', $pengadaan->idpengadaan) }}">
+      @csrf
+      @method('DELETE')
+      <button type="button" class="tombol bahaya" data-konfirmasi="Hapus pengadaan #{{ $pengadaan->idpengadaan }}?">Hapus</button>
+    </form>
+  @endif
 @endsection
 
 @section('isi')
@@ -18,10 +26,10 @@
     <h2>Informasi pengadaan</h2>
     <dl class="info-daftar">
       <div><dt>ID pengadaan</dt><dd>{{ $pengadaan->idpengadaan }}</dd></div>
-      <div><dt>Tanggal</dt><dd>{{ $pengadaan->timestamp?->format('d/m/Y H:i') ?? '-' }}</dd></div>
-      <div><dt>Vendor</dt><dd>{{ $pengadaan->vendor ? $pengadaan->vendor->nama_vendor : '-' }}</dd></div>
-      <div><dt>Dibuat oleh</dt><dd>{{ $pengadaan->user?->username ?? '-' }}</dd></div>
-      <div><dt>Status</dt><dd><x-badge :teks="$pengadaan->status ?? '-'" /> <small class="hint">(arti kode belum ditetapkan)</small></dd></div>
+      <div><dt>Tanggal</dt><dd>{{ $pengadaan->tanggal ?? '-' }}</dd></div>
+      <div><dt>Vendor</dt><dd>{{ $pengadaan->nama_vendor ?? '-' }}</dd></div>
+      <div><dt>Dibuat oleh</dt><dd>{{ $pengadaan->username ?? '-' }}</dd></div>
+      <div><dt>Status</dt><dd><x-badge :teks="$pengadaan->status ?? '-'" /> <small class="hint">(D = draft, S = selesai)</small></dd></div>
     </dl>
   </section>
 
@@ -34,11 +42,11 @@
       </thead>
       <tbody>
       @forelse ($pengadaan->detail as $d)
-        @php $sudah = (int) $diterima->get($d->idbarang, 0); @endphp
+        @php $sudah = (int) ($diterima[$d->idbarang] ?? 0); @endphp
         <tr>
           <td>{{ $loop->iteration }}</td>
-          <td>{{ $d->barang?->nama ?? 'Barang #'.$d->idbarang }}</td>
-          <td>{{ $d->barang?->nama_satuan ?? '-' }}</td>
+          <td>{{ $d->nama ?? 'Barang #'.$d->idbarang }}</td>
+          <td>{{ $d->nama_satuan ?? '-' }}</td>
           <td class="angka"><x-rp :nilai="$d->harga_satuan" /></td>
           <td class="angka">{{ $d->jumlah }}</td>
           <td class="angka"><x-rp :nilai="$d->sub_total" /></td>
@@ -68,8 +76,8 @@
       @forelse ($pengadaan->penerimaan as $p)
         <tr>
           <td class="angka">{{ $p->idpenerimaan }}</td>
-          <td>{{ $p->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
-          <td>{{ $p->user?->username ?? '-' }}</td>
+          <td>{{ $p->tanggal ?? '-' }}</td>
+          <td>{{ $p->username ?? '-' }}</td>
           <td><x-badge :teks="$p->status ?? '-'" /></td>
           <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('penerimaan.show', $p->idpenerimaan) }}">Detail</a></td>
         </tr>

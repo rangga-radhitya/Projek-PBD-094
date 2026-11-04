@@ -17,7 +17,7 @@ return [
         'match' => ['dashboard'],
     ],
     [
-        'label' => 'Master Data',
+        'label' => 'Tabel Master',
         'items' => [
             ['label' => 'Role',             'route' => 'role',             'match' => ['role', 'role/*']],
             ['label' => 'User',             'route' => 'user',             'match' => ['user', 'user/*']],
@@ -28,43 +28,18 @@ return [
         ],
     ],
     [
-        'label' => 'Pengadaan',
+        'label' => 'Transaksi',
         'items' => [
-            ['label' => 'Data Pengadaan', 'route' => 'pengadaan.index', 'match' => ['pengadaan', 'pengadaan/*']],
-        ],
-    ],
-    [
-        'label' => 'Penerimaan',
-        'items' => [
-            ['label' => 'Data Penerimaan', 'route' => 'penerimaan.index', 'match' => ['penerimaan', 'penerimaan/*']],
-        ],
-    ],
-    [
-        'label' => 'Penjualan',
-        'items' => [
-            ['label' => 'Data Penjualan', 'route' => 'penjualan.index', 'match' => ['penjualan', 'penjualan/*']],
-        ],
-    ],
-    [
-        'label' => 'Retur',
-        'items' => [
-            ['label' => 'Data Retur', 'route' => 'retur.index', 'match' => ['retur', 'retur/*']],
+            ['label' => 'Pengadaan',  'route' => 'pengadaan.index',  'match' => ['pengadaan', 'pengadaan/*']],
+            ['label' => 'Penerimaan', 'route' => 'penerimaan.index', 'match' => ['penerimaan', 'penerimaan/*']],
+            ['label' => 'Penjualan',  'route' => 'penjualan.index',  'match' => ['penjualan', 'penjualan/*']],
+            ['label' => 'Retur',      'route' => 'retur.index',      'match' => ['retur', 'retur/*']],
         ],
     ],
     [
         'label' => 'Persediaan',
         'items' => [
             ['label' => 'Kartu Stok', 'route' => 'kartu_stok', 'match' => ['kartu_stok', 'kartu_stok/*']],
-        ],
-    ],
-    [
-        'label' => 'Laporan',
-        'items' => [
-            ['label' => 'Laporan Penjualan',  'route' => 'laporan.show', 'params' => ['jenis' => 'penjualan'],  'match' => ['laporan/penjualan']],
-            ['label' => 'Laporan Pengadaan',  'route' => 'laporan.show', 'params' => ['jenis' => 'pengadaan'],  'match' => ['laporan/pengadaan']],
-            ['label' => 'Laporan Penerimaan', 'route' => 'laporan.show', 'params' => ['jenis' => 'penerimaan'], 'match' => ['laporan/penerimaan']],
-            ['label' => 'Laporan Retur',      'route' => 'laporan.show', 'params' => ['jenis' => 'retur'],      'match' => ['laporan/retur']],
-            ['label' => 'Laporan Stok',       'route' => 'laporan.show', 'params' => ['jenis' => 'stok'],       'match' => ['laporan/stok']],
         ],
     ],
 ];

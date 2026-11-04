@@ -1,28 +1,12 @@
 <?php $__env->startSection('judul', 'Data Retur'); ?>
-<?php $__env->startSection('grup', 'Retur'); ?>
-<?php $__env->startSection('deskripsi', 'Retur barang yang mengacu ke penerimaan (retur ke vendor). Data dibaca dari tabel retur.'); ?>
+<?php $__env->startSection('grup', 'Transaksi'); ?>
+<?php $__env->startSection('deskripsi', 'Retur barang ke vendor, mengacu pada penerimaan. Stok keluar otomatis lewat trigger database.'); ?>
+
+<?php $__env->startSection('aksi'); ?>
+  <a class="tombol" href="<?php echo e(route('retur.create')); ?>">+ Tambah Retur</a>
+<?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('isi'); ?>
-  <?php if (isset($component)) { $__componentOriginal3a3743169da1b02a6fcfe13e09b73f16 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal3a3743169da1b02a6fcfe13e09b73f16 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.catatan','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('catatan'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes([]); ?>Struktur database mencatat retur terhadap <strong>penerimaan</strong> dari vendor. Pencatatan retur baru belum tersedia pada tahap ini. <?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal3a3743169da1b02a6fcfe13e09b73f16)): ?>
-<?php $attributes = $__attributesOriginal3a3743169da1b02a6fcfe13e09b73f16; ?>
-<?php unset($__attributesOriginal3a3743169da1b02a6fcfe13e09b73f16); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal3a3743169da1b02a6fcfe13e09b73f16)): ?>
-<?php $component = $__componentOriginal3a3743169da1b02a6fcfe13e09b73f16; ?>
-<?php unset($__componentOriginal3a3743169da1b02a6fcfe13e09b73f16); ?>
-<?php endif; ?>
-
   <?php if (isset($component)) { $__componentOriginale9f22847d79d6273acb27aff60f1f678 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginale9f22847d79d6273acb27aff60f1f678 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.filter-bar','data' => ['reset' => route('retur.index')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -74,12 +58,20 @@
     <?php $__empty_1 = true; $__currentLoopData = $daftar; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
       <tr>
         <td class="angka"><?php echo e($r->idretur); ?></td>
-        <td><?php echo e($r->created_at?->format('d/m/Y H:i') ?? '-'); ?></td>
+        <td><?php echo e($r->tanggal ?? '-'); ?></td>
         <td><?php if($r->idpenerimaan): ?><a href="<?php echo e(route('penerimaan.show', $r->idpenerimaan)); ?>">#<?php echo e($r->idpenerimaan); ?></a><?php else: ?> - <?php endif; ?></td>
-        <td><?php echo e($r->penerimaan?->pengadaan?->vendor?->nama_vendor ?? '-'); ?></td>
-        <td><?php echo e($r->user?->username ?? '-'); ?></td>
+        <td><?php echo e($r->nama_vendor ?? '-'); ?></td>
+        <td><?php echo e($r->username ?? '-'); ?></td>
         <td class="angka"><?php echo e($r->detail_count); ?></td>
-        <td class="aksi"><a class="tombol sekunder kecil" href="<?php echo e(route('retur.show', $r->idretur)); ?>">Detail</a></td>
+        <td class="aksi">
+          <a class="tombol sekunder kecil" href="<?php echo e(route('retur.show', $r->idretur)); ?>">Detail</a>
+          <form method="POST" action="<?php echo e(route('retur.destroy', $r->idretur)); ?>">
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('DELETE'); ?>
+            <button type="button" class="tombol sekunder kecil"
+                    data-konfirmasi="Hapus retur #<?php echo e($r->idretur); ?>? Stok akan dikoreksi otomatis.">Hapus</button>
+          </form>
+        </td>
       </tr>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
       <tr><td colspan="7" class="kosong"><?php echo e(request()->hasAny(['q','idvendor','dari','sampai']) ? 'Tidak ada retur yang cocok dengan pencarian/filter.' : 'Belum ada data retur.'); ?></td></tr>

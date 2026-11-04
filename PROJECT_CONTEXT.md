@@ -126,7 +126,7 @@ Catatan teknis: view memakai INNER JOIN, sehingga baris dengan FK `NULL` (semua 
 
 ### 4.6 Stored Procedure, Function, Trigger
 
-**Tidak ada satu pun** di file SQL (dicari: `CREATE PROCEDURE`, `CREATE FUNCTION`, `CREATE TRIGGER` → nol hasil). Tidak ada juga index tambahan, UNIQUE, CHECK, maupun DEFAULT.
+`dml_ddl.sql` dan `views.sql` tidak memuat satu pun (audit awal: nol hasil). Sejak tahap database programming, `database/sql/routines.sql` memuat **tepat tiga objek**: Function `fn_hitung_total_penjualan`, Stored Procedure `sp_laporan_penjualan_periode`, dan Trigger `trg_detail_penerimaan_after_insert` (detail: `DATABASE_OBJECTS_IMPLEMENTATION_REPORT.md`). Skema tabel tidak diubah; tidak ada index tambahan, UNIQUE, CHECK, maupun DEFAULT.
 
 ## 5. Arsitektur Laravel
 
@@ -181,7 +181,7 @@ Catatan teknis: view memakai INNER JOIN, sehingga baris dengan FK `NULL` (semua 
 - Autentikasi, otorisasi per role, manajemen sesi login.
 - Seluruh proses transaksi: pengadaan, penerimaan, penjualan, retur.
 - Persediaan (kartu stok / stok saat ini), laporan, dashboard.
-- Stored Procedure, Function, Trigger (0 dari target minimal 1/1/1).
+- ~~Stored Procedure, Function, Trigger~~ — sudah ada 1/1/1 di `database/sql/routines.sql` (perlu dijalankan di database setelah `dml_ddl.sql` dan `views.sql`).
 - View untuk tabel transaksi, pagination, pencarian, flash message, validasi.
 - Test otomatis nyata (hanya ExampleTest bawaan).
 
@@ -210,7 +210,7 @@ Yang **tidak didukung / ambigu** — **[KONFIRMASI]** sebelum implementasi:
 ## 10. Daftar Masalah & Risiko (ringkas; rincian prioritas ada di DEVELOPMENT_PLAN.md §2)
 
 **Kritis**
-1. Tidak ada mekanisme yang menjaga konsistensi stok (tanpa trigger/SP/transaksi DB); `kartu_stok.stock` adalah saldo berjalan yang rawan salah/race condition jika diisi dari aplikasi.
+1. Konsistensi stok **untuk penerimaan** kini dijaga trigger `trg_detail_penerimaan_after_insert` (satu-satunya penulis `kartu_stok` untuk penerimaan; Laravel tidak boleh ikut menulis). Penjualan dan retur belum mengurangi stok — mekanismenya belum ada.
 2. Auth tidak ada, dan `config/auth.php` tidak cocok dengan tabel `user` (iduser/username/password) — semua halaman terbuka tanpa login.
 3. Model hanya menunjuk VIEW; tidak bisa dipakai untuk INSERT/UPDATE/DELETE (view memakai JOIN/IF/CASE).
 

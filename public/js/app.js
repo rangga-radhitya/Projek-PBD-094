@@ -1,4 +1,4 @@
-/* Interaksi frontend dasar (tanpa dependency): sidebar mobile, modal form tampilan, modal konfirmasi. */
+/* Interaksi frontend dasar (tanpa dependency): sidebar mobile, modal form, modal konfirmasi. */
 (function () {
   'use strict';
 
@@ -23,13 +23,14 @@
 
   var modalAktif = null;
   var pemicu = null;
+  var formKonfirmasi = null;
 
   function bukaModal(modal, dari) {
     if (!modal) return;
     modalAktif = modal;
     pemicu = dari || null;
     modal.hidden = false;
-    var pertama = modal.querySelector('input:not([disabled]), select, button:not([disabled])');
+    var pertama = modal.querySelector('input:not([disabled]):not([type="hidden"]), select, button:not([disabled])');
     if (pertama) pertama.focus();
   }
   function tutupModal() {
@@ -50,8 +51,17 @@
       if (modal) {
         var form = modal.querySelector('form');
         if (form) form.reset();
+
         var judul = modal.querySelector('[data-modal-judul]');
         if (judul) judul.textContent = bukaForm.getAttribute('data-judul') || 'Form';
+
+        // Action & method: tambah (POST) atau edit (PUT/PATCH).
+        var aksi = bukaForm.getAttribute('data-aksi');
+        if (aksi && form) form.setAttribute('action', aksi);
+        var metode = bukaForm.getAttribute('data-metode') || 'POST';
+        var metodeEl = form ? form.querySelector('[data-metode]') : null;
+        if (metodeEl) metodeEl.value = metode;
+
         var nilai = bukaForm.getAttribute('data-nilai');
         if (nilai && form) {
           try {
@@ -69,10 +79,21 @@
 
     var konfirmasi = t.closest('[data-konfirmasi]');
     if (konfirmasi) {
+      formKonfirmasi = konfirmasi.closest('form');
       var m = document.getElementById('modal-konfirmasi');
       var teks = document.getElementById('modal-konfirmasi-teks');
       if (teks) teks.textContent = konfirmasi.getAttribute('data-konfirmasi');
       bukaModal(m, konfirmasi);
+      return;
+    }
+
+    if (t.closest('[data-konfirmasi-lanjut]')) {
+      if (formKonfirmasi) {
+        var f = formKonfirmasi;
+        formKonfirmasi = null;
+        tutupModal();
+        f.submit();
+      }
       return;
     }
 

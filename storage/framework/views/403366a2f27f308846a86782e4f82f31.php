@@ -47,7 +47,7 @@
     <header class="bar-atas">
       <button type="button" class="tombol-menu" data-buka-sisi aria-controls="sisi" aria-expanded="false" aria-label="Buka menu">&#9776;</button>
       <span class="bar-judul"><?php echo e(config('app.name', 'Daily Bun')); ?></span>
-      <span class="bar-status" title="Aplikasi masih tahap tampilan: belum ada login dan belum ada penyimpanan data.">Tahap tampilan</span>
+      <span class="bar-status" title="Belum ada fitur login; transaksi dicatat atas nama pengguna tetap (user id 1).">Mode tanpa login</span>
     </header>
 
     <main id="konten">
@@ -81,6 +81,7 @@
 
 <?php echo $__env->make('partials.modal-konfirmasi', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php echo $__env->yieldPushContent('modal'); ?>
+<?php echo $__env->yieldPushContent('skrip'); ?>
 </body>
 </html>
 <?php /**PATH C:\Users\user\Documents\D4 Teknik Informatika\Semester 3\PBD\Project_Bakery\resources\views/layouts/app.blade.php ENDPATH**/ ?>

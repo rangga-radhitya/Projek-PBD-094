@@ -2,29 +2,99 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Vendor;
+use App\Services\VendorService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class VendorController extends Controller
 {
-    // Menampilkan data dari view (READ saja) + pencarian, filter, pagination
+    public function __construct(private VendorService $layanan) {}
+
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
         $badan = (string) $request->query('badan_hukum', '');
         $status = (string) $request->query('status', '');
 
-        $daftar = Vendor::query()
-            ->when($q !== '', fn ($w) => $w->where('nama_vendor', 'like', "%{$q}%"))
-            ->when(in_array($badan, ['P', 'C', 'U'], true), fn ($w) => $w->where('badan_hukum', $badan))
-            // View menganggap status selain 'A' sebagai Nonaktif
-            ->when($status === 'A', fn ($w) => $w->where('status', 'A'))
-            ->when($status === 'N', fn ($w) => $w->where(fn ($x) => $x->where('status', '!=', 'A')->orWhereNull('status')))
-            ->orderBy('idvendor')
-            ->paginate(15)
-            ->withQueryString();
+        $daftar = $this->layanan->daftar($q, $badan, $status, 15, $request);
 
         return view('vendor.index', compact('daftar', 'q', 'badan', 'status'));
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $data = $request->validate(
+            [
+                'nama_vendor' => ['required', 'string', 'max:100'],
+                'badan_hukum' => ['required', 'in:P,C,U'],
+                'status' => ['required', 'in:A,N'],
+            ],
+            [],
+            ['nama_vendor' => 'nama vendor', 'badan_hukum' => 'badan hukum', 'status' => 'status']
+        );
+
+        if ($this->layanan->namaSudahAda($data['nama_vendor'])) {
+            throw ValidationException::withMessages(['nama_vendor' => 'Nama vendor sudah dipakai.']);
+        }
+
+        $this->layanan->tambah($data['nama_vendor'], $data['badan_hukum'], $data['status']);
+
+        return redirect()->route('vendor')->with('sukses', 'Vendor berhasil ditambahkan.');
+    }
+
+    public function update(Request $request, int $id): RedirectResponse
+    {
+        if ($this->layanan->cari($id) === null) {
+            return redirect()->route('vendor')->with('gagal', 'Vendor tidak ditemukan.');
+        }
+
+        $data = $request->validate(
+            [
+                'nama_vendor' => ['required', 'string', 'max:100'],
+                'badan_hukum' => ['required', 'in:P,C,U'],
+                'status' => ['required', 'in:A,N'],
+            ],
+            [],
+            ['nama_vendor' => 'nama vendor', 'badan_hukum' => 'badan hukum', 'status' => 'status']
+        );
+
+        if ($this->layanan->namaSudahAda($data['nama_vendor'], $id)) {
+            throw ValidationException::withMessages(['nama_vendor' => 'Nama vendor sudah dipakai.']);
+        }
+
+        $this->layanan->ubah($id, $data['nama_vendor'], $data['badan_hukum'], $data['status']);
+
+        return redirect()->route('vendor')->with('sukses', 'Vendor berhasil diperbarui.');
+    }
+
+    public function status(int $id): RedirectResponse
+    {
+        $vendor = $this->layanan->cari($id);
+
+        if ($vendor === null) {
+            return redirect()->route('vendor')->with('gagal', 'Vendor tidak ditemukan.');
+        }
+
+        $baru = $vendor->status === 'A' ? 'N' : 'A';
+        $this->layanan->ubahStatus($id, $baru);
+
+        return redirect()->route('vendor')->with('sukses', 'Status vendor berhasil diubah menjadi '.($baru === 'A' ? 'aktif' : 'nonaktif').'.');
+    }
+
+    public function destroy(int $id): RedirectResponse
+    {
+        if ($this->layanan->cari($id) === null) {
+            return redirect()->route('vendor')->with('gagal', 'Vendor tidak ditemukan.');
+        }
+
+        if ($this->layanan->dipakaiPengadaan($id)) {
+            return redirect()->route('vendor')->with('gagal', 'Vendor tidak bisa dihapus karena masih dipakai pengadaan.');
+        }
+
+        $this->layanan->hapus($id);
+
+        return redirect()->route('vendor')->with('sukses', 'Vendor berhasil dihapus.');
     }
 }

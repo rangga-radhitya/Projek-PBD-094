@@ -1,28 +1,37 @@
 @extends('layouts.app')
 
 @section('judul', 'Detail Penerimaan #'.$penerimaan->idpenerimaan)
+@section('grup', 'Transaksi')
 @section('deskripsi', 'Informasi penerimaan barang beserta barang yang diterima.')
 
 @section('breadcrumb')
-  <li>Penerimaan</li>
-  <li><a href="{{ route('penerimaan.index') }}">Data Penerimaan</a></li>
+  <li>Transaksi</li>
+  <li><a href="{{ route('penerimaan.index') }}">Penerimaan</a></li>
   <li aria-current="page">Penerimaan #{{ $penerimaan->idpenerimaan }}</li>
 @endsection
 
 @section('aksi')
   <a class="tombol sekunder" href="{{ route('penerimaan.index') }}">&laquo; Kembali</a>
+  <form method="POST" action="{{ route('penerimaan.destroy', $penerimaan->idpenerimaan) }}">
+    @csrf
+    @method('DELETE')
+    <button type="button" class="tombol bahaya"
+            data-konfirmasi="Hapus penerimaan #{{ $penerimaan->idpenerimaan }}? Stok yang sudah masuk akan dikoreksi otomatis.">Hapus</button>
+  </form>
 @endsection
 
 @section('isi')
+  @php $totalTerima = array_sum(array_map(fn ($d) => (int) $d->sub_total_terima, $penerimaan->detail)); @endphp
+
   <section class="kartu">
     <h2>Informasi penerimaan</h2>
     <dl class="info-daftar">
       <div><dt>ID penerimaan</dt><dd>{{ $penerimaan->idpenerimaan }}</dd></div>
-      <div><dt>Tanggal</dt><dd>{{ $penerimaan->created_at?->format('d/m/Y H:i') ?? '-' }}</dd></div>
+      <div><dt>Tanggal</dt><dd>{{ $penerimaan->tanggal ?? '-' }}</dd></div>
       <div><dt>Pengadaan asal</dt><dd>@if ($penerimaan->idpengadaan)<a href="{{ route('pengadaan.show', $penerimaan->idpengadaan) }}">Pengadaan #{{ $penerimaan->idpengadaan }}</a>@else - @endif</dd></div>
-      <div><dt>Vendor</dt><dd>{{ $penerimaan->pengadaan?->vendor ? $penerimaan->pengadaan->vendor->nama_vendor : '-' }}</dd></div>
-      <div><dt>Diterima oleh</dt><dd>{{ $penerimaan->user?->username ?? '-' }}</dd></div>
-      <div><dt>Status</dt><dd><x-badge :teks="$penerimaan->status ?? '-'" /> <small class="hint">(arti kode belum ditetapkan)</small></dd></div>
+      <div><dt>Vendor</dt><dd>{{ $penerimaan->nama_vendor ?? '-' }}</dd></div>
+      <div><dt>Diterima oleh</dt><dd>{{ $penerimaan->username ?? '-' }}</dd></div>
+      <div><dt>Status</dt><dd><x-badge :teks="$penerimaan->status ?? '-'" /> <small class="hint">(D = draft, S = selesai)</small></dd></div>
     </dl>
   </section>
 
@@ -37,8 +46,8 @@
       @forelse ($penerimaan->detail as $d)
         <tr>
           <td>{{ $loop->iteration }}</td>
-          <td>{{ $d->barang?->nama ?? 'Barang #'.$d->barang_idbarang }}</td>
-          <td>{{ $d->barang?->nama_satuan ?? '-' }}</td>
+          <td>{{ $d->nama ?? 'Barang #'.$d->barang_idbarang }}</td>
+          <td>{{ $d->nama_satuan ?? '-' }}</td>
           <td class="angka">{{ $d->jumlah_terima }}</td>
           <td class="angka"><x-rp :nilai="$d->harga_satuan_terima" /></td>
           <td class="angka"><x-rp :nilai="$d->sub_total_terima" /></td>
@@ -47,9 +56,9 @@
         <tr><td colspan="6" class="kosong">Penerimaan ini belum memiliki detail barang.</td></tr>
       @endforelse
       </tbody>
-      @if ($penerimaan->detail->isNotEmpty())
+      @if (! empty($penerimaan->detail))
       <tfoot>
-        <tr><td colspan="5" class="angka">Total (dijumlahkan dari sub total terima)</td><td class="angka"><x-rp :nilai="$penerimaan->detail->sum('sub_total_terima')" /></td></tr>
+        <tr><td colspan="5" class="angka">Total (dijumlahkan dari sub total terima)</td><td class="angka"><x-rp :nilai="$totalTerima" /></td></tr>
       </tfoot>
       @endif
     </table>
@@ -65,8 +74,8 @@
       @forelse ($penerimaan->retur as $rt)
         <tr>
           <td class="angka">{{ $rt->idretur }}</td>
-          <td>{{ $rt->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
-          <td>{{ $rt->user?->username ?? '-' }}</td>
+          <td>{{ $rt->tanggal ?? '-' }}</td>
+          <td>{{ $rt->username ?? '-' }}</td>
           <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('retur.show', $rt->idretur) }}">Detail</a></td>
         </tr>
       @empty

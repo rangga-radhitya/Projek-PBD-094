@@ -5,7 +5,7 @@
 @section('deskripsi', 'Riwayat pergerakan stok barang (masuk, keluar, saldo). Data dibaca dari tabel kartu_stok.')
 
 @section('isi')
-  <x-catatan>Halaman ini hanya menampilkan riwayat. Arti kode <strong>jenis transaksi</strong> belum ditetapkan, sehingga kode ditampilkan apa adanya dan kolom referensi belum berupa tautan.</x-catatan>
+  <x-catatan>Kode <strong>jenis transaksi</strong>: <strong>M</strong> = stok masuk (penerimaan atau pembatalan retur), <strong>K</strong> = stok keluar/koreksi (pembatalan penerimaan), <strong>R</strong> = retur ke vendor. Saldo (<code>stock</code>) adalah saldo berjalan per barang.</x-catatan>
 
   <x-filter-bar :reset="route('kartu_stok')">
     <div class="grup-filter">
@@ -48,8 +48,8 @@
     <tbody>
     @forelse ($daftar as $r)
       <tr>
-        <td>{{ $r->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
-        <td>{{ $r->barang?->nama ?? ($r->idbarang ? 'Barang #'.$r->idbarang : '-') }}</td>
+        <td>{{ $r->tanggal ?? '-' }}</td>
+        <td>{{ $r->nama_barang ?? ($r->idbarang ? 'Barang #'.$r->idbarang : '-') }}</td>
         <td><x-badge :teks="$r->jenis_transaksi ?? '-'" /></td>
         <td class="angka">{{ $r->masuk ?? 0 }}</td>
         <td class="angka">{{ $r->keluar ?? 0 }}</td>

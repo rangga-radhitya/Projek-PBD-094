@@ -1,9 +1,10 @@
 <?php $__env->startSection('judul', 'Data Satuan'); ?>
-<?php $__env->startSection('grup', 'Master Data'); ?>
-<?php $__env->startSection('deskripsi', 'Satuan barang (Pcs, Cup, Box, dst.). Data dibaca dari view v_satuan.'); ?>
+<?php $__env->startSection('grup', 'Tabel Master'); ?>
+<?php $__env->startSection('deskripsi', 'Satuan barang (Pcs, Cup, Box, dst.).'); ?>
 
 <?php $__env->startSection('aksi'); ?>
-  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Satuan">+ Tambah Satuan</button>
+  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Satuan"
+          data-aksi="<?php echo e(route('satuan.store')); ?>" data-metode="POST">+ Tambah Satuan</button>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('isi'); ?>
@@ -71,8 +72,15 @@
 <?php unset($__componentOriginal2ddbc40e602c342e508ac696e52f8719); ?>
 <?php endif; ?></td>
         <td class="aksi">
-          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Satuan" data-nilai="<?php echo e(json_encode(['nama_satuan' => $r->nama_satuan, 'status' => $r->status])); ?>">Edit</button>
-          <button type="button" class="tombol sekunder kecil" data-konfirmasi="<?php echo e($r->status == 1 ? 'Nonaktifkan' : 'Aktifkan'); ?> satuan &quot;<?php echo e($r->nama_satuan); ?>&quot;?"><?php echo e($r->status == 1 ? 'Nonaktifkan' : 'Aktifkan'); ?></button>
+          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Satuan"
+                  data-aksi="<?php echo e(route('satuan.update', $r->idsatuan)); ?>" data-metode="PUT"
+                  data-nilai="<?php echo e(json_encode(['nama_satuan' => $r->nama_satuan, 'status' => $r->status])); ?>">Edit</button>
+          <form method="POST" action="<?php echo e(route('satuan.status', $r->idsatuan)); ?>">
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('PATCH'); ?>
+            <button type="button" class="tombol sekunder kecil"
+                    data-konfirmasi="<?php echo e($r->status == 1 ? 'Nonaktifkan' : 'Aktifkan'); ?> satuan &quot;<?php echo e($r->nama_satuan); ?>&quot;?"><?php echo e($r->status == 1 ? 'Nonaktifkan' : 'Aktifkan'); ?></button>
+          </form>
         </td>
       </tr>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -85,7 +93,7 @@
 
 
   <?php $__env->startPush('modal'); ?>
-    <?php echo $__env->make('partials.modal-form', ['id' => 'm-form', 'fields' => [
+    <?php echo $__env->make('partials.modal-form', ['id' => 'm-form', 'aksi' => route('satuan.store'), 'judul' => 'Tambah Satuan', 'fields' => [
       ['label' => 'Nama satuan', 'name' => 'nama_satuan', 'wajib' => true, 'hint' => 'Maksimal 45 karakter.'],
       ['label' => 'Status', 'name' => 'status', 'type' => 'select', 'wajib' => true, 'options' => ['1' => 'Aktif', '0' => 'Nonaktif']],
     ]], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>

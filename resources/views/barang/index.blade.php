@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('judul', 'Data Barang')
-@section('grup', 'Master Data')
-@section('deskripsi', 'Katalog produk dan harga jual. Data dibaca dari view v_barang.')
+@section('grup', 'Tabel Master')
+@section('deskripsi', 'Katalog produk dan harga jual.')
 
 @section('aksi')
-  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Barang">+ Tambah Barang</button>
+  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Barang"
+          data-aksi="{{ route('barang.store') }}" data-metode="POST">+ Tambah Barang</button>
 @endsection
 
 @section('isi')
@@ -58,8 +59,15 @@
         <td class="angka"><x-rp :nilai="$r->harga" /></td>
         <td><x-badge :aktif="$r->status == 1" :teks="$r->status == 1 ? 'Aktif' : 'Nonaktif'" /></td>
         <td class="aksi">
-          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Barang" data-nilai="{{ json_encode(['nama' => $r->nama, 'jenis' => $r->jenis, 'idsatuan' => $r->idsatuan, 'harga' => $r->harga, 'status' => $r->status]) }}">Edit</button>
-          <button type="button" class="tombol sekunder kecil" data-konfirmasi="{{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }} barang &quot;{{ $r->nama }}&quot;?">{{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }}</button>
+          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Barang"
+                  data-aksi="{{ route('barang.update', $r->idbarang) }}" data-metode="PUT"
+                  data-nilai="{{ json_encode(['nama' => $r->nama, 'jenis' => $r->jenis, 'idsatuan' => $r->idsatuan, 'harga' => $r->harga, 'status' => $r->status]) }}">Edit</button>
+          <form method="POST" action="{{ route('barang.status', $r->idbarang) }}">
+            @csrf
+            @method('PATCH')
+            <button type="button" class="tombol sekunder kecil"
+                    data-konfirmasi="{{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }} barang &quot;{{ $r->nama }}&quot;?">{{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }}</button>
+          </form>
         </td>
       </tr>
     @empty
@@ -71,10 +79,10 @@
   {{ $daftar->links('components.pagination') }}
 
   @push('modal')
-    @include('partials.modal-form', ['id' => 'm-form', 'fields' => [
+    @include('partials.modal-form', ['id' => 'm-form', 'aksi' => route('barang.store'), 'judul' => 'Tambah Barang', 'fields' => [
       ['label' => 'Nama barang', 'name' => 'nama', 'wajib' => true, 'hint' => 'Maksimal 45 karakter.'],
       ['label' => 'Jenis', 'name' => 'jenis', 'type' => 'select', 'wajib' => true, 'options' => ['B' => 'Bread', 'D' => 'Drink', 'C' => 'Cake', 'P' => 'Pastry']],
-      ['label' => 'Satuan', 'name' => 'idsatuan', 'type' => 'select', 'wajib' => true, 'options' => $daftarSatuan->pluck('nama_satuan', 'idsatuan')->all()],
+      ['label' => 'Satuan', 'name' => 'idsatuan', 'type' => 'select', 'wajib' => true, 'options' => $opsiSatuan],
       ['label' => 'Harga jual (Rp)', 'name' => 'harga', 'type' => 'number', 'min' => 0, 'wajib' => true],
       ['label' => 'Status', 'name' => 'status', 'type' => 'select', 'wajib' => true, 'options' => ['1' => 'Aktif', '0' => 'Nonaktif']],
     ]])

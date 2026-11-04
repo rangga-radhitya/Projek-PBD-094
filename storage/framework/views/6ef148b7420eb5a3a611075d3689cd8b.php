@@ -1,9 +1,10 @@
 <?php $__env->startSection('judul', 'Data Role'); ?>
-<?php $__env->startSection('grup', 'Master Data'); ?>
-<?php $__env->startSection('deskripsi', 'Peran pengguna aplikasi. Data dibaca dari view v_role.'); ?>
+<?php $__env->startSection('grup', 'Tabel Master'); ?>
+<?php $__env->startSection('deskripsi', 'Peran pengguna aplikasi.'); ?>
 
 <?php $__env->startSection('aksi'); ?>
-  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Role">+ Tambah Role</button>
+  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Role"
+          data-aksi="<?php echo e(route('role.store')); ?>" data-metode="POST">+ Tambah Role</button>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('isi'); ?>
@@ -43,8 +44,15 @@
         <td class="angka"><?php echo e($r->idrole); ?></td>
         <td><?php echo e($r->nama_role); ?></td>
         <td class="aksi">
-          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Role" data-nilai="<?php echo e(json_encode(['nama_role' => $r->nama_role])); ?>">Edit</button>
-          <button type="button" class="tombol sekunder kecil" data-konfirmasi="Hapus role &quot;<?php echo e($r->nama_role); ?>&quot;? Role yang masih dipakai user tidak boleh dihapus.">Hapus</button>
+          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Role"
+                  data-aksi="<?php echo e(route('role.update', $r->idrole)); ?>" data-metode="PUT"
+                  data-nilai="<?php echo e(json_encode(['nama_role' => $r->nama_role])); ?>">Edit</button>
+          <form method="POST" action="<?php echo e(route('role.destroy', $r->idrole)); ?>">
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('DELETE'); ?>
+            <button type="button" class="tombol sekunder kecil"
+                    data-konfirmasi="Hapus role &quot;<?php echo e($r->nama_role); ?>&quot;? Role yang masih dipakai user tidak boleh dihapus.">Hapus</button>
+          </form>
         </td>
       </tr>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -57,7 +65,7 @@
 
 
   <?php $__env->startPush('modal'); ?>
-    <?php echo $__env->make('partials.modal-form', ['id' => 'm-form', 'fields' => [
+    <?php echo $__env->make('partials.modal-form', ['id' => 'm-form', 'aksi' => route('role.store'), 'judul' => 'Tambah Role', 'fields' => [
       ['label' => 'Nama role', 'name' => 'nama_role', 'wajib' => true, 'hint' => 'Maksimal 100 karakter.'],
     ]], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
   <?php $__env->stopPush(); ?>

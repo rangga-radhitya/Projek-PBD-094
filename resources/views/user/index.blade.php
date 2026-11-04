@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('judul', 'Data User')
-@section('grup', 'Master Data')
-@section('deskripsi', 'Akun pengguna aplikasi. Data dibaca dari view v_user (kolom password tidak pernah ditampilkan).')
+@section('grup', 'Tabel Master')
+@section('deskripsi', 'Akun pengguna aplikasi. Kolom password tidak pernah ditampilkan.')
 
 @section('aksi')
-  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah User">+ Tambah User</button>
+  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah User"
+          data-aksi="{{ route('user.store') }}" data-metode="POST">+ Tambah User</button>
 @endsection
 
 @section('isi')
@@ -37,8 +38,15 @@
         <td>{{ $r->username }}</td>
         <td>{{ $r->nama_role }}</td>
         <td class="aksi">
-          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit User" data-nilai="{{ json_encode(['username' => $r->username, 'idrole' => $r->idrole]) }}">Edit</button>
-          <button type="button" class="tombol sekunder kecil" data-konfirmasi="Hapus user &quot;{{ $r->username }}&quot;? User yang sudah dipakai pada transaksi tidak boleh dihapus.">Hapus</button>
+          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit User"
+                  data-aksi="{{ route('user.update', $r->iduser) }}" data-metode="PUT"
+                  data-nilai="{{ json_encode(['username' => $r->username, 'idrole' => $r->idrole]) }}">Edit</button>
+          <form method="POST" action="{{ route('user.destroy', $r->iduser) }}">
+            @csrf
+            @method('DELETE')
+            <button type="button" class="tombol sekunder kecil"
+                    data-konfirmasi="Hapus user &quot;{{ $r->username }}&quot;? User yang sudah dipakai pada transaksi tidak boleh dihapus.">Hapus</button>
+          </form>
         </td>
       </tr>
     @empty
@@ -49,11 +57,18 @@
   </div>
   {{ $daftar->links('components.pagination') }}
 
+  @php
+    $opsiRole = [];
+    foreach ($daftarRole as $role) {
+        $opsiRole[(string) $role->idrole] = $role->nama_role;
+    }
+  @endphp
+
   @push('modal')
-    @include('partials.modal-form', ['id' => 'm-form', 'fields' => [
+    @include('partials.modal-form', ['id' => 'm-form', 'aksi' => route('user.store'), 'judul' => 'Tambah User', 'fields' => [
       ['label' => 'Username', 'name' => 'username', 'wajib' => true, 'hint' => 'Maksimal 45 karakter.'],
       ['label' => 'Password', 'name' => 'password', 'type' => 'password', 'hint' => 'Wajib saat tambah; kosongkan saat edit bila tidak diganti.'],
-      ['label' => 'Role', 'name' => 'idrole', 'type' => 'select', 'wajib' => true, 'options' => $daftarRole->pluck('nama_role', 'idrole')->all()],
+      ['label' => 'Role', 'name' => 'idrole', 'type' => 'select', 'wajib' => true, 'options' => $opsiRole],
     ]])
   @endpush
 @endsection

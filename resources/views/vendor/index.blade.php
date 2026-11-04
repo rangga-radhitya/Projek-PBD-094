@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('judul', 'Data Vendor')
-@section('grup', 'Master Data')
-@section('deskripsi', 'Pemasok barang. Data dibaca dari view v_vendor.')
+@section('grup', 'Tabel Master')
+@section('deskripsi', 'Pemasok barang.')
 
 @section('aksi')
-  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Vendor">+ Tambah Vendor</button>
+  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Vendor"
+          data-aksi="{{ route('vendor.store') }}" data-metode="POST">+ Tambah Vendor</button>
 @endsection
 
 @section('isi')
@@ -46,8 +47,15 @@
         <td>{{ $r->badan_hukum_teks }}</td>
         <td><x-badge :aktif="$r->status === 'A'" :teks="$r->status_teks" /></td>
         <td class="aksi">
-          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Vendor" data-nilai="{{ json_encode(['nama_vendor' => $r->nama_vendor, 'badan_hukum' => $r->badan_hukum, 'status' => $r->status]) }}">Edit</button>
-          <button type="button" class="tombol sekunder kecil" data-konfirmasi="{{ $r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan' }} vendor &quot;{{ $r->nama_vendor }}&quot;?">{{ $r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan' }}</button>
+          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Vendor"
+                  data-aksi="{{ route('vendor.update', $r->idvendor) }}" data-metode="PUT"
+                  data-nilai="{{ json_encode(['nama_vendor' => $r->nama_vendor, 'badan_hukum' => $r->badan_hukum, 'status' => $r->status]) }}">Edit</button>
+          <form method="POST" action="{{ route('vendor.status', $r->idvendor) }}">
+            @csrf
+            @method('PATCH')
+            <button type="button" class="tombol sekunder kecil"
+                    data-konfirmasi="{{ $r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan' }} vendor &quot;{{ $r->nama_vendor }}&quot;?">{{ $r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan' }}</button>
+          </form>
         </td>
       </tr>
     @empty
@@ -59,10 +67,10 @@
   {{ $daftar->links('components.pagination') }}
 
   @push('modal')
-    @include('partials.modal-form', ['id' => 'm-form', 'fields' => [
+    @include('partials.modal-form', ['id' => 'm-form', 'aksi' => route('vendor.store'), 'judul' => 'Tambah Vendor', 'fields' => [
       ['label' => 'Nama vendor', 'name' => 'nama_vendor', 'wajib' => true, 'hint' => 'Maksimal 100 karakter.'],
       ['label' => 'Badan hukum', 'name' => 'badan_hukum', 'type' => 'select', 'wajib' => true, 'options' => ['P' => 'PT', 'C' => 'CV', 'U' => 'UD']],
-      ['label' => 'Status', 'name' => 'status', 'type' => 'select', 'wajib' => true, 'options' => ['A' => 'Aktif'], 'hint' => 'Kode untuk status nonaktif belum ditetapkan (perlu konfirmasi).'],
+      ['label' => 'Status', 'name' => 'status', 'type' => 'select', 'wajib' => true, 'options' => ['A' => 'Aktif', 'N' => 'Nonaktif']],
     ]])
   @endpush
 @endsection

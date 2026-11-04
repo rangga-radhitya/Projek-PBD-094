@@ -1,12 +1,14 @@
 @extends('layouts.app')
 
 @section('judul', 'Data Pengadaan')
-@section('grup', 'Pengadaan')
-@section('deskripsi', 'Pesanan barang ke vendor. Data dibaca dari tabel pengadaan.')
+@section('grup', 'Transaksi')
+@section('deskripsi', 'Pesanan barang ke vendor.')
+
+@section('aksi')
+  <a class="tombol" href="{{ route('pengadaan.create') }}">+ Tambah Pengadaan</a>
+@endsection
 
 @section('isi')
-  <x-catatan>Kode <strong>status</strong> ditampilkan apa adanya karena arti kodenya belum ditetapkan. Pembuatan pengadaan baru belum tersedia pada tahap ini.</x-catatan>
-
   <x-filter-bar :reset="route('pengadaan.index')">
     <div class="grup-filter">
       <label for="q">Cari ID / vendor</label>
@@ -49,14 +51,22 @@
     @forelse ($daftar as $r)
       <tr>
         <td class="angka">{{ $r->idpengadaan }}</td>
-        <td>{{ $r->timestamp?->format('d/m/Y H:i') ?? '-' }}</td>
-        <td>{{ $r->vendor?->nama_vendor ?? '-' }}</td>
-        <td>{{ $r->user?->username ?? '-' }}</td>
+        <td>{{ $r->tanggal ?? '-' }}</td>
+        <td>{{ $r->nama_vendor ?? '-' }}</td>
+        <td>{{ $r->username ?? '-' }}</td>
         <td><x-badge :teks="$r->status ?? '-'" /></td>
         <td class="angka"><x-rp :nilai="$r->subtotal_nilai" /></td>
         <td class="angka"><x-rp :nilai="$r->ppn" /></td>
         <td class="angka"><x-rp :nilai="$r->total_nilai" /></td>
-        <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('pengadaan.show', $r->idpengadaan) }}">Detail</a></td>
+        <td class="aksi">
+          <a class="tombol sekunder kecil" href="{{ route('pengadaan.show', $r->idpengadaan) }}">Detail</a>
+          <form method="POST" action="{{ route('pengadaan.destroy', $r->idpengadaan) }}">
+            @csrf
+            @method('DELETE')
+            <button type="button" class="tombol sekunder kecil"
+                    data-konfirmasi="Hapus pengadaan #{{ $r->idpengadaan }}? Pengadaan yang sudah memiliki penerimaan tidak boleh dihapus.">Hapus</button>
+          </form>
+        </td>
       </tr>
     @empty
       <tr><td colspan="9" class="kosong">{{ request()->hasAny(['q','idvendor','status','dari','sampai']) ? 'Tidak ada pengadaan yang cocok dengan pencarian/filter.' : 'Belum ada data pengadaan.' }}</td></tr>

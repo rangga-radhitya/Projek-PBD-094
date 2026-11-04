@@ -40,9 +40,9 @@
     @forelse ($daftar as $r)
       <tr>
         <td class="angka">{{ $r->idpenjualan }}</td>
-        <td>{{ $r->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
-        <td>{{ $r->user?->username ?? '-' }}</td>
-        <td class="angka"><x-persen :nilai="$r->margin?->persen" /></td>
+        <td>{{ $r->tanggal ?? '-' }}</td>
+        <td>{{ $r->username ?? '-' }}</td>
+        <td class="angka"><x-persen :nilai="$r->persen" /></td>
         <td class="angka">{{ $r->detail_count }}</td>
         <td class="angka"><x-rp :nilai="$r->subtotal_nilai" /></td>
         <td class="angka"><x-rp :nilai="$r->ppn" /></td>

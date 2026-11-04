@@ -47,7 +47,7 @@
     <header class="bar-atas">
       <button type="button" class="tombol-menu" data-buka-sisi aria-controls="sisi" aria-expanded="false" aria-label="Buka menu">&#9776;</button>
       <span class="bar-judul">{{ config('app.name', 'Daily Bun') }}</span>
-      <span class="bar-status" title="Aplikasi masih tahap tampilan: belum ada login dan belum ada penyimpanan data.">Tahap tampilan</span>
+      <span class="bar-status" title="Belum ada fitur login; transaksi dicatat atas nama pengguna tetap (user id 1).">Mode tanpa login</span>
     </header>
 
     <main id="konten">
@@ -81,5 +81,6 @@
 
 @include('partials.modal-konfirmasi')
 @stack('modal')
+@stack('skrip')
 </body>
 </html>

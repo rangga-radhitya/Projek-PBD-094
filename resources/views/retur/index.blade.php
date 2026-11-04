@@ -1,12 +1,14 @@
 @extends('layouts.app')
 
 @section('judul', 'Data Retur')
-@section('grup', 'Retur')
-@section('deskripsi', 'Retur barang yang mengacu ke penerimaan (retur ke vendor). Data dibaca dari tabel retur.')
+@section('grup', 'Transaksi')
+@section('deskripsi', 'Retur barang ke vendor, mengacu pada penerimaan. Stok keluar otomatis lewat trigger database.')
+
+@section('aksi')
+  <a class="tombol" href="{{ route('retur.create') }}">+ Tambah Retur</a>
+@endsection
 
 @section('isi')
-  <x-catatan>Struktur database mencatat retur terhadap <strong>penerimaan</strong> dari vendor. Pencatatan retur baru belum tersedia pada tahap ini.</x-catatan>
-
   <x-filter-bar :reset="route('retur.index')">
     <div class="grup-filter">
       <label for="q">Cari ID retur / penerimaan</label>
@@ -40,12 +42,20 @@
     @forelse ($daftar as $r)
       <tr>
         <td class="angka">{{ $r->idretur }}</td>
-        <td>{{ $r->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
+        <td>{{ $r->tanggal ?? '-' }}</td>
         <td>@if ($r->idpenerimaan)<a href="{{ route('penerimaan.show', $r->idpenerimaan) }}">#{{ $r->idpenerimaan }}</a>@else - @endif</td>
-        <td>{{ $r->penerimaan?->pengadaan?->vendor?->nama_vendor ?? '-' }}</td>
-        <td>{{ $r->user?->username ?? '-' }}</td>
+        <td>{{ $r->nama_vendor ?? '-' }}</td>
+        <td>{{ $r->username ?? '-' }}</td>
         <td class="angka">{{ $r->detail_count }}</td>
-        <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('retur.show', $r->idretur) }}">Detail</a></td>
+        <td class="aksi">
+          <a class="tombol sekunder kecil" href="{{ route('retur.show', $r->idretur) }}">Detail</a>
+          <form method="POST" action="{{ route('retur.destroy', $r->idretur) }}">
+            @csrf
+            @method('DELETE')
+            <button type="button" class="tombol sekunder kecil"
+                    data-konfirmasi="Hapus retur #{{ $r->idretur }}? Stok akan dikoreksi otomatis.">Hapus</button>
+          </form>
+        </td>
       </tr>
     @empty
       <tr><td colspan="7" class="kosong">{{ request()->hasAny(['q','idvendor','dari','sampai']) ? 'Tidak ada retur yang cocok dengan pencarian/filter.' : 'Belum ada data retur.' }}</td></tr>

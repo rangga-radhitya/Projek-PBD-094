@@ -19,9 +19,9 @@
     <h2>Informasi penjualan</h2>
     <dl class="info-daftar">
       <div><dt>ID penjualan</dt><dd>{{ $penjualan->idpenjualan }}</dd></div>
-      <div><dt>Tanggal</dt><dd>{{ $penjualan->created_at?->format('d/m/Y H:i') ?? '-' }}</dd></div>
-      <div><dt>Kasir</dt><dd>{{ $penjualan->user?->username ?? '-' }}</dd></div>
-      <div><dt>Margin tercatat</dt><dd>@if ($penjualan->margin)<x-persen :nilai="$penjualan->margin->persen" /> (ID {{ $penjualan->idmargin_penjualan }})@else - @endif</dd></div>
+      <div><dt>Tanggal</dt><dd>{{ $penjualan->tanggal ?? '-' }}</dd></div>
+      <div><dt>Kasir</dt><dd>{{ $penjualan->username ?? '-' }}</dd></div>
+      <div><dt>Margin tercatat</dt><dd>@if ($penjualan->persen !== null)<x-persen :nilai="$penjualan->persen" /> (ID {{ $penjualan->idmargin_penjualan }})@else - @endif</dd></div>
     </dl>
   </section>
 
@@ -36,8 +36,8 @@
       @forelse ($penjualan->detail as $d)
         <tr>
           <td>{{ $loop->iteration }}</td>
-          <td>{{ $d->barang?->nama ?? 'Barang #'.$d->idbarang }}</td>
-          <td>{{ $d->barang?->nama_satuan ?? '-' }}</td>
+          <td>{{ $d->nama ?? 'Barang #'.$d->idbarang }}</td>
+          <td>{{ $d->nama_satuan ?? '-' }}</td>
           <td class="angka"><x-rp :nilai="$d->harga_satuan" /></td>
           <td class="angka">{{ $d->jumlah }}</td>
           <td class="angka"><x-rp :nilai="$d->subtotal" /></td>
@@ -47,6 +47,17 @@
       @endforelse
       </tbody>
       <tfoot>
+        @if ($totalFungsi !== null)
+          <tr>
+            <td colspan="5" class="angka">Subtotal dihitung dari detail (fungsi database <code>fn_hitung_total_penjualan</code>)</td>
+            <td class="angka">
+              <x-rp :nilai="$totalFungsi" />
+              @if ($penjualan->subtotal_nilai !== null)
+                <x-badge :aktif="(float) $totalFungsi === (float) $penjualan->subtotal_nilai" :teks="(float) $totalFungsi === (float) $penjualan->subtotal_nilai ? 'sesuai' : 'berbeda dari subtotal tercatat'" />
+              @endif
+            </td>
+          </tr>
+        @endif
         <tr><td colspan="5" class="angka">Subtotal</td><td class="angka"><x-rp :nilai="$penjualan->subtotal_nilai" /></td></tr>
         <tr><td colspan="5" class="angka">PPN</td><td class="angka"><x-rp :nilai="$penjualan->ppn" /></td></tr>
         <tr><td colspan="5" class="angka">Total</td><td class="angka"><x-rp :nilai="$penjualan->total_nilai" /></td></tr>

@@ -9,6 +9,9 @@
 @endsection
 
 @section('isi')
+  @if ($jenis === 'penjualan')
+    @include('laporan._penjualan')
+  @else
   <x-catatan>Laporan ini <strong>belum tersedia</strong> (menunggu backend agregasi). Filter di bawah hanya contoh struktur dan dinonaktifkan.</x-catatan>
 
   <form class="filter" onsubmit="return false">
@@ -34,4 +37,5 @@
     </div>
     <p>Sementara, data mentahnya dapat dilihat di <a href="{{ route($laporan['sementara']['route']) }}">{{ $laporan['sementara']['label'] }}</a>.</p>
   </section>
+  @endif
 @endsection

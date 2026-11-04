@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('judul', 'Dashboard'); ?>
 <?php $__env->startSection('deskripsi', 'Ringkasan data aplikasi. Semua angka dihitung langsung dari database.'); ?>
 
@@ -23,7 +25,7 @@
 <?php $component = $__componentOriginalb4e3971ce842b126bc6c4e68494cd6a3; ?>
 <?php unset($__componentOriginalb4e3971ce842b126bc6c4e68494cd6a3); ?>
 <?php endif; ?> <br>(tanggal <?php echo e(\Carbon\Carbon::parse($hari)->format('d/m/Y')); ?>, zona waktu aplikasi UTC)</div></div>
-    <div class="kartu"><div class="judul">Margin aktif</div><div class="nilai"><?php if($marginAktif->isNotEmpty()): ?><?php $__currentLoopData = $marginAktif; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $m): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if (isset($component)) { $__componentOriginal50d9ef21f2f1e58eed9598823a32f3d7 = $component; } ?>
+    <div class="kartu"><div class="judul">Margin aktif</div><div class="nilai"><?php if(! empty($marginAktif)): ?><?php $__currentLoopData = $marginAktif; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $m): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if (isset($component)) { $__componentOriginal50d9ef21f2f1e58eed9598823a32f3d7 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal50d9ef21f2f1e58eed9598823a32f3d7 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.persen','data' => ['nilai' => $m->persen]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('persen'); ?>
@@ -66,8 +68,8 @@
         <?php $__empty_1 = true; $__currentLoopData = $penjualanTerakhir; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $p): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
           <tr>
             <td class="angka"><a href="<?php echo e(route('penjualan.show', $p->idpenjualan)); ?>">#<?php echo e($p->idpenjualan); ?></a></td>
-            <td><?php echo e($p->created_at?->format('d/m/Y H:i') ?? '-'); ?></td>
-            <td><?php echo e($p->user?->username ?? '-'); ?></td>
+            <td><?php echo e($p->tanggal ?? '-'); ?></td>
+            <td><?php echo e($p->username ?? '-'); ?></td>
             <td class="angka"><?php if (isset($component)) { $__componentOriginalb4e3971ce842b126bc6c4e68494cd6a3 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalb4e3971ce842b126bc6c4e68494cd6a3 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.rp','data' => ['nilai' => $p->total_nilai]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -106,8 +108,8 @@
         <?php $__empty_1 = true; $__currentLoopData = $pengadaanTerakhir; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $p): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
           <tr>
             <td class="angka"><a href="<?php echo e(route('pengadaan.show', $p->idpengadaan)); ?>">#<?php echo e($p->idpengadaan); ?></a></td>
-            <td><?php echo e($p->timestamp?->format('d/m/Y H:i') ?? '-'); ?></td>
-            <td><?php echo e($p->vendor?->nama_vendor ?? '-'); ?></td>
+            <td><?php echo e($p->tanggal ?? '-'); ?></td>
+            <td><?php echo e($p->nama_vendor ?? '-'); ?></td>
             <td class="angka"><?php if (isset($component)) { $__componentOriginalb4e3971ce842b126bc6c4e68494cd6a3 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalb4e3971ce842b126bc6c4e68494cd6a3 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.rp','data' => ['nilai' => $p->total_nilai]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -147,7 +149,7 @@
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes([]); ?>Belum tersedia (butuh backend): ringkasan stok per barang / stok rendah dan pengadaan yang menunggu penerimaan, karena arti kode status dan aturan stok belum ditetapkan. <?php echo $__env->renderComponent(); ?>
+<?php $component->withAttributes([]); ?>Stok berjalan per barang dapat dilihat di halaman <a href="<?php echo e(route('kartu_stok')); ?>">Kartu Stok</a>. Ringkasan stok rendah belum dihitung pada dashboard. <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal3a3743169da1b02a6fcfe13e09b73f16)): ?>
 <?php $attributes = $__attributesOriginal3a3743169da1b02a6fcfe13e09b73f16; ?>

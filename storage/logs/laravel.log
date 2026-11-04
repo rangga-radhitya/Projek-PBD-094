@@ -600,3 +600,23 @@ Did you mean one of these?
 #69 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('C://Users//user//D...')
 #70 {main}
 "} 
+[2026-11-04 15:20:49] local.ERROR: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`projek_pbd_094`.`detail_pengadaan`, CONSTRAINT `fk_detpengadaan_pengadaan` FOREIGN KEY (`idpengadaan`) REFERENCES `pengadaan` (`idpengadaan`)) (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: projek_pbd_094, SQL: CALL sp_tambah_detail_pengadaan(0, 1, 10000, 2, 11)) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 23000): SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`projek_pbd_094`.`detail_pengadaan`, CONSTRAINT `fk_detpengadaan_pengadaan` FOREIGN KEY (`idpengadaan`) REFERENCES `pengadaan` (`idpengadaan`)) (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: projek_pbd_094, SQL: CALL sp_tambah_detail_pengadaan(0, 1, 10000, 2, 11)) at C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Database/Connection.php:864)
+[stacktrace]
+#0 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Database/Connection.php(820): Illuminate/Database/Connection->runQueryCallback('CALL sp_tambah_...', Array, Object(Closure))
+#1 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Database/Connection.php(597): Illuminate/Database/Connection->run('CALL sp_tambah_...', Array, Object(Closure))
+#2 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Database/DatabaseManager.php(502): Illuminate/Database/Connection->statement('CALL sp_tambah_...', Array)
+#3 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(364): Illuminate/Database/DatabaseManager->__call('statement', Array)
+#4 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/uji_objek_db.php(40): Illuminate/Support/Facades/Facade::__callStatic('statement', Array)
+#5 {main}
+
+[previous exception] [object] (PDOException(code: 23000): SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`projek_pbd_094`.`detail_pengadaan`, CONSTRAINT `fk_detpengadaan_pengadaan` FOREIGN KEY (`idpengadaan`) REFERENCES `pengadaan` (`idpengadaan`)) at C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Database/Connection.php:608)
+[stacktrace]
+#0 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Database/Connection.php(608): PDOStatement->execute()
+#1 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Database/Connection.php(853): Illuminate/Database/Connection->{closure:Illuminate/Database/Connection::statement():597}('CALL sp_tambah_...', Array)
+#2 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Database/Connection.php(820): Illuminate/Database/Connection->runQueryCallback('CALL sp_tambah_...', Array, Object(Closure))
+#3 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Database/Connection.php(597): Illuminate/Database/Connection->run('CALL sp_tambah_...', Array, Object(Closure))
+#4 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Database/DatabaseManager.php(502): Illuminate/Database/Connection->statement('CALL sp_tambah_...', Array)
+#5 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(364): Illuminate/Database/DatabaseManager->__call('statement', Array)
+#6 C:/Users/user/Documents/D4 Teknik Informatika/Semester 3/PBD/Project_Bakery/uji_objek_db.php(40): Illuminate/Support/Facades/Facade::__callStatic('statement', Array)
+#7 {main}
+"} 

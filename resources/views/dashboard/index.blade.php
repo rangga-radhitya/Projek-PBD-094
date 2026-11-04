@@ -6,7 +6,7 @@
 @section('isi')
   <div class="ringkasan">
     <div class="kartu"><div class="judul">Penjualan hari ini</div><div class="nilai">{{ $ringkas['penjualan_hari_ini'] }}</div><div class="ket">transaksi · <x-rp :nilai="$ringkas['nilai_hari_ini']" /> <br>(tanggal {{ \Carbon\Carbon::parse($hari)->format('d/m/Y') }}, zona waktu aplikasi UTC)</div></div>
-    <div class="kartu"><div class="judul">Margin aktif</div><div class="nilai">@if ($marginAktif->isNotEmpty())@foreach ($marginAktif as $m)<x-persen :nilai="$m->persen" />@if (! $loop->last), @endif @endforeach @else - @endif</div><div class="ket"><a href="{{ route('margin_penjualan') }}">Lihat margin penjualan</a></div></div>
+    <div class="kartu"><div class="judul">Margin aktif</div><div class="nilai">@if (! empty($marginAktif))@foreach ($marginAktif as $m)<x-persen :nilai="$m->persen" />@if (! $loop->last), @endif @endforeach @else - @endif</div><div class="ket"><a href="{{ route('margin_penjualan') }}">Lihat margin penjualan</a></div></div>
     <div class="kartu"><div class="judul">Barang aktif</div><div class="nilai">{{ $ringkas['barang_aktif'] }}</div><div class="ket"><a href="{{ route('barang') }}">Lihat barang</a></div></div>
     <div class="kartu"><div class="judul">Vendor aktif</div><div class="nilai">{{ $ringkas['vendor_aktif'] }}</div><div class="ket"><a href="{{ route('vendor') }}">Lihat vendor</a></div></div>
     <div class="kartu"><div class="judul">User</div><div class="nilai">{{ $ringkas['user'] }}</div><div class="ket"><a href="{{ route('user') }}">Lihat user</a></div></div>
@@ -30,8 +30,8 @@
         @forelse ($penjualanTerakhir as $p)
           <tr>
             <td class="angka"><a href="{{ route('penjualan.show', $p->idpenjualan) }}">#{{ $p->idpenjualan }}</a></td>
-            <td>{{ $p->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
-            <td>{{ $p->user?->username ?? '-' }}</td>
+            <td>{{ $p->tanggal ?? '-' }}</td>
+            <td>{{ $p->username ?? '-' }}</td>
             <td class="angka"><x-rp :nilai="$p->total_nilai" /></td>
           </tr>
         @empty
@@ -51,8 +51,8 @@
         @forelse ($pengadaanTerakhir as $p)
           <tr>
             <td class="angka"><a href="{{ route('pengadaan.show', $p->idpengadaan) }}">#{{ $p->idpengadaan }}</a></td>
-            <td>{{ $p->timestamp?->format('d/m/Y H:i') ?? '-' }}</td>
-            <td>{{ $p->vendor?->nama_vendor ?? '-' }}</td>
+            <td>{{ $p->tanggal ?? '-' }}</td>
+            <td>{{ $p->nama_vendor ?? '-' }}</td>
             <td class="angka"><x-rp :nilai="$p->total_nilai" /></td>
           </tr>
         @empty
@@ -64,5 +64,5 @@
     </section>
   </div>
 
-  <x-catatan>Belum tersedia (butuh backend): ringkasan stok per barang / stok rendah dan pengadaan yang menunggu penerimaan, karena arti kode status dan aturan stok belum ditetapkan.</x-catatan>
+  <x-catatan>Stok berjalan per barang dapat dilihat di halaman <a href="{{ route('kartu_stok') }}">Kartu Stok</a>. Ringkasan stok rendah belum dihitung pada dashboard.</x-catatan>
 @endsection

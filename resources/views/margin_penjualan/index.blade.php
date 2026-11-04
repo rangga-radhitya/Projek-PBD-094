@@ -1,15 +1,16 @@
 @extends('layouts.app')
 
 @section('judul', 'Data Margin Penjualan')
-@section('grup', 'Master Data')
-@section('deskripsi', 'Persentase margin penjualan. Data dibaca dari view v_margin_penjualan.')
+@section('grup', 'Tabel Master')
+@section('deskripsi', 'Persentase margin penjualan. Hanya satu margin yang boleh aktif.')
 
 @section('aksi')
-  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Margin Penjualan">+ Tambah Margin</button>
+  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Margin Penjualan"
+          data-aksi="{{ route('margin_penjualan.store') }}" data-metode="POST">+ Tambah Margin</button>
 @endsection
 
 @section('isi')
-  @if ($aktif->isNotEmpty())
+  @if (! empty($aktif))
     <x-catatan jenis="sukses">Margin aktif saat ini: @foreach ($aktif as $m)<strong><x-persen :nilai="$m->persen" /></strong> (ID {{ $m->idmargin_penjualan }})@if (! $loop->last), @endif @endforeach</x-catatan>
   @else
     <x-catatan jenis="info">Tidak ada margin yang berstatus aktif.</x-catatan>
@@ -38,12 +39,19 @@
         <td class="angka"><x-persen :nilai="$r->persen" /></td>
         <td><x-badge :aktif="$r->status == 1" :teks="$r->status == 1 ? 'Aktif' : 'Nonaktif'" /></td>
         <td>{{ $r->username }}</td>
-        <td>{{ $r->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
-        <td>{{ $r->updated_at?->format('d/m/Y H:i') ?? '-' }}</td>
+        <td>{{ $r->dibuat ?? '-' }}</td>
+        <td>{{ $r->diubah ?? '-' }}</td>
         <td class="aksi">
-          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Margin Penjualan" data-nilai="{{ json_encode(['persen' => $r->persen, 'status' => $r->status]) }}">Edit</button>
+          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Margin Penjualan"
+                  data-aksi="{{ route('margin_penjualan.update', $r->idmargin_penjualan) }}" data-metode="PUT"
+                  data-nilai="{{ json_encode(['persen' => $r->persen, 'status' => $r->status]) }}">Edit</button>
           @if ($r->status != 1)
-            <button type="button" class="tombol sekunder kecil" data-konfirmasi="Aktifkan margin {{ rtrim(rtrim(number_format((float) $r->persen, 2, ',', '.'), '0'), ',') }}%? Margin lain akan dinonaktifkan.">Aktifkan</button>
+            <form method="POST" action="{{ route('margin_penjualan.aktifkan', $r->idmargin_penjualan) }}">
+              @csrf
+              @method('PATCH')
+              <button type="button" class="tombol sekunder kecil"
+                      data-konfirmasi="Aktifkan margin {{ rtrim(rtrim(number_format((float) $r->persen, 2, ',', '.'), '0'), ',') }}%? Margin lain akan dinonaktifkan.">Aktifkan</button>
+            </form>
           @endif
         </td>
       </tr>
@@ -56,8 +64,8 @@
   {{ $daftar->links('components.pagination') }}
 
   @push('modal')
-    @include('partials.modal-form', ['id' => 'm-form', 'fields' => [
-      ['label' => 'Persen margin', 'name' => 'persen', 'type' => 'number', 'min' => 0, 'wajib' => true, 'hint' => 'Pembuat (user) akan diisi otomatis dari akun yang login.'],
+    @include('partials.modal-form', ['id' => 'm-form', 'aksi' => route('margin_penjualan.store'), 'judul' => 'Tambah Margin Penjualan', 'fields' => [
+      ['label' => 'Persen margin', 'name' => 'persen', 'type' => 'number', 'min' => 0, 'step' => '0.01', 'wajib' => true, 'hint' => 'Pembuat (user) diisi otomatis (user id 1).'],
       ['label' => 'Status', 'name' => 'status', 'type' => 'select', 'wajib' => true, 'options' => ['1' => 'Aktif', '0' => 'Nonaktif']],
     ]])
   @endpush

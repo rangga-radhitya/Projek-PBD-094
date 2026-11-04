@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('judul', 'Kartu Stok'); ?>
 <?php $__env->startSection('grup', 'Persediaan'); ?>
 <?php $__env->startSection('deskripsi', 'Riwayat pergerakan stok barang (masuk, keluar, saldo). Data dibaca dari tabel kartu_stok.'); ?>
@@ -12,7 +14,7 @@
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes([]); ?>Halaman ini hanya menampilkan riwayat. Arti kode <strong>jenis transaksi</strong> belum ditetapkan, sehingga kode ditampilkan apa adanya dan kolom referensi belum berupa tautan. <?php echo $__env->renderComponent(); ?>
+<?php $component->withAttributes([]); ?>Kode <strong>jenis transaksi</strong>: <strong>M</strong> = stok masuk (penerimaan atau pembatalan retur), <strong>K</strong> = stok keluar/koreksi (pembatalan penerimaan), <strong>R</strong> = retur ke vendor. Saldo (<code>stock</code>) adalah saldo berjalan per barang. <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal3a3743169da1b02a6fcfe13e09b73f16)): ?>
 <?php $attributes = $__attributesOriginal3a3743169da1b02a6fcfe13e09b73f16; ?>
@@ -82,8 +84,8 @@
     <tbody>
     <?php $__empty_1 = true; $__currentLoopData = $daftar; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
       <tr>
-        <td><?php echo e($r->created_at?->format('d/m/Y H:i') ?? '-'); ?></td>
-        <td><?php echo e($r->barang?->nama ?? ($r->idbarang ? 'Barang #'.$r->idbarang : '-')); ?></td>
+        <td><?php echo e($r->tanggal ?? '-'); ?></td>
+        <td><?php echo e($r->nama_barang ?? ($r->idbarang ? 'Barang #'.$r->idbarang : '-')); ?></td>
         <td><?php if (isset($component)) { $__componentOriginal2ddbc40e602c342e508ac696e52f8719 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal2ddbc40e602c342e508ac696e52f8719 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.badge','data' => ['teks' => $r->jenis_transaksi ?? '-']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>

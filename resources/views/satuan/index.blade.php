@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('judul', 'Data Satuan')
-@section('grup', 'Master Data')
-@section('deskripsi', 'Satuan barang (Pcs, Cup, Box, dst.). Data dibaca dari view v_satuan.')
+@section('grup', 'Tabel Master')
+@section('deskripsi', 'Satuan barang (Pcs, Cup, Box, dst.).')
 
 @section('aksi')
-  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Satuan">+ Tambah Satuan</button>
+  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Satuan"
+          data-aksi="{{ route('satuan.store') }}" data-metode="POST">+ Tambah Satuan</button>
 @endsection
 
 @section('isi')
@@ -36,8 +37,15 @@
         <td>{{ $r->nama_satuan }}</td>
         <td><x-badge :aktif="$r->status == 1" :teks="$r->status_teks" /></td>
         <td class="aksi">
-          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Satuan" data-nilai="{{ json_encode(['nama_satuan' => $r->nama_satuan, 'status' => $r->status]) }}">Edit</button>
-          <button type="button" class="tombol sekunder kecil" data-konfirmasi="{{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }} satuan &quot;{{ $r->nama_satuan }}&quot;?">{{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }}</button>
+          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Satuan"
+                  data-aksi="{{ route('satuan.update', $r->idsatuan) }}" data-metode="PUT"
+                  data-nilai="{{ json_encode(['nama_satuan' => $r->nama_satuan, 'status' => $r->status]) }}">Edit</button>
+          <form method="POST" action="{{ route('satuan.status', $r->idsatuan) }}">
+            @csrf
+            @method('PATCH')
+            <button type="button" class="tombol sekunder kecil"
+                    data-konfirmasi="{{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }} satuan &quot;{{ $r->nama_satuan }}&quot;?">{{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }}</button>
+          </form>
         </td>
       </tr>
     @empty
@@ -49,7 +57,7 @@
   {{ $daftar->links('components.pagination') }}
 
   @push('modal')
-    @include('partials.modal-form', ['id' => 'm-form', 'fields' => [
+    @include('partials.modal-form', ['id' => 'm-form', 'aksi' => route('satuan.store'), 'judul' => 'Tambah Satuan', 'fields' => [
       ['label' => 'Nama satuan', 'name' => 'nama_satuan', 'wajib' => true, 'hint' => 'Maksimal 45 karakter.'],
       ['label' => 'Status', 'name' => 'status', 'type' => 'select', 'wajib' => true, 'options' => ['1' => 'Aktif', '0' => 'Nonaktif']],
     ]])
