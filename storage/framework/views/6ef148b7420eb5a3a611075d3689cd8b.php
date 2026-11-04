@@ -1,0 +1,66 @@
+<?php $__env->startSection('judul', 'Data Role'); ?>
+<?php $__env->startSection('grup', 'Master Data'); ?>
+<?php $__env->startSection('deskripsi', 'Peran pengguna aplikasi. Data dibaca dari view v_role.'); ?>
+
+<?php $__env->startSection('aksi'); ?>
+  <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Role">+ Tambah Role</button>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('isi'); ?>
+  <?php if (isset($component)) { $__componentOriginale9f22847d79d6273acb27aff60f1f678 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginale9f22847d79d6273acb27aff60f1f678 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.filter-bar','data' => ['reset' => route('role')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('filter-bar'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['reset' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('role'))]); ?>
+    <div class="grup-filter">
+      <label for="q">Cari nama role</label>
+      <input type="search" id="q" name="q" value="<?php echo e($q); ?>" placeholder="Nama role">
+    </div>
+   <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginale9f22847d79d6273acb27aff60f1f678)): ?>
+<?php $attributes = $__attributesOriginale9f22847d79d6273acb27aff60f1f678; ?>
+<?php unset($__attributesOriginale9f22847d79d6273acb27aff60f1f678); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginale9f22847d79d6273acb27aff60f1f678)): ?>
+<?php $component = $__componentOriginale9f22847d79d6273acb27aff60f1f678; ?>
+<?php unset($__componentOriginale9f22847d79d6273acb27aff60f1f678); ?>
+<?php endif; ?>
+
+  <div class="tabel-bungkus">
+  <table>
+    <thead>
+      <tr><th class="angka">ID</th><th>Nama role</th><th class="aksi">Aksi</th></tr>
+    </thead>
+    <tbody>
+    <?php $__empty_1 = true; $__currentLoopData = $daftar; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+      <tr>
+        <td class="angka"><?php echo e($r->idrole); ?></td>
+        <td><?php echo e($r->nama_role); ?></td>
+        <td class="aksi">
+          <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Role" data-nilai="<?php echo e(json_encode(['nama_role' => $r->nama_role])); ?>">Edit</button>
+          <button type="button" class="tombol sekunder kecil" data-konfirmasi="Hapus role &quot;<?php echo e($r->nama_role); ?>&quot;? Role yang masih dipakai user tidak boleh dihapus.">Hapus</button>
+        </td>
+      </tr>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+      <tr><td colspan="3" class="kosong"><?php echo e($q !== '' ? 'Tidak ada role yang cocok dengan pencarian.' : 'Belum ada data role.'); ?></td></tr>
+    <?php endif; ?>
+    </tbody>
+  </table>
+  </div>
+  <?php echo e($daftar->links('components.pagination')); ?>
+
+
+  <?php $__env->startPush('modal'); ?>
+    <?php echo $__env->make('partials.modal-form', ['id' => 'm-form', 'fields' => [
+      ['label' => 'Nama role', 'name' => 'nama_role', 'wajib' => true, 'hint' => 'Maksimal 100 karakter.'],
+    ]], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+  <?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\user\Documents\D4 Teknik Informatika\Semester 3\PBD\Project_Bakery\resources\views/role/index.blade.php ENDPATH**/ ?>
