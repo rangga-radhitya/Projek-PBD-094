@@ -3,13 +3,15 @@
 namespace App\Services;
 
 use App\Support\Paginasi;
+use App\Support\Stok;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 /**
  * Retur barang ke vendor. Mengacu ke penerimaan.
- * Simpan lewat Stored Procedure sp_tambah_retur / sp_tambah_detail_retur.
+ * Header, detail, dan pergerakan stok keluar dicatat dalam satu transaksi aplikasi.
  */
 class ReturService
 {
@@ -147,16 +149,72 @@ class ReturService
     public function tambah(int $idpenerimaan, int $iduser, array $items): int
     {
         return DB::transaction(function () use ($idpenerimaan, $iduser, $items) {
-            DB::statement('CALL sp_tambah_retur(?, ?)', [$idpenerimaan, $iduser]);
-            $id = (int) DB::selectOne('SELECT LAST_INSERT_ID() AS id')->id;
+            $penerimaan = DB::selectOne(
+                'SELECT idpenerimaan FROM penerimaan WHERE idpenerimaan = ?',
+                [$idpenerimaan]
+            );
+
+            if ($penerimaan === null) {
+                throw new RuntimeException('Penerimaan tidak ditemukan.');
+            }
+
+            DB::insert(
+                'INSERT INTO retur (created_at, idpenerimaan, iduser)
+                 VALUES (NOW(), ?, ?)',
+                [$idpenerimaan, $iduser]
+            );
+            $id = (int) DB::getPdo()->lastInsertId();
 
             foreach ($items as $item) {
-                DB::statement('CALL sp_tambah_detail_retur(?, ?, ?, ?)', [
-                    $id,
-                    (int) $item['iddetail_penerimaan'],
-                    (int) $item['jumlah'],
-                    $item['alasan'] ?? null,
-                ]);
+                $jumlah = (int) $item['jumlah'];
+                $iddetail = (int) $item['iddetail_penerimaan'];
+
+                if ($jumlah <= 0) {
+                    throw new RuntimeException('Jumlah retur harus lebih dari 0.');
+                }
+
+                // Kunci baris detail agar pemeriksaan sisa retur berurutan.
+                $detail = DB::selectOne(
+                    'SELECT jumlah_terima, idpenerimaan
+                     FROM detail_penerimaan
+                     WHERE iddetail_penerimaan = ?
+                     FOR UPDATE',
+                    [$iddetail]
+                );
+
+                if ($detail === null) {
+                    throw new RuntimeException('Detail penerimaan tidak ditemukan.');
+                }
+
+                if ((int) $detail->idpenerimaan !== $idpenerimaan) {
+                    throw new RuntimeException('Detail penerimaan bukan milik penerimaan pada retur ini.');
+                }
+
+                $diretur = (int) DB::selectOne(
+                    'SELECT COALESCE(SUM(jumlah), 0) AS total
+                     FROM detail_retur
+                     WHERE iddetail_penerimaan = ?',
+                    [$iddetail]
+                )->total;
+
+                if ($diretur + $jumlah > (int) $detail->jumlah_terima) {
+                    throw new RuntimeException('Jumlah retur melebihi jumlah yang diterima.');
+                }
+
+                DB::insert(
+                    'INSERT INTO detail_retur (jumlah, alasan, idretur, iddetail_penerimaan)
+                     VALUES (?, ?, ?, ?)',
+                    [$jumlah, $item['alasan'] ?? null, $id, $iddetail]
+                );
+
+                $idbarang = (int) DB::selectOne(
+                    'SELECT barang_idbarang FROM detail_penerimaan WHERE iddetail_penerimaan = ?',
+                    [$iddetail]
+                )->barang_idbarang;
+
+                $saldo = Stok::saldoTerakhir($idbarang);
+
+                Stok::catat('R', 0, $jumlah, $saldo - $jumlah, $id, $idbarang);
             }
 
             return $id;
@@ -166,7 +224,25 @@ class ReturService
     public function hapus(int $id): void
     {
         DB::transaction(function () use ($id) {
-            DB::statement('CALL sp_hapus_retur(?)', [$id]);
+            $baris = DB::select(
+                'SELECT dp.barang_idbarang AS idbarang, d.jumlah
+                 FROM detail_retur d
+                 JOIN detail_penerimaan dp ON dp.iddetail_penerimaan = d.iddetail_penerimaan
+                 WHERE d.idretur = ?
+                 ORDER BY d.iddetail_retur',
+                [$id]
+            );
+
+            foreach ($baris as $b) {
+                $idbarang = $b->idbarang === null ? null : (int) $b->idbarang;
+                $jumlah = (int) $b->jumlah;
+                $saldo = $idbarang === null ? 0 : Stok::saldoTerakhir($idbarang);
+
+                Stok::catat('M', $jumlah, 0, $saldo + $jumlah, $id, $idbarang);
+            }
+
+            DB::delete('DELETE FROM detail_retur WHERE idretur = ?', [$id]);
+            DB::delete('DELETE FROM retur WHERE idretur = ?', [$id]);
         });
     }
 }

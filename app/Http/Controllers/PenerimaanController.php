@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use PDOException;
+use RuntimeException;
 
 class PenerimaanController extends Controller
 {
@@ -106,6 +107,8 @@ class PenerimaanController extends Controller
             );
         } catch (PDOException $e) {
             return back()->withInput()->with('gagal', $e->errorInfo[2] ?? 'Penerimaan gagal disimpan.');
+        } catch (RuntimeException $e) {
+            return back()->withInput()->with('gagal', $e->getMessage());
         }
 
         return redirect()->route('penerimaan.show', $id)->with('sukses', 'Penerimaan berhasil disimpan dan stok sudah diperbarui.');
@@ -121,6 +124,8 @@ class PenerimaanController extends Controller
             $this->layanan->hapus($id);
         } catch (PDOException $e) {
             return redirect()->route('penerimaan.index')->with('gagal', $e->errorInfo[2] ?? 'Penerimaan gagal dihapus.');
+        } catch (RuntimeException $e) {
+            return redirect()->route('penerimaan.index')->with('gagal', $e->getMessage());
         }
 
         return redirect()->route('penerimaan.index')->with('sukses', 'Penerimaan dihapus dan stok dikoreksi.');

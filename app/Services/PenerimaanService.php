@@ -3,14 +3,17 @@
 namespace App\Services;
 
 use App\Support\Paginasi;
+use App\Support\Stok;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 /**
- * Penerimaan barang. Simpan lewat Stored Procedure sp_tambah_penerimaan /
- * sp_tambah_detail_penerimaan. Stok masuk dicatat otomatis oleh trigger
- * trg_detail_penerimaan_after_insert.
+ * Penerimaan barang. Header + detail disimpan dalam satu transaksi aplikasi.
+ * Stok masuk tetap dicatat otomatis oleh trigger
+ * trg_detail_penerimaan_after_insert; penghapusan mengoreksi stok lewat
+ * kartu_stok dari aplikasi.
  */
 class PenerimaanService
 {
@@ -166,16 +169,48 @@ class PenerimaanService
     public function tambah(int $idpengadaan, int $iduser, string $status, array $items): int
     {
         return DB::transaction(function () use ($idpengadaan, $iduser, $status, $items) {
-            DB::statement('CALL sp_tambah_penerimaan(?, ?, ?)', [$idpengadaan, $iduser, $status]);
-            $id = (int) DB::selectOne('SELECT LAST_INSERT_ID() AS id')->id;
+            DB::insert(
+                'INSERT INTO penerimaan (created_at, status, idpengadaan, iduser)
+                 VALUES (NOW(), ?, ?, ?)',
+                [$status, $idpengadaan, $iduser]
+            );
+            $id = (int) DB::getPdo()->lastInsertId();
 
             foreach ($items as $item) {
-                DB::statement('CALL sp_tambah_detail_penerimaan(?, ?, ?, ?)', [
-                    $id,
-                    (int) $item['idbarang'],
-                    (int) $item['jumlah_terima'],
-                    (int) $item['harga_satuan_terima'],
-                ]);
+                $idbarang = (int) $item['idbarang'];
+                $jumlah = (int) $item['jumlah_terima'];
+                $harga = (int) $item['harga_satuan_terima'];
+
+                if ($jumlah <= 0) {
+                    throw new RuntimeException('Jumlah terima harus lebih dari 0.');
+                }
+
+                // Kunci baris pesanan agar pemeriksaan sisa berurutan per barang.
+                $pesanan = DB::selectOne(
+                    'SELECT jumlah FROM detail_pengadaan
+                     WHERE idpengadaan = ? AND idbarang = ?
+                     LIMIT 1 FOR UPDATE',
+                    [$idpengadaan, $idbarang]
+                );
+
+                $diterima = (int) DB::selectOne(
+                    'SELECT COALESCE(SUM(dp.jumlah_terima), 0) AS total
+                     FROM detail_penerimaan dp
+                     JOIN penerimaan p ON p.idpenerimaan = dp.idpenerimaan
+                     WHERE p.idpengadaan = ? AND dp.barang_idbarang = ?',
+                    [$idpengadaan, $idbarang]
+                )->total;
+
+                if ($pesanan === null || $diterima + $jumlah > (int) $pesanan->jumlah) {
+                    throw new RuntimeException('Jumlah terima melebihi jumlah yang dipesan.');
+                }
+
+                DB::insert(
+                    'INSERT INTO detail_penerimaan
+                        (idpenerimaan, barang_idbarang, jumlah_terima, harga_satuan_terima, sub_total_terima)
+                     VALUES (?, ?, ?, ?, ?)',
+                    [$id, $idbarang, $jumlah, $harga, $harga * $jumlah]
+                );
             }
 
             return $id;
@@ -185,7 +220,34 @@ class PenerimaanService
     public function hapus(int $id): void
     {
         DB::transaction(function () use ($id) {
-            DB::statement('CALL sp_hapus_penerimaan(?)', [$id]);
+            $adaRetur = (int) DB::selectOne(
+                'SELECT COUNT(*) AS n FROM retur WHERE idpenerimaan = ?',
+                [$id]
+            )->n;
+
+            if ($adaRetur > 0) {
+                throw new RuntimeException('Penerimaan tidak bisa dihapus karena sudah memiliki retur.');
+            }
+
+            $baris = DB::select(
+                'SELECT barang_idbarang AS idbarang, SUM(jumlah_terima) AS total
+                 FROM detail_penerimaan
+                 WHERE idpenerimaan = ?
+                 GROUP BY barang_idbarang
+                 ORDER BY barang_idbarang',
+                [$id]
+            );
+
+            foreach ($baris as $b) {
+                $idbarang = $b->idbarang === null ? null : (int) $b->idbarang;
+                $total = (int) $b->total;
+                $saldo = $idbarang === null ? 0 : Stok::saldoTerakhir($idbarang);
+
+                Stok::catat('K', 0, $total, $saldo - $total, $id, $idbarang);
+            }
+
+            DB::delete('DELETE FROM detail_penerimaan WHERE idpenerimaan = ?', [$id]);
+            DB::delete('DELETE FROM penerimaan WHERE idpenerimaan = ?', [$id]);
         });
     }
 

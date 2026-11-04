@@ -116,7 +116,7 @@
           </tbody>
         </table>
       </div>
-      <p class="hint">Jumlah retur tidak boleh melebihi sisa yang belum diretur; aturan ini juga diperiksa oleh stored procedure. Stok keluar dicatat otomatis oleh trigger database.</p>
+      <p class="hint">Jumlah retur tidak boleh melebihi sisa yang belum diretur. Stok keluar dicatat otomatis saat retur disimpan.</p>
     </section>
   </form>
 @endif

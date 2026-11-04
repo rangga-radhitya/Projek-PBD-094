@@ -210,7 +210,7 @@ Yang **tidak didukung / ambigu** — **[KONFIRMASI]** sebelum implementasi:
 ## 10. Daftar Masalah & Risiko (ringkas; rincian prioritas ada di DEVELOPMENT_PLAN.md §2)
 
 **Kritis**
-1. Konsistensi stok **untuk penerimaan** kini dijaga trigger `trg_detail_penerimaan_after_insert` (satu-satunya penulis `kartu_stok` untuk penerimaan; Laravel tidak boleh ikut menulis). Penjualan dan retur belum mengurangi stok — mekanismenya belum ada.
+1. Konsistensi stok **untuk penerimaan** dijaga trigger `trg_detail_penerimaan_after_insert` (satu-satunya penulis `kartu_stok` untuk penerimaan; Laravel tidak boleh ikut menulis). Retur dan pembatalannya mengoreksi stok lewat aplikasi (`App\Support\Stok`). Penjualan belum mengurangi stok — mekanismenya belum ada.
 2. Auth tidak ada, dan `config/auth.php` tidak cocok dengan tabel `user` (iduser/username/password) — semua halaman terbuka tanpa login.
 3. Model hanya menunjuk VIEW; tidak bisa dipakai untuk INSERT/UPDATE/DELETE (view memakai JOIN/IF/CASE).
 

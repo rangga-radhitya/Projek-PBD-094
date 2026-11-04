@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use PDOException;
+use RuntimeException;
 
 class ReturController extends Controller
 {
@@ -97,6 +98,8 @@ class ReturController extends Controller
             $id = $this->layanan->tambah((int) $data['idpenerimaan'], self::ID_USER_DEFAULT, $items);
         } catch (PDOException $e) {
             return back()->withInput()->with('gagal', $e->errorInfo[2] ?? 'Retur gagal disimpan.');
+        } catch (RuntimeException $e) {
+            return back()->withInput()->with('gagal', $e->getMessage());
         }
 
         return redirect()->route('retur.show', $id)->with('sukses', 'Retur berhasil disimpan dan stok sudah dikoreksi.');
@@ -112,6 +115,8 @@ class ReturController extends Controller
             $this->layanan->hapus($id);
         } catch (PDOException $e) {
             return redirect()->route('retur.index')->with('gagal', $e->errorInfo[2] ?? 'Retur gagal dihapus.');
+        } catch (RuntimeException $e) {
+            return redirect()->route('retur.index')->with('gagal', $e->getMessage());
         }
 
         return redirect()->route('retur.index')->with('sukses', 'Retur dihapus dan stok dikoreksi.');

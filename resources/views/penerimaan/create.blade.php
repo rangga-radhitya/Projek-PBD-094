@@ -142,7 +142,7 @@
       <dl class="ringkas">
         <div><dt>Total nilai diterima</dt><dd><output id="ringkas-total">0</output></dd></div>
       </dl>
-      <p class="hint">Jumlah terima tidak boleh melebihi sisa; aturan ini juga diperiksa oleh stored procedure. Stok masuk dicatat otomatis oleh trigger database.</p>
+      <p class="hint">Jumlah terima tidak boleh melebihi sisa yang belum diterima. Stok masuk dicatat otomatis oleh trigger database.</p>
     </section>
   </form>
 @endif

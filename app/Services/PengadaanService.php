@@ -6,10 +6,11 @@ use App\Support\Paginasi;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 /**
- * Pengadaan. Baca dengan SQL mentah; simpan/ubah total lewat Stored Procedure
- * sp_tambah_pengadaan dan sp_tambah_detail_pengadaan.
+ * Pengadaan. Baca dengan SQL mentah; simpan header + detail dalam satu
+ * transaksi aplikasi (tanpa stored procedure).
  */
 class PengadaanService
 {
@@ -143,18 +144,43 @@ class PengadaanService
     public function tambah(int $iduser, int $idvendor, string $status, array $items, int $ppnPersen): int
     {
         return DB::transaction(function () use ($iduser, $idvendor, $status, $items, $ppnPersen) {
-            DB::statement('CALL sp_tambah_pengadaan(?, ?, ?)', [$iduser, $idvendor, $status]);
-            $id = (int) DB::selectOne('SELECT LAST_INSERT_ID() AS id')->id;
+            DB::insert(
+                'INSERT INTO pengadaan (timestamp, user_iduser, status, vendor_idvendor, subtotal_nilai, ppn, total_nilai)
+                 VALUES (NOW(), ?, ?, ?, 0, 0, 0)',
+                [$iduser, $status, $idvendor]
+            );
+            $id = (int) DB::getPdo()->lastInsertId();
 
             foreach ($items as $item) {
-                DB::statement('CALL sp_tambah_detail_pengadaan(?, ?, ?, ?, ?)', [
-                    $id,
-                    (int) $item['idbarang'],
-                    (int) $item['harga_satuan'],
-                    (int) $item['jumlah'],
-                    $ppnPersen,
-                ]);
+                $harga = (int) $item['harga_satuan'];
+                $jumlah = (int) $item['jumlah'];
+
+                if ($jumlah <= 0) {
+                    throw new RuntimeException('Jumlah barang pengadaan harus lebih dari 0.');
+                }
+
+                if ($harga < 0) {
+                    throw new RuntimeException('Harga satuan tidak boleh negatif.');
+                }
+
+                DB::insert(
+                    'INSERT INTO detail_pengadaan (harga_satuan, jumlah, sub_total, idbarang, idpengadaan)
+                     VALUES (?, ?, ?, ?, ?)',
+                    [$harga, $jumlah, $harga * $jumlah, (int) $item['idbarang'], $id]
+                );
             }
+
+            $subtotal = (int) DB::selectOne(
+                'SELECT COALESCE(SUM(sub_total), 0) AS total FROM detail_pengadaan WHERE idpengadaan = ?',
+                [$id]
+            )->total;
+
+            $ppn = (int) round($subtotal * $ppnPersen / 100);
+
+            DB::update(
+                'UPDATE pengadaan SET subtotal_nilai = ?, ppn = ?, total_nilai = ? WHERE idpengadaan = ?',
+                [$subtotal, $ppn, $subtotal + $ppn, $id]
+            );
 
             return $id;
         });

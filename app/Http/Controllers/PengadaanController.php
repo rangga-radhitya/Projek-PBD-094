@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use PDOException;
+use RuntimeException;
 
 class PengadaanController extends Controller
 {
@@ -101,6 +102,8 @@ class PengadaanController extends Controller
             );
         } catch (PDOException $e) {
             return back()->withInput()->with('gagal', $e->errorInfo[2] ?? 'Pengadaan gagal disimpan.');
+        } catch (RuntimeException $e) {
+            return back()->withInput()->with('gagal', $e->getMessage());
         }
 
         return redirect()->route('pengadaan.show', $id)->with('sukses', 'Pengadaan berhasil disimpan.');
