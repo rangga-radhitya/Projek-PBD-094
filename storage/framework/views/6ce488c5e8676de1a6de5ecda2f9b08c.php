@@ -29,9 +29,35 @@ foreach ($attributes->all() as $__key => $__value) {
 unset($__defined_vars, $__key, $__value); ?>
 
 <form class="filter" method="get" role="search">
-  <?php echo e($slot); ?>
+  <div class="filter-isi">
+    <?php echo e($slot); ?>
 
-  <button type="submit" class="tombol utama">Cari</button>
-  <a class="tombol sekunder" href="<?php echo e($reset); ?>">Reset</a>
+  </div>
+  <div class="filter-aksi">
+    <button type="submit" class="tombol utama">
+      <?php if (isset($component)) { $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ikon','data' => ['nama' => 'cari','ukuran' => 16]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('ikon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['nama' => 'cari','ukuran' => 16]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $attributes = $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $component = $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+      Cari
+    </button>
+    <a class="tombol sekunder" href="<?php echo e($reset); ?>">Reset</a>
+  </div>
 </form>
 <?php /**PATH C:\Users\user\Documents\D4 Teknik Informatika\Semester 3\PBD\Project_Bakery\resources\views/components/filter-bar.blade.php ENDPATH**/ ?>

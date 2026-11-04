@@ -2,7 +2,6 @@
 
 @section('judul', 'Detail Retur #'.$retur->idretur)
 @section('grup', 'Transaksi')
-@section('deskripsi', 'Informasi retur beserta barang yang diretur.')
 
 @section('breadcrumb')
   <li>Transaksi</li>
@@ -11,12 +10,18 @@
 @endsection
 
 @section('aksi')
-  <a class="tombol sekunder" href="{{ route('retur.index') }}">&laquo; Kembali</a>
+  <a class="tombol sekunder" href="{{ route('retur.index') }}">
+    <x-ikon nama="kiri" :ukuran="15" />
+    Kembali
+  </a>
   <form method="POST" action="{{ route('retur.destroy', $retur->idretur) }}">
     @csrf
     @method('DELETE')
     <button type="button" class="tombol bahaya"
-            data-konfirmasi="Hapus retur #{{ $retur->idretur }}? Stok akan dikoreksi otomatis.">Hapus</button>
+            data-konfirmasi="Hapus retur #{{ $retur->idretur }}? Stok akan dikoreksi otomatis.">
+      <x-ikon nama="hapus" :ukuran="15" />
+      Hapus
+    </button>
   </form>
 @endsection
 

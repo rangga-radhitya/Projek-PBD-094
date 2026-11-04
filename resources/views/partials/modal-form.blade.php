@@ -14,7 +14,9 @@
   <div class="modal-kotak" role="dialog" aria-modal="true" aria-labelledby="{{ $id }}-judul">
     <div class="modal-kepala">
       <h2 id="{{ $id }}-judul" data-modal-judul>{{ $judul ?? 'Form' }}</h2>
-      <button type="button" class="modal-tutup" data-tutup-modal aria-label="Tutup">&times;</button>
+      <button type="button" class="modal-tutup" data-tutup-modal aria-label="Tutup">
+        <x-ikon nama="tutup" :ukuran="18" />
+      </button>
     </div>
     <form class="modal-isi" method="POST" action="{{ $aksi ?? '' }}" autocomplete="off" data-form-crud>
       @csrf
@@ -22,11 +24,14 @@
 
       @if ($adaGalat)
         <div class="peringatan gagal" role="alert">
-          <ul class="daftar-galat">
-            @foreach ($errors->all() as $galat)
-              <li>{{ $galat }}</li>
-            @endforeach
-          </ul>
+          <div>
+            <strong>Periksa kembali isian berikut.</strong>
+            <ul class="daftar-galat">
+              @foreach ($errors->all() as $galat)
+                <li>{{ $galat }}</li>
+              @endforeach
+            </ul>
+          </div>
         </div>
       @endif
 
@@ -35,11 +40,12 @@
           $fid = $id.'-'.$f['name'];
           $tipe = $f['type'] ?? 'text';
           $nilaiLama = old($f['name']);
+          $adaHint = ! empty($f['hint']);
         @endphp
         <div class="field">
           <label for="{{ $fid }}">{{ $f['label'] }}@if (!empty($f['wajib']))<span class="wajib" aria-hidden="true"> *</span>@endif</label>
           @if ($tipe === 'select')
-            <select id="{{ $fid }}" name="{{ $f['name'] }}" @if (!empty($f['wajib'])) required @endif>
+            <select id="{{ $fid }}" name="{{ $f['name'] }}" @if (!empty($f['wajib'])) required @endif @if ($adaHint) aria-describedby="{{ $fid }}-hint" @endif>
               <option value="">— Pilih —</option>
               @foreach ($f['options'] as $nilai => $teks)
                 <option value="{{ $nilai }}" @selected((string) $nilaiLama === (string) $nilai)>{{ $teks }}</option>
@@ -50,15 +56,22 @@
                    value="{{ $nilaiLama }}"
                    @if (isset($f['min'])) min="{{ $f['min'] }}" @endif
                    @if (isset($f['step'])) step="{{ $f['step'] }}" @endif
-                   @if (!empty($f['wajib'])) required @endif>
+                   @if (!empty($f['wajib'])) required @endif
+                   @if ($adaHint) aria-describedby="{{ $fid }}-hint" @endif>
           @endif
-          @if (!empty($f['hint']))<small class="hint">{{ $f['hint'] }}</small>@endif
+          @if ($adaHint)<small class="hint" id="{{ $fid }}-hint">{{ $f['hint'] }}</small>@endif
         </div>
       @endforeach
 
       <div class="modal-kaki">
-        <button type="button" class="tombol sekunder" data-tutup-modal>Batal</button>
-        <button type="submit" class="tombol utama">Simpan</button>
+        <button type="button" class="tombol sekunder" data-tutup-modal>
+          <x-ikon nama="tutup" :ukuran="15" />
+          Batal
+        </button>
+        <button type="submit" class="tombol utama">
+          <x-ikon nama="centang" :ukuran="15" />
+          Simpan
+        </button>
       </div>
     </form>
   </div>

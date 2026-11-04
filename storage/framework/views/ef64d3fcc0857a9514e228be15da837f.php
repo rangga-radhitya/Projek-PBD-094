@@ -1,10 +1,31 @@
 <?php $__env->startSection('judul', 'Data Vendor'); ?>
 <?php $__env->startSection('grup', 'Tabel Master'); ?>
-<?php $__env->startSection('deskripsi', 'Pemasok barang.'); ?>
 
 <?php $__env->startSection('aksi'); ?>
   <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Vendor"
-          data-aksi="<?php echo e(route('vendor.store')); ?>" data-metode="POST">+ Tambah Vendor</button>
+          data-aksi="<?php echo e(route('vendor.store')); ?>" data-metode="POST">
+    <?php if (isset($component)) { $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ikon','data' => ['nama' => 'tambah','ukuran' => 16]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('ikon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['nama' => 'tambah','ukuran' => 16]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $attributes = $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $component = $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+    Tambah Vendor
+  </button>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('isi'); ?>
@@ -53,24 +74,24 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="angka">ID</th><th>Nama vendor</th><th>Badan hukum</th><th>Status</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Nama vendor</th><th>Badan hukum</th><th>Status</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     <?php $__empty_1 = true; $__currentLoopData = $daftar; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
       <tr>
-        <td class="angka"><?php echo e($r->idvendor); ?></td>
+        <td class="kode"><?php echo e($r->idvendor); ?></td>
         <td><?php echo e($r->nama_vendor); ?></td>
         <td><?php echo e($r->badan_hukum_teks); ?></td>
         <td><?php if (isset($component)) { $__componentOriginal2ddbc40e602c342e508ac696e52f8719 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal2ddbc40e602c342e508ac696e52f8719 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.badge','data' => ['aktif' => $r->status === 'A','teks' => $r->status_teks]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.badge','data' => ['jenis' => $r->status === 'A' ? 'sukses' : 'netral','teks' => $r->status_teks]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('badge'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['aktif' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($r->status === 'A'),'teks' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($r->status_teks)]); ?>
+<?php $component->withAttributes(['jenis' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($r->status === 'A' ? 'sukses' : 'netral'),'teks' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($r->status_teks)]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal2ddbc40e602c342e508ac696e52f8719)): ?>
@@ -84,12 +105,57 @@
         <td class="aksi">
           <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Vendor"
                   data-aksi="<?php echo e(route('vendor.update', $r->idvendor)); ?>" data-metode="PUT"
-                  data-nilai="<?php echo e(json_encode(['nama_vendor' => $r->nama_vendor, 'badan_hukum' => $r->badan_hukum, 'status' => $r->status])); ?>">Edit</button>
+                  data-nilai="<?php echo e(json_encode(['nama_vendor' => $r->nama_vendor, 'badan_hukum' => $r->badan_hukum, 'status' => $r->status])); ?>">
+            <?php if (isset($component)) { $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ikon','data' => ['nama' => 'edit','ukuran' => 14]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('ikon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['nama' => 'edit','ukuran' => 14]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $attributes = $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $component = $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+            Edit
+          </button>
           <form method="POST" action="<?php echo e(route('vendor.status', $r->idvendor)); ?>">
             <?php echo csrf_field(); ?>
             <?php echo method_field('PATCH'); ?>
             <button type="button" class="tombol sekunder kecil"
-                    data-konfirmasi="<?php echo e($r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan'); ?> vendor &quot;<?php echo e($r->nama_vendor); ?>&quot;?"><?php echo e($r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan'); ?></button>
+                    data-konfirmasi="<?php echo e($r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan'); ?> vendor &quot;<?php echo e($r->nama_vendor); ?>&quot;?">
+              <?php if (isset($component)) { $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ikon','data' => ['nama' => $r->status === 'A' ? 'tutup' : 'centang','ukuran' => 14]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('ikon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['nama' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($r->status === 'A' ? 'tutup' : 'centang'),'ukuran' => 14]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $attributes = $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $component = $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+              <?php echo e($r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan'); ?>
+
+            </button>
           </form>
         </td>
       </tr>

@@ -1,7 +1,7 @@
 <?php $attributes ??= new \Illuminate\View\ComponentAttributeBag;
 
 $__newAttributes = [];
-$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames((['aktif' => null, 'teks' => '']));
+$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames((['aktif' => null, 'teks' => '', 'jenis' => null]));
 
 foreach ($attributes->all() as $__key => $__value) {
     if (in_array($__key, $__propNames)) {
@@ -16,7 +16,7 @@ $attributes = new \Illuminate\View\ComponentAttributeBag($__newAttributes);
 unset($__propNames);
 unset($__newAttributes);
 
-foreach (array_filter((['aktif' => null, 'teks' => '']), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
+foreach (array_filter((['aktif' => null, 'teks' => '', 'jenis' => null]), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
     $$__key = $$__key ?? $__value;
 }
 
@@ -28,5 +28,8 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
-<span <?php echo e($attributes->class(['lencana', 'aktif' => $aktif === true, 'nonaktif' => $aktif === false, 'netral' => $aktif === null])); ?>><?php echo e($teks); ?></span>
+<?php
+  $kelas = $jenis ?? ($aktif === true ? 'sukses' : ($aktif === false ? 'nonaktif' : 'netral'));
+?>
+<span <?php echo e($attributes->class(['lencana', $kelas])); ?>><?php echo e($teks); ?></span>
 <?php /**PATH C:\Users\user\Documents\D4 Teknik Informatika\Semester 3\PBD\Project_Bakery\resources\views/components/badge.blade.php ENDPATH**/ ?>

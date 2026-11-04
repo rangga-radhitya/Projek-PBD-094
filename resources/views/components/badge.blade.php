@@ -1,3 +1,7 @@
-@props(['aktif' => null, 'teks' => ''])
-{{-- Badge status. $aktif: true = hijau, false = abu-abu, null = netral (kode yang artinya belum diketahui). --}}
-<span {{ $attributes->class(['lencana', 'aktif' => $aktif === true, 'nonaktif' => $aktif === false, 'netral' => $aktif === null]) }}>{{ $teks }}</span>
+@props(['aktif' => null, 'teks' => '', 'jenis' => null])
+{{-- Badge status. $aktif tetap didukung untuk pemanggilan lama.
+     $jenis: sukses | proses | bahaya | netral | info. --}}
+@php
+  $kelas = $jenis ?? ($aktif === true ? 'sukses' : ($aktif === false ? 'nonaktif' : 'netral'));
+@endphp
+<span {{ $attributes->class(['lencana', $kelas]) }}>{{ $teks }}</span>

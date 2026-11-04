@@ -2,10 +2,12 @@
 
 @section('judul', 'Data Pengadaan')
 @section('grup', 'Transaksi')
-@section('deskripsi', 'Pesanan barang ke vendor.')
 
 @section('aksi')
-  <a class="tombol" href="{{ route('pengadaan.create') }}">+ Tambah Pengadaan</a>
+  <a class="tombol" href="{{ route('pengadaan.create') }}">
+    <x-ikon nama="tambah" :ukuran="16" />
+    Tambah Pengadaan
+  </a>
 @endsection
 
 @section('isi')
@@ -45,26 +47,36 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="angka">ID</th><th>Tanggal</th><th>Vendor</th><th>Dibuat oleh</th><th>Status</th><th class="angka">Subtotal</th><th class="angka">PPN</th><th class="angka">Total</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Tanggal</th><th>Vendor</th><th>Dibuat oleh</th><th>Status</th><th class="angka">Subtotal</th><th class="angka">PPN</th><th class="angka">Total</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     @forelse ($daftar as $r)
       <tr>
-        <td class="angka">{{ $r->idpengadaan }}</td>
+        <td class="kode">{{ $r->idpengadaan }}</td>
         <td>{{ $r->tanggal ?? '-' }}</td>
         <td>{{ $r->nama_vendor ?? '-' }}</td>
         <td>{{ $r->username ?? '-' }}</td>
-        <td><x-badge :teks="$r->status ?? '-'" /></td>
+        <td>
+          <x-badge :jenis="$r->status === 'S' ? 'sukses' : 'netral'"
+                   :teks="$r->status ?? '-'"
+                   :title="$r->status === 'D' ? 'Draft' : ($r->status === 'S' ? 'Selesai' : 'Status belum diketahui')" />
+        </td>
         <td class="angka"><x-rp :nilai="$r->subtotal_nilai" /></td>
         <td class="angka"><x-rp :nilai="$r->ppn" /></td>
         <td class="angka"><x-rp :nilai="$r->total_nilai" /></td>
         <td class="aksi">
-          <a class="tombol sekunder kecil" href="{{ route('pengadaan.show', $r->idpengadaan) }}">Detail</a>
+          <a class="tombol sekunder kecil" href="{{ route('pengadaan.show', $r->idpengadaan) }}">
+            <x-ikon nama="info" :ukuran="14" />
+            Detail
+          </a>
           <form method="POST" action="{{ route('pengadaan.destroy', $r->idpengadaan) }}">
             @csrf
             @method('DELETE')
             <button type="button" class="tombol sekunder kecil"
-                    data-konfirmasi="Hapus pengadaan #{{ $r->idpengadaan }}? Pengadaan yang sudah memiliki penerimaan tidak boleh dihapus.">Hapus</button>
+                    data-konfirmasi="Hapus pengadaan #{{ $r->idpengadaan }}? Pengadaan yang sudah memiliki penerimaan tidak boleh dihapus.">
+              <x-ikon nama="hapus" :ukuran="14" />
+              Hapus
+            </button>
           </form>
         </td>
       </tr>

@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('judul', 'Data Penjualan')
-@section('grup', 'Penjualan')
-@section('deskripsi', 'Riwayat transaksi penjualan. Data dibaca dari tabel penjualan.')
+@section('grup', 'Transaksi')
 
 @section('isi')
-  <x-catatan>Pembuatan transaksi penjualan (kasir) belum tersedia pada tahap ini.</x-catatan>
+  <x-catatan ringkas judul="Catatan">
+    Pembuatan transaksi penjualan (kasir) belum tersedia pada tahap ini.
+  </x-catatan>
 
   <x-filter-bar :reset="route('penjualan.index')">
     <div class="grup-filter">
@@ -34,12 +35,12 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="angka">ID</th><th>Tanggal</th><th>Kasir</th><th class="angka">Margin</th><th class="angka">Jumlah item</th><th class="angka">Subtotal</th><th class="angka">PPN</th><th class="angka">Total</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Tanggal</th><th>Kasir</th><th class="angka">Margin</th><th class="angka">Jumlah item</th><th class="angka">Subtotal</th><th class="angka">PPN</th><th class="angka">Total</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     @forelse ($daftar as $r)
       <tr>
-        <td class="angka">{{ $r->idpenjualan }}</td>
+        <td class="kode">{{ $r->idpenjualan }}</td>
         <td>{{ $r->tanggal ?? '-' }}</td>
         <td>{{ $r->username ?? '-' }}</td>
         <td class="angka"><x-persen :nilai="$r->persen" /></td>
@@ -47,7 +48,10 @@
         <td class="angka"><x-rp :nilai="$r->subtotal_nilai" /></td>
         <td class="angka"><x-rp :nilai="$r->ppn" /></td>
         <td class="angka"><x-rp :nilai="$r->total_nilai" /></td>
-        <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('penjualan.show', $r->idpenjualan) }}">Detail</a></td>
+        <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('penjualan.show', $r->idpenjualan) }}">
+          <x-ikon nama="info" :ukuran="14" />
+          Detail
+        </a></td>
       </tr>
     @empty
       <tr><td colspan="9" class="kosong">{{ request()->hasAny(['q','iduser','dari','sampai']) ? 'Tidak ada penjualan yang cocok dengan pencarian/filter.' : 'Belum ada data penjualan.' }}</td></tr>

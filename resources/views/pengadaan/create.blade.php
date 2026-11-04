@@ -2,7 +2,6 @@
 
 @section('judul', 'Tambah Pengadaan')
 @section('grup', 'Transaksi')
-@section('deskripsi', 'Catat pesanan barang ke vendor. Subtotal, PPN, dan total dihitung oleh stored procedure saat disimpan.')
 
 @section('breadcrumb')
   <li>Transaksi</li>
@@ -11,8 +10,14 @@
 @endsection
 
 @section('aksi')
-  <a class="tombol sekunder" href="{{ route('pengadaan.index') }}">&laquo; Kembali</a>
-  <button type="submit" form="form-pengadaan" class="tombol utama">Simpan Pengadaan</button>
+  <a class="tombol sekunder" href="{{ route('pengadaan.index') }}">
+    <x-ikon nama="kiri" :ukuran="15" />
+    Kembali
+  </a>
+  <button type="submit" form="form-pengadaan" class="tombol utama">
+    <x-ikon nama="centang" :ukuran="15" />
+    Simpan Pengadaan
+  </button>
 @endsection
 
 @section('isi')
@@ -86,14 +91,22 @@
             <td><input type="number" name="items[{{ $i }}][harga_satuan]" value="{{ $harga }}" min="0" step="1" required></td>
             <td><input type="number" name="items[{{ $i }}][jumlah]" value="{{ $jumlah }}" min="1" step="1" required></td>
             <td class="angka"><output data-subtotal>0</output></td>
-            <td class="kolom-aksi"><button type="button" class="tombol sekunder kecil" data-hapus-baris>Hapus</button></td>
+            <td class="kolom-aksi">
+              <button type="button" class="tombol sekunder kecil" data-hapus-baris>
+                <x-ikon nama="hapus" :ukuran="14" />
+                Hapus
+              </button>
+            </td>
           </tr>
         @endforeach
         </tbody>
       </table>
     </div>
 
-    <p><button type="button" class="tombol sekunder kecil" id="tambah-baris">+ Tambah barang</button></p>
+    <p><button type="button" class="tombol sekunder kecil" id="tambah-baris">
+      <x-ikon nama="tambah" :ukuran="14" />
+      Tambah barang
+    </button></p>
 
     <dl class="ringkas">
       <div><dt>Subtotal</dt><dd><output id="ringkas-subtotal">0</output></dd></div>
@@ -118,10 +131,14 @@
     <td><input type="number" name="items[__INDEX__][harga_satuan]" value="" min="0" step="1" required></td>
     <td><input type="number" name="items[__INDEX__][jumlah]" value="1" min="1" step="1" required></td>
     <td class="angka"><output data-subtotal>0</output></td>
-    <td class="kolom-aksi"><button type="button" class="tombol sekunder kecil" data-hapus-baris>Hapus</button></td>
+    <td class="kolom-aksi">
+      <button type="button" class="tombol sekunder kecil" data-hapus-baris>
+        <x-ikon nama="hapus" :ukuran="14" />
+        Hapus
+      </button>
+    </td>
   </tr>
-</template>
-@endsection
+</template>@endsection
 
 @push('skrip')
 <script>

@@ -2,7 +2,6 @@
 
 @section('judul', 'Detail Penerimaan #'.$penerimaan->idpenerimaan)
 @section('grup', 'Transaksi')
-@section('deskripsi', 'Informasi penerimaan barang beserta barang yang diterima.')
 
 @section('breadcrumb')
   <li>Transaksi</li>
@@ -11,12 +10,18 @@
 @endsection
 
 @section('aksi')
-  <a class="tombol sekunder" href="{{ route('penerimaan.index') }}">&laquo; Kembali</a>
+  <a class="tombol sekunder" href="{{ route('penerimaan.index') }}">
+    <x-ikon nama="kiri" :ukuran="15" />
+    Kembali
+  </a>
   <form method="POST" action="{{ route('penerimaan.destroy', $penerimaan->idpenerimaan) }}">
     @csrf
     @method('DELETE')
     <button type="button" class="tombol bahaya"
-            data-konfirmasi="Hapus penerimaan #{{ $penerimaan->idpenerimaan }}? Stok yang sudah masuk akan dikoreksi otomatis.">Hapus</button>
+            data-konfirmasi="Hapus penerimaan #{{ $penerimaan->idpenerimaan }}? Stok yang sudah masuk akan dikoreksi otomatis.">
+      <x-ikon nama="hapus" :ukuran="15" />
+      Hapus
+    </button>
   </form>
 @endsection
 
@@ -31,7 +36,12 @@
       <div><dt>Pengadaan asal</dt><dd>@if ($penerimaan->idpengadaan)<a href="{{ route('pengadaan.show', $penerimaan->idpengadaan) }}">Pengadaan #{{ $penerimaan->idpengadaan }}</a>@else - @endif</dd></div>
       <div><dt>Vendor</dt><dd>{{ $penerimaan->nama_vendor ?? '-' }}</dd></div>
       <div><dt>Diterima oleh</dt><dd>{{ $penerimaan->username ?? '-' }}</dd></div>
-      <div><dt>Status</dt><dd><x-badge :teks="$penerimaan->status ?? '-'" /> <small class="hint">(D = draft, S = selesai)</small></dd></div>
+      <div><dt>Status</dt><dd>
+        <x-badge :jenis="$penerimaan->status === 'S' ? 'sukses' : 'netral'"
+                 :teks="$penerimaan->status ?? '-'"
+                 :title="$penerimaan->status === 'D' ? 'Draft' : ($penerimaan->status === 'S' ? 'Selesai' : 'Status belum diketahui')" />
+        <small class="hint">(D = draft, S = selesai)</small>
+      </dd></div>
     </dl>
   </section>
 
@@ -69,14 +79,17 @@
     <h2>Retur terkait</h2>
     <div class="tabel-bungkus">
     <table>
-      <thead><tr><th class="angka">ID retur</th><th>Tanggal</th><th>Dibuat oleh</th><th class="aksi">Aksi</th></tr></thead>
+      <thead><tr><th class="kode">ID retur</th><th>Tanggal</th><th>Dibuat oleh</th><th class="aksi">Aksi</th></tr></thead>
       <tbody>
       @forelse ($penerimaan->retur as $rt)
         <tr>
-          <td class="angka">{{ $rt->idretur }}</td>
+          <td class="kode">{{ $rt->idretur }}</td>
           <td>{{ $rt->tanggal ?? '-' }}</td>
           <td>{{ $rt->username ?? '-' }}</td>
-          <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('retur.show', $rt->idretur) }}">Detail</a></td>
+          <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('retur.show', $rt->idretur) }}">
+            <x-ikon nama="info" :ukuran="14" />
+            Detail
+          </a></td>
         </tr>
       @empty
         <tr><td colspan="4" class="kosong">Belum ada retur untuk penerimaan ini.</td></tr>

@@ -1,17 +1,22 @@
 @extends('layouts.app')
 
 @section('judul', 'Detail Penjualan #'.$penjualan->idpenjualan)
-@section('deskripsi', 'Informasi transaksi penjualan beserta barang yang dijual.')
 
 @section('breadcrumb')
-  <li>Penjualan</li>
+  <li>Transaksi</li>
   <li><a href="{{ route('penjualan.index') }}">Data Penjualan</a></li>
   <li aria-current="page">Penjualan #{{ $penjualan->idpenjualan }}</li>
 @endsection
 
 @section('aksi')
-  <a class="tombol sekunder" href="{{ route('penjualan.index') }}">&laquo; Kembali</a>
-  <button type="button" class="tombol sekunder" onclick="window.print()">Cetak</button>
+  <a class="tombol sekunder" href="{{ route('penjualan.index') }}">
+    <x-ikon nama="kiri" :ukuran="15" />
+    Kembali
+  </a>
+  <button type="button" class="tombol sekunder" onclick="window.print()">
+    <x-ikon nama="cetak" :ukuran="15" />
+    Cetak
+  </button>
 @endsection
 
 @section('isi')
@@ -53,7 +58,7 @@
             <td class="angka">
               <x-rp :nilai="$totalFungsi" />
               @if ($penjualan->subtotal_nilai !== null)
-                <x-badge :aktif="(float) $totalFungsi === (float) $penjualan->subtotal_nilai" :teks="(float) $totalFungsi === (float) $penjualan->subtotal_nilai ? 'sesuai' : 'berbeda dari subtotal tercatat'" />
+                <x-badge :jenis="(float) $totalFungsi === (float) $penjualan->subtotal_nilai ? 'sukses' : 'bahaya'" :teks="(float) $totalFungsi === (float) $penjualan->subtotal_nilai ? 'sesuai' : 'berbeda dari subtotal tercatat'" />
               @endif
             </td>
           </tr>

@@ -2,10 +2,12 @@
 
 @section('judul', 'Data Retur')
 @section('grup', 'Transaksi')
-@section('deskripsi', 'Retur barang ke vendor, mengacu pada penerimaan. Stok keluar otomatis lewat trigger database.')
 
 @section('aksi')
-  <a class="tombol" href="{{ route('retur.create') }}">+ Tambah Retur</a>
+  <a class="tombol" href="{{ route('retur.create') }}">
+    <x-ikon nama="tambah" :ukuran="16" />
+    Tambah Retur
+  </a>
 @endsection
 
 @section('isi')
@@ -36,24 +38,30 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="angka">ID</th><th>Tanggal</th><th>Penerimaan asal</th><th>Vendor</th><th>Dibuat oleh</th><th class="angka">Jumlah item</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Tanggal</th><th>Penerimaan asal</th><th>Vendor</th><th>Dibuat oleh</th><th class="angka">Jumlah item</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     @forelse ($daftar as $r)
       <tr>
-        <td class="angka">{{ $r->idretur }}</td>
+        <td class="kode">{{ $r->idretur }}</td>
         <td>{{ $r->tanggal ?? '-' }}</td>
         <td>@if ($r->idpenerimaan)<a href="{{ route('penerimaan.show', $r->idpenerimaan) }}">#{{ $r->idpenerimaan }}</a>@else - @endif</td>
         <td>{{ $r->nama_vendor ?? '-' }}</td>
         <td>{{ $r->username ?? '-' }}</td>
         <td class="angka">{{ $r->detail_count }}</td>
         <td class="aksi">
-          <a class="tombol sekunder kecil" href="{{ route('retur.show', $r->idretur) }}">Detail</a>
+          <a class="tombol sekunder kecil" href="{{ route('retur.show', $r->idretur) }}">
+            <x-ikon nama="info" :ukuran="14" />
+            Detail
+          </a>
           <form method="POST" action="{{ route('retur.destroy', $r->idretur) }}">
             @csrf
             @method('DELETE')
             <button type="button" class="tombol sekunder kecil"
-                    data-konfirmasi="Hapus retur #{{ $r->idretur }}? Stok akan dikoreksi otomatis.">Hapus</button>
+                    data-konfirmasi="Hapus retur #{{ $r->idretur }}? Stok akan dikoreksi otomatis.">
+              <x-ikon nama="hapus" :ukuran="14" />
+              Hapus
+            </button>
           </form>
         </td>
       </tr>

@@ -1,7 +1,7 @@
 <?php $attributes ??= new \Illuminate\View\ComponentAttributeBag;
 
 $__newAttributes = [];
-$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames((['jenis' => 'info']));
+$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames((['jenis' => 'info', 'judul' => 'Catatan', 'ringkas' => false]));
 
 foreach ($attributes->all() as $__key => $__value) {
     if (in_array($__key, $__propNames)) {
@@ -16,7 +16,7 @@ $attributes = new \Illuminate\View\ComponentAttributeBag($__newAttributes);
 unset($__propNames);
 unset($__newAttributes);
 
-foreach (array_filter((['jenis' => 'info']), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
+foreach (array_filter((['jenis' => 'info', 'judul' => 'Catatan', 'ringkas' => false]), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
     $$__key = $$__key ?? $__value;
 }
 
@@ -28,5 +28,34 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
-<div <?php echo e($attributes->class(['peringatan', $jenis])); ?> role="note"><?php echo e($slot); ?></div>
+<?php if($ringkas): ?>
+  <details <?php echo e($attributes->class(['catatan-ringkas'])); ?>>
+    <summary>
+      <?php if (isset($component)) { $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ikon','data' => ['nama' => 'info','ukuran' => 15]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('ikon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['nama' => 'info','ukuran' => 15]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $attributes = $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $component = $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+      <span><?php echo e($judul); ?></span>
+    </summary>
+    <div class="catatan-isi"><?php echo e($slot); ?></div>
+  </details>
+<?php else: ?>
+  <div <?php echo e($attributes->class(['peringatan', $jenis])); ?> role="note"><?php echo e($slot); ?></div>
+<?php endif; ?>
 <?php /**PATH C:\Users\user\Documents\D4 Teknik Informatika\Semester 3\PBD\Project_Bakery\resources\views/components/catatan.blade.php ENDPATH**/ ?>

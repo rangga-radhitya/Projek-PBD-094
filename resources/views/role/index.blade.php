@@ -2,11 +2,13 @@
 
 @section('judul', 'Data Role')
 @section('grup', 'Tabel Master')
-@section('deskripsi', 'Peran pengguna aplikasi.')
 
 @section('aksi')
   <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Role"
-          data-aksi="{{ route('role.store') }}" data-metode="POST">+ Tambah Role</button>
+          data-aksi="{{ route('role.store') }}" data-metode="POST">
+    <x-ikon nama="tambah" :ukuran="16" />
+    Tambah Role
+  </button>
 @endsection
 
 @section('isi')
@@ -20,22 +22,28 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="angka">ID</th><th>Nama role</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Nama role</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     @forelse ($daftar as $r)
       <tr>
-        <td class="angka">{{ $r->idrole }}</td>
+        <td class="kode">{{ $r->idrole }}</td>
         <td>{{ $r->nama_role }}</td>
         <td class="aksi">
           <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Role"
                   data-aksi="{{ route('role.update', $r->idrole) }}" data-metode="PUT"
-                  data-nilai="{{ json_encode(['nama_role' => $r->nama_role]) }}">Edit</button>
+                  data-nilai="{{ json_encode(['nama_role' => $r->nama_role]) }}">
+            <x-ikon nama="edit" :ukuran="14" />
+            Edit
+          </button>
           <form method="POST" action="{{ route('role.destroy', $r->idrole) }}">
             @csrf
             @method('DELETE')
             <button type="button" class="tombol sekunder kecil"
-                    data-konfirmasi="Hapus role &quot;{{ $r->nama_role }}&quot;? Role yang masih dipakai user tidak boleh dihapus.">Hapus</button>
+                    data-konfirmasi="Hapus role &quot;{{ $r->nama_role }}&quot;? Role yang masih dipakai user tidak boleh dihapus.">
+              <x-ikon nama="hapus" :ukuran="14" />
+              Hapus
+            </button>
           </form>
         </td>
       </tr>

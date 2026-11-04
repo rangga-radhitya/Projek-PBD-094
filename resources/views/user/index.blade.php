@@ -2,11 +2,13 @@
 
 @section('judul', 'Data User')
 @section('grup', 'Tabel Master')
-@section('deskripsi', 'Akun pengguna aplikasi. Kolom password tidak pernah ditampilkan.')
 
 @section('aksi')
   <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah User"
-          data-aksi="{{ route('user.store') }}" data-metode="POST">+ Tambah User</button>
+          data-aksi="{{ route('user.store') }}" data-metode="POST">
+    <x-ikon nama="tambah" :ukuran="16" />
+    Tambah User
+  </button>
 @endsection
 
 @section('isi')
@@ -29,23 +31,29 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="angka">ID</th><th>Username</th><th>Role</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Username</th><th>Role</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     @forelse ($daftar as $r)
       <tr>
-        <td class="angka">{{ $r->iduser }}</td>
+        <td class="kode">{{ $r->iduser }}</td>
         <td>{{ $r->username }}</td>
         <td>{{ $r->nama_role }}</td>
         <td class="aksi">
           <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit User"
                   data-aksi="{{ route('user.update', $r->iduser) }}" data-metode="PUT"
-                  data-nilai="{{ json_encode(['username' => $r->username, 'idrole' => $r->idrole]) }}">Edit</button>
+                  data-nilai="{{ json_encode(['username' => $r->username, 'idrole' => $r->idrole]) }}">
+            <x-ikon nama="edit" :ukuran="14" />
+            Edit
+          </button>
           <form method="POST" action="{{ route('user.destroy', $r->iduser) }}">
             @csrf
             @method('DELETE')
             <button type="button" class="tombol sekunder kecil"
-                    data-konfirmasi="Hapus user &quot;{{ $r->username }}&quot;? User yang sudah dipakai pada transaksi tidak boleh dihapus.">Hapus</button>
+                    data-konfirmasi="Hapus user &quot;{{ $r->username }}&quot;? User yang sudah dipakai pada transaksi tidak boleh dihapus.">
+              <x-ikon nama="hapus" :ukuran="14" />
+              Hapus
+            </button>
           </form>
         </td>
       </tr>

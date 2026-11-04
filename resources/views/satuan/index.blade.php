@@ -2,11 +2,13 @@
 
 @section('judul', 'Data Satuan')
 @section('grup', 'Tabel Master')
-@section('deskripsi', 'Satuan barang (Pcs, Cup, Box, dst.).')
 
 @section('aksi')
   <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Satuan"
-          data-aksi="{{ route('satuan.store') }}" data-metode="POST">+ Tambah Satuan</button>
+          data-aksi="{{ route('satuan.store') }}" data-metode="POST">
+    <x-ikon nama="tambah" :ukuran="16" />
+    Tambah Satuan
+  </button>
 @endsection
 
 @section('isi')
@@ -28,23 +30,29 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="angka">ID</th><th>Nama satuan</th><th>Status</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Nama satuan</th><th>Status</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     @forelse ($daftar as $r)
       <tr>
-        <td class="angka">{{ $r->idsatuan }}</td>
+        <td class="kode">{{ $r->idsatuan }}</td>
         <td>{{ $r->nama_satuan }}</td>
-        <td><x-badge :aktif="$r->status == 1" :teks="$r->status_teks" /></td>
+        <td><x-badge :jenis="$r->status == 1 ? 'sukses' : 'netral'" :teks="$r->status_teks" /></td>
         <td class="aksi">
           <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Satuan"
                   data-aksi="{{ route('satuan.update', $r->idsatuan) }}" data-metode="PUT"
-                  data-nilai="{{ json_encode(['nama_satuan' => $r->nama_satuan, 'status' => $r->status]) }}">Edit</button>
+                  data-nilai="{{ json_encode(['nama_satuan' => $r->nama_satuan, 'status' => $r->status]) }}">
+            <x-ikon nama="edit" :ukuran="14" />
+            Edit
+          </button>
           <form method="POST" action="{{ route('satuan.status', $r->idsatuan) }}">
             @csrf
             @method('PATCH')
             <button type="button" class="tombol sekunder kecil"
-                    data-konfirmasi="{{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }} satuan &quot;{{ $r->nama_satuan }}&quot;?">{{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }}</button>
+                    data-konfirmasi="{{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }} satuan &quot;{{ $r->nama_satuan }}&quot;?">
+              <x-ikon :nama="$r->status == 1 ? 'tutup' : 'centang'" :ukuran="14" />
+              {{ $r->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }}
+            </button>
           </form>
         </td>
       </tr>

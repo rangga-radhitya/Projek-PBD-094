@@ -9,34 +9,54 @@
   function bukaSisi() {
     if (!sisi) return;
     sisi.classList.add('terbuka');
+    document.body.classList.add('sisi-terbuka');
     if (latar) latar.hidden = false;
     if (tombolMenu) tombolMenu.setAttribute('aria-expanded', 'true');
   }
   function tutupSisi() {
     if (!sisi) return;
     sisi.classList.remove('terbuka');
+    document.body.classList.remove('sisi-terbuka');
     if (latar) latar.hidden = true;
     if (tombolMenu) tombolMenu.setAttribute('aria-expanded', 'false');
   }
   if (tombolMenu) tombolMenu.addEventListener('click', bukaSisi);
   if (latar) latar.addEventListener('click', tutupSisi);
+  if (sisi) {
+    sisi.querySelectorAll('a').forEach(function (tautan) {
+      tautan.addEventListener('click', tutupSisi);
+    });
+  }
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 1024) tutupSisi();
+  });
 
   var modalAktif = null;
   var pemicu = null;
   var formKonfirmasi = null;
+
+  function daftarFokus(modal) {
+    return Array.prototype.slice.call(modal.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter(function (el) {
+      return el.offsetParent !== null;
+    });
+  }
 
   function bukaModal(modal, dari) {
     if (!modal) return;
     modalAktif = modal;
     pemicu = dari || null;
     modal.hidden = false;
-    var pertama = modal.querySelector('input:not([disabled]):not([type="hidden"]), select, button:not([disabled])');
+    document.body.classList.add('modal-terbuka');
+    var pertama = modal.querySelector('input:not([disabled]):not([type="hidden"]), select:not([disabled]), button:not([disabled])');
     if (pertama) pertama.focus();
   }
   function tutupModal() {
     if (!modalAktif) return;
     modalAktif.hidden = true;
     modalAktif = null;
+    document.body.classList.remove('modal-terbuka');
     if (pemicu && pemicu.focus) pemicu.focus();
     pemicu = null;
   }
@@ -102,6 +122,21 @@
   });
 
   document.addEventListener('keydown', function (e) {
+    if (e.key === 'Tab' && modalAktif) {
+      var fokus = daftarFokus(modalAktif);
+      if (fokus.length === 0) return;
+      var pertama = fokus[0];
+      var terakhir = fokus[fokus.length - 1];
+      if (e.shiftKey && document.activeElement === pertama) {
+        e.preventDefault();
+        terakhir.focus();
+      } else if (!e.shiftKey && document.activeElement === terakhir) {
+        e.preventDefault();
+        pertama.focus();
+      }
+      return;
+    }
+
     if (e.key !== 'Escape') return;
     if (modalAktif) tutupModal();
     else tutupSisi();

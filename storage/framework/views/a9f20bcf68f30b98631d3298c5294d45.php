@@ -1,9 +1,30 @@
 <?php $__env->startSection('judul', 'Data Retur'); ?>
 <?php $__env->startSection('grup', 'Transaksi'); ?>
-<?php $__env->startSection('deskripsi', 'Retur barang ke vendor, mengacu pada penerimaan. Stok keluar otomatis lewat trigger database.'); ?>
 
 <?php $__env->startSection('aksi'); ?>
-  <a class="tombol" href="<?php echo e(route('retur.create')); ?>">+ Tambah Retur</a>
+  <a class="tombol" href="<?php echo e(route('retur.create')); ?>">
+    <?php if (isset($component)) { $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ikon','data' => ['nama' => 'tambah','ukuran' => 16]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('ikon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['nama' => 'tambah','ukuran' => 16]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $attributes = $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $component = $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+    Tambah Retur
+  </a>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('isi'); ?>
@@ -52,24 +73,68 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="angka">ID</th><th>Tanggal</th><th>Penerimaan asal</th><th>Vendor</th><th>Dibuat oleh</th><th class="angka">Jumlah item</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Tanggal</th><th>Penerimaan asal</th><th>Vendor</th><th>Dibuat oleh</th><th class="angka">Jumlah item</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     <?php $__empty_1 = true; $__currentLoopData = $daftar; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
       <tr>
-        <td class="angka"><?php echo e($r->idretur); ?></td>
+        <td class="kode"><?php echo e($r->idretur); ?></td>
         <td><?php echo e($r->tanggal ?? '-'); ?></td>
         <td><?php if($r->idpenerimaan): ?><a href="<?php echo e(route('penerimaan.show', $r->idpenerimaan)); ?>">#<?php echo e($r->idpenerimaan); ?></a><?php else: ?> - <?php endif; ?></td>
         <td><?php echo e($r->nama_vendor ?? '-'); ?></td>
         <td><?php echo e($r->username ?? '-'); ?></td>
         <td class="angka"><?php echo e($r->detail_count); ?></td>
         <td class="aksi">
-          <a class="tombol sekunder kecil" href="<?php echo e(route('retur.show', $r->idretur)); ?>">Detail</a>
+          <a class="tombol sekunder kecil" href="<?php echo e(route('retur.show', $r->idretur)); ?>">
+            <?php if (isset($component)) { $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ikon','data' => ['nama' => 'info','ukuran' => 14]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('ikon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['nama' => 'info','ukuran' => 14]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $attributes = $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $component = $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+            Detail
+          </a>
           <form method="POST" action="<?php echo e(route('retur.destroy', $r->idretur)); ?>">
             <?php echo csrf_field(); ?>
             <?php echo method_field('DELETE'); ?>
             <button type="button" class="tombol sekunder kecil"
-                    data-konfirmasi="Hapus retur #<?php echo e($r->idretur); ?>? Stok akan dikoreksi otomatis.">Hapus</button>
+                    data-konfirmasi="Hapus retur #<?php echo e($r->idretur); ?>? Stok akan dikoreksi otomatis.">
+              <?php if (isset($component)) { $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ikon','data' => ['nama' => 'hapus','ukuran' => 14]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('ikon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['nama' => 'hapus','ukuran' => 14]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $attributes = $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
+<?php $component = $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
+<?php unset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
+<?php endif; ?>
+              Hapus
+            </button>
           </form>
         </td>
       </tr>

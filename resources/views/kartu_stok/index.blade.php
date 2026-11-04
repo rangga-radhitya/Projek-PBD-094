@@ -2,10 +2,20 @@
 
 @section('judul', 'Kartu Stok')
 @section('grup', 'Persediaan')
-@section('deskripsi', 'Riwayat pergerakan stok barang (masuk, keluar, saldo). Data dibaca dari tabel kartu_stok.')
 
 @section('isi')
-  <x-catatan>Kode <strong>jenis transaksi</strong>: <strong>M</strong> = stok masuk (penerimaan atau pembatalan retur), <strong>K</strong> = stok keluar/koreksi (pembatalan penerimaan), <strong>R</strong> = retur ke vendor. Saldo (<code>stock</code>) adalah saldo berjalan per barang.</x-catatan>
+  <x-catatan ringkas judul="Arti kode jenis transaksi">
+    <p><strong>M</strong> = stok masuk (penerimaan atau pembatalan retur). <strong>K</strong> = stok keluar/koreksi (pembatalan penerimaan). <strong>R</strong> = retur ke vendor.</p>
+    <p>Saldo (<code>stock</code>) adalah saldo berjalan per barang.</p>
+  </x-catatan>
+
+  @php
+    $lencanaJenis = [
+        'M' => ['kelas' => 'sukses', 'arti' => 'Stok masuk'],
+        'K' => ['kelas' => 'bahaya', 'arti' => 'Stok keluar/koreksi'],
+        'R' => ['kelas' => 'proses', 'arti' => 'Retur ke vendor'],
+    ];
+  @endphp
 
   <x-filter-bar :reset="route('kartu_stok')">
     <div class="grup-filter">
@@ -43,18 +53,22 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th>Tanggal</th><th>Barang</th><th>Jenis transaksi</th><th class="angka">Masuk</th><th class="angka">Keluar</th><th class="angka">Saldo (stock)</th><th class="angka">ID transaksi</th></tr>
+      <tr><th>Tanggal</th><th>Barang</th><th>Jenis transaksi</th><th class="angka">Masuk</th><th class="angka">Keluar</th><th class="angka">Saldo (stock)</th><th class="kode">ID transaksi</th></tr>
     </thead>
     <tbody>
     @forelse ($daftar as $r)
       <tr>
         <td>{{ $r->tanggal ?? '-' }}</td>
         <td>{{ $r->nama_barang ?? ($r->idbarang ? 'Barang #'.$r->idbarang : '-') }}</td>
-        <td><x-badge :teks="$r->jenis_transaksi ?? '-'" /></td>
+        <td>
+          <x-badge :jenis="$lencanaJenis[$r->jenis_transaksi]['kelas'] ?? 'netral'"
+                   :teks="$r->jenis_transaksi ?? '-'"
+                   :title="$lencanaJenis[$r->jenis_transaksi]['arti'] ?? 'Arti kode belum diketahui'" />
+        </td>
         <td class="angka">{{ $r->masuk ?? 0 }}</td>
         <td class="angka">{{ $r->keluar ?? 0 }}</td>
         <td class="angka">{{ $r->stock ?? '-' }}</td>
-        <td class="angka">{{ $r->idtransaksi ?? '-' }}</td>
+        <td class="kode">{{ $r->idtransaksi ?? '-' }}</td>
       </tr>
     @empty
       <tr><td colspan="7" class="kosong">{{ request()->hasAny(['q','idbarang','jenis','dari','sampai']) ? 'Tidak ada riwayat stok yang cocok dengan pencarian/filter.' : 'Belum ada riwayat stok (tabel kartu_stok masih kosong).' }}</td></tr>

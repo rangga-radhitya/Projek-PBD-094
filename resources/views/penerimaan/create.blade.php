@@ -2,7 +2,6 @@
 
 @section('judul', 'Tambah Penerimaan')
 @section('grup', 'Transaksi')
-@section('deskripsi', 'Catat barang yang diterima dari vendor. Stok masuk dicatat otomatis oleh trigger database.')
 
 @section('breadcrumb')
   <li>Transaksi</li>
@@ -11,9 +10,15 @@
 @endsection
 
 @section('aksi')
-  <a class="tombol sekunder" href="{{ route('penerimaan.index') }}">&laquo; Kembali</a>
+  <a class="tombol sekunder" href="{{ route('penerimaan.index') }}">
+    <x-ikon nama="kiri" :ukuran="15" />
+    Kembali
+  </a>
   @if ($pengadaan !== null)
-    <button type="submit" form="form-penerimaan" class="tombol utama">Simpan Penerimaan</button>
+    <button type="submit" form="form-penerimaan" class="tombol utama">
+      <x-ikon nama="centang" :ukuran="15" />
+      Simpan Penerimaan
+    </button>
   @endif
 @endsection
 
@@ -137,7 +142,7 @@
       <dl class="ringkas">
         <div><dt>Total nilai diterima</dt><dd><output id="ringkas-total">0</output></dd></div>
       </dl>
-      <p class="hint">Jumlah terima tidak boleh melebihi sisa; aturan ini juga diperiksa oleh stored procedure.</p>
+      <p class="hint">Jumlah terima tidak boleh melebihi sisa; aturan ini juga diperiksa oleh stored procedure. Stok masuk dicatat otomatis oleh trigger database.</p>
     </section>
   </form>
 @endif

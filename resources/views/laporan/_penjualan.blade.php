@@ -25,23 +25,32 @@
   </div>
 
   <section class="kartu">
-    <h2>Rincian transaksi</h2>
+    <div class="panel-kepala">
+      <h2>Rincian transaksi</h2>
+      <button type="button" class="tombol sekunder kecil" onclick="window.print()">
+        <x-ikon nama="cetak" :ukuran="14" />
+        Cetak
+      </button>
+    </div>
     <div class="tabel-bungkus">
     <table>
       <thead>
-        <tr><th class="angka">ID</th><th>Tanggal</th><th>Kasir</th><th class="angka">Item</th><th class="angka">Subtotal (dihitung)</th><th class="angka">PPN</th><th class="angka">Total tercatat</th><th>Aksi</th></tr>
+        <tr><th class="kode">ID</th><th>Tanggal</th><th>Kasir</th><th class="angka">Item</th><th class="angka">Subtotal (dihitung)</th><th class="angka">PPN</th><th class="angka">Total tercatat</th><th>Aksi</th></tr>
       </thead>
       <tbody>
       @forelse ($rincian as $r)
         <tr>
-          <td class="angka">{{ $r['idpenjualan'] }}</td>
+          <td class="kode">{{ $r['idpenjualan'] }}</td>
           <td>{{ \Carbon\Carbon::parse($r['created_at'])->format('d/m/Y H:i') }}</td>
           <td>{{ $r['kasir'] ?? '-' }}</td>
           <td class="angka">{{ $r['jumlah_item'] }}</td>
           <td class="angka"><x-rp :nilai="$r['subtotal_hitung']" /></td>
           <td class="angka"><x-rp :nilai="$r['ppn']" /></td>
           <td class="angka"><x-rp :nilai="$r['total_nilai']" /></td>
-          <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('penjualan.show', $r['idpenjualan']) }}">Detail</a></td>
+          <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('penjualan.show', $r['idpenjualan']) }}">
+            <x-ikon nama="info" :ukuran="14" />
+            Detail
+          </a></td>
         </tr>
       @empty
         <tr><td colspan="8" class="kosong">Tidak ada transaksi penjualan pada periode ini.</td></tr>
@@ -49,7 +58,9 @@
       </tbody>
     </table>
     </div>
-    <p class="hint">Hanya transaksi yang memiliki minimal satu detail barang yang dihitung. Subtotal dihitung dari detail (jumlah × harga satuan) oleh fungsi <code>fn_hitung_total_penjualan</code>.</p>
-    <p><button type="button" class="tombol sekunder" onclick="window.print()">Cetak</button></p>
+    <x-catatan ringkas judul="Cara hitung" class="catatan-tabel">
+      Hanya transaksi yang memiliki minimal satu detail barang yang dihitung.
+      Subtotal dihitung dari detail (jumlah × harga satuan) oleh fungsi <code>fn_hitung_total_penjualan</code>.
+    </x-catatan>
   </section>
 @endif

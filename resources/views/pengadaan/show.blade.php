@@ -2,7 +2,6 @@
 
 @section('judul', 'Detail Pengadaan #'.$pengadaan->idpengadaan)
 @section('grup', 'Transaksi')
-@section('deskripsi', 'Informasi pesanan ke vendor beserta barang yang dipesan.')
 
 @section('breadcrumb')
   <li>Transaksi</li>
@@ -11,12 +10,18 @@
 @endsection
 
 @section('aksi')
-  <a class="tombol sekunder" href="{{ route('pengadaan.index') }}">&laquo; Kembali</a>
+  <a class="tombol sekunder" href="{{ route('pengadaan.index') }}">
+    <x-ikon nama="kiri" :ukuran="15" />
+    Kembali
+  </a>
   @if (empty($pengadaan->penerimaan))
     <form method="POST" action="{{ route('pengadaan.destroy', $pengadaan->idpengadaan) }}">
       @csrf
       @method('DELETE')
-      <button type="button" class="tombol bahaya" data-konfirmasi="Hapus pengadaan #{{ $pengadaan->idpengadaan }}?">Hapus</button>
+      <button type="button" class="tombol bahaya" data-konfirmasi="Hapus pengadaan #{{ $pengadaan->idpengadaan }}?">
+        <x-ikon nama="hapus" :ukuran="15" />
+        Hapus
+      </button>
     </form>
   @endif
 @endsection
@@ -29,7 +34,12 @@
       <div><dt>Tanggal</dt><dd>{{ $pengadaan->tanggal ?? '-' }}</dd></div>
       <div><dt>Vendor</dt><dd>{{ $pengadaan->nama_vendor ?? '-' }}</dd></div>
       <div><dt>Dibuat oleh</dt><dd>{{ $pengadaan->username ?? '-' }}</dd></div>
-      <div><dt>Status</dt><dd><x-badge :teks="$pengadaan->status ?? '-'" /> <small class="hint">(D = draft, S = selesai)</small></dd></div>
+      <div><dt>Status</dt><dd>
+        <x-badge :jenis="$pengadaan->status === 'S' ? 'sukses' : 'netral'"
+                 :teks="$pengadaan->status ?? '-'"
+                 :title="$pengadaan->status === 'D' ? 'Draft' : ($pengadaan->status === 'S' ? 'Selesai' : 'Status belum diketahui')" />
+        <small class="hint">(D = draft, S = selesai)</small>
+      </dd></div>
     </dl>
   </section>
 
@@ -64,22 +74,32 @@
       </tfoot>
     </table>
     </div>
-    <p class="hint">"Sudah diterima" dijumlahkan dari seluruh penerimaan untuk pengadaan ini; "Sisa" = jumlah dipesan − sudah diterima.</p>
+    <x-catatan ringkas judul="Cara hitung" class="catatan-tabel">
+      "Sudah diterima" dijumlahkan dari seluruh penerimaan untuk pengadaan ini;
+      "Sisa" = jumlah dipesan − sudah diterima.
+    </x-catatan>
   </section>
 
   <section class="kartu">
     <h2>Penerimaan terkait</h2>
     <div class="tabel-bungkus">
     <table>
-      <thead><tr><th class="angka">ID penerimaan</th><th>Tanggal</th><th>Diterima oleh</th><th>Status</th><th class="aksi">Aksi</th></tr></thead>
+      <thead><tr><th class="kode">ID penerimaan</th><th>Tanggal</th><th>Diterima oleh</th><th>Status</th><th class="aksi">Aksi</th></tr></thead>
       <tbody>
       @forelse ($pengadaan->penerimaan as $p)
         <tr>
-          <td class="angka">{{ $p->idpenerimaan }}</td>
+          <td class="kode">{{ $p->idpenerimaan }}</td>
           <td>{{ $p->tanggal ?? '-' }}</td>
           <td>{{ $p->username ?? '-' }}</td>
-          <td><x-badge :teks="$p->status ?? '-'" /></td>
-          <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('penerimaan.show', $p->idpenerimaan) }}">Detail</a></td>
+          <td>
+            <x-badge :jenis="$p->status === 'S' ? 'sukses' : 'netral'"
+                     :teks="$p->status ?? '-'"
+                     :title="$p->status === 'D' ? 'Draft' : ($p->status === 'S' ? 'Selesai' : 'Status belum diketahui')" />
+          </td>
+          <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('penerimaan.show', $p->idpenerimaan) }}">
+            <x-ikon nama="info" :ukuran="14" />
+            Detail
+          </a></td>
         </tr>
       @empty
         <tr><td colspan="5" class="kosong">Belum ada penerimaan untuk pengadaan ini.</td></tr>

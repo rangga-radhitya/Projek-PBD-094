@@ -2,7 +2,6 @@
 
 @section('judul', 'Tambah Retur')
 @section('grup', 'Transaksi')
-@section('deskripsi', 'Catat pengembalian barang ke vendor berdasarkan penerimaan. Stok keluar dicatat otomatis oleh trigger database.')
 
 @section('breadcrumb')
   <li>Transaksi</li>
@@ -11,9 +10,15 @@
 @endsection
 
 @section('aksi')
-  <a class="tombol sekunder" href="{{ route('retur.index') }}">&laquo; Kembali</a>
+  <a class="tombol sekunder" href="{{ route('retur.index') }}">
+    <x-ikon nama="kiri" :ukuran="15" />
+    Kembali
+  </a>
   @if ($penerimaan !== null)
-    <button type="submit" form="form-retur" class="tombol utama">Simpan Retur</button>
+    <button type="submit" form="form-retur" class="tombol utama">
+      <x-ikon nama="centang" :ukuran="15" />
+      Simpan Retur
+    </button>
   @endif
 @endsection
 
@@ -111,7 +116,7 @@
           </tbody>
         </table>
       </div>
-      <p class="hint">Jumlah retur tidak boleh melebihi sisa yang belum diretur; aturan ini juga diperiksa oleh stored procedure.</p>
+      <p class="hint">Jumlah retur tidak boleh melebihi sisa yang belum diretur; aturan ini juga diperiksa oleh stored procedure. Stok keluar dicatat otomatis oleh trigger database.</p>
     </section>
   </form>
 @endif

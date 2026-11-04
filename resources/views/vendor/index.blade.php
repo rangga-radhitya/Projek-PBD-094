@@ -2,11 +2,13 @@
 
 @section('judul', 'Data Vendor')
 @section('grup', 'Tabel Master')
-@section('deskripsi', 'Pemasok barang.')
 
 @section('aksi')
   <button type="button" class="tombol" data-buka-form="m-form" data-judul="Tambah Vendor"
-          data-aksi="{{ route('vendor.store') }}" data-metode="POST">+ Tambah Vendor</button>
+          data-aksi="{{ route('vendor.store') }}" data-metode="POST">
+    <x-ikon nama="tambah" :ukuran="16" />
+    Tambah Vendor
+  </button>
 @endsection
 
 @section('isi')
@@ -37,24 +39,30 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="angka">ID</th><th>Nama vendor</th><th>Badan hukum</th><th>Status</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Nama vendor</th><th>Badan hukum</th><th>Status</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     @forelse ($daftar as $r)
       <tr>
-        <td class="angka">{{ $r->idvendor }}</td>
+        <td class="kode">{{ $r->idvendor }}</td>
         <td>{{ $r->nama_vendor }}</td>
         <td>{{ $r->badan_hukum_teks }}</td>
-        <td><x-badge :aktif="$r->status === 'A'" :teks="$r->status_teks" /></td>
+        <td><x-badge :jenis="$r->status === 'A' ? 'sukses' : 'netral'" :teks="$r->status_teks" /></td>
         <td class="aksi">
           <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Vendor"
                   data-aksi="{{ route('vendor.update', $r->idvendor) }}" data-metode="PUT"
-                  data-nilai="{{ json_encode(['nama_vendor' => $r->nama_vendor, 'badan_hukum' => $r->badan_hukum, 'status' => $r->status]) }}">Edit</button>
+                  data-nilai="{{ json_encode(['nama_vendor' => $r->nama_vendor, 'badan_hukum' => $r->badan_hukum, 'status' => $r->status]) }}">
+            <x-ikon nama="edit" :ukuran="14" />
+            Edit
+          </button>
           <form method="POST" action="{{ route('vendor.status', $r->idvendor) }}">
             @csrf
             @method('PATCH')
             <button type="button" class="tombol sekunder kecil"
-                    data-konfirmasi="{{ $r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan' }} vendor &quot;{{ $r->nama_vendor }}&quot;?">{{ $r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan' }}</button>
+                    data-konfirmasi="{{ $r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan' }} vendor &quot;{{ $r->nama_vendor }}&quot;?">
+              <x-ikon :nama="$r->status === 'A' ? 'tutup' : 'centang'" :ukuran="14" />
+              {{ $r->status === 'A' ? 'Nonaktifkan' : 'Aktifkan' }}
+            </button>
           </form>
         </td>
       </tr>
