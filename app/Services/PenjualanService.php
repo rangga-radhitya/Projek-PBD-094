@@ -6,32 +6,12 @@ use App\Support\Paginasi;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
-use PDO;
-use PDOException;
 
 /**
- * Penjualan: daftar/detail (SQL mentah) serta objek database
- * sp_laporan_penjualan_periode (Stored Procedure) dan fn_hitung_total_penjualan (Function).
+ * Penjualan: daftar, detail, dan rekap periode memakai SQL biasa.
  */
 class PenjualanService
 {
-    private ?PDO $pdo = null;
-
-    /** Untuk pengujian di luar Laravel: pakai koneksi PDO yang diberikan. */
-    public static function denganPdo(PDO $pdo): static
-    {
-        $service = new static();
-        $service->pdo = $pdo;
-
-        return $service;
-    }
-
-    private function pdo(): PDO
-    {
-        return $this->pdo ??= DB::connection()->getPdo();
-    }
-
     public function daftar(string $q, string $iduser, string $dari, string $sampai, int $perHalaman, Request $request): LengthAwarePaginator
     {
         $sql = "SELECT p.idpenjualan, p.subtotal_nilai, p.ppn, p.total_nilai,
@@ -106,62 +86,72 @@ class PenjualanService
      * Rekap penjualan pada rentang tanggal (format Y-m-d, kedua ujung termasuk).
      *
      * @return array{rincian: array<int, array<string, mixed>>, rekap: array<string, mixed>}
-     *
-     * @throws InvalidArgumentException bila rentang ditolak oleh Stored Procedure (SQLSTATE 45000)
-     * @throws PDOException             bila objek belum terpasang (errorInfo[1] = 1305) atau galat database lain
      */
     public function laporanPeriode(string $awal, string $akhir): array
     {
-        $st = $this->pdo()->prepare('CALL sp_laporan_penjualan_periode(?, ?)');
+        $rincian = DB::select(
+            "SELECT p.idpenjualan, p.created_at, u.username AS kasir,
+                    (SELECT COUNT(*) FROM detail_penjualan d
+                      WHERE d.penjualan_idpenjualan = p.idpenjualan) AS jumlah_item,
+                    (SELECT COALESCE(SUM(d.subtotal), 0) FROM detail_penjualan d
+                      WHERE d.penjualan_idpenjualan = p.idpenjualan) AS subtotal_hitung,
+                    p.ppn, p.total_nilai
+             FROM penjualan p
+             LEFT JOIN `user` u ON u.iduser = p.iduser
+             WHERE p.created_at >= ?
+               AND p.created_at < DATE_ADD(?, INTERVAL 1 DAY)
+               AND EXISTS (SELECT 1 FROM detail_penjualan d
+                            WHERE d.penjualan_idpenjualan = p.idpenjualan)
+             ORDER BY p.created_at, p.idpenjualan",
+            [$awal, $akhir]
+        );
 
-        try {
-            $st->execute([$awal, $akhir]);
-            $rincian = $st->fetchAll(PDO::FETCH_ASSOC);
+        $rekap = DB::selectOne(
+            "SELECT COUNT(*) AS jumlah_transaksi,
+                    COALESCE(SUM(t.subtotal_hitung), 0) AS total_pendapatan,
+                    COALESCE(SUM(t.ppn), 0) AS total_ppn,
+                    COALESCE(SUM(t.total_nilai), 0) AS total_nilai_tercatat
+             FROM (SELECT (SELECT COALESCE(SUM(d.subtotal), 0) FROM detail_penjualan d
+                            WHERE d.penjualan_idpenjualan = p.idpenjualan) AS subtotal_hitung,
+                          p.ppn, p.total_nilai
+                   FROM penjualan p
+                   WHERE p.created_at >= ?
+                     AND p.created_at < DATE_ADD(?, INTERVAL 1 DAY)
+                     AND EXISTS (SELECT 1 FROM detail_penjualan d
+                                  WHERE d.penjualan_idpenjualan = p.idpenjualan)) t",
+            [$awal, $akhir]
+        );
 
-            $rekap = null;
-            if ($st->nextRowset()) {
-                $rekap = $st->fetch(PDO::FETCH_ASSOC) ?: null;
-            }
-
-            return [
-                'rincian' => $rincian,
-                'rekap' => $rekap ?? [
-                    'jumlah_transaksi' => 0,
-                    'total_pendapatan' => '0.00',
-                    'total_ppn' => 0,
-                    'total_nilai_tercatat' => 0,
-                ],
-            ];
-        } catch (PDOException $e) {
-            if (($e->errorInfo[0] ?? null) === '45000') {
-                throw new InvalidArgumentException((string) ($e->errorInfo[2] ?? 'Rentang tanggal tidak valid.'), 0, $e);
-            }
-
-            throw $e;
-        } finally {
-            $st->closeCursor();
-        }
+        return [
+            'rincian' => array_map(fn ($r) => (array) $r, $rincian),
+            'rekap' => $rekap === null ? [
+                'jumlah_transaksi' => 0,
+                'total_pendapatan' => 0,
+                'total_ppn' => 0,
+                'total_nilai_tercatat' => 0,
+            ] : (array) $rekap,
+        ];
     }
 
     /**
-     * Total satu transaksi penjualan dari fungsi database.
-     * Mengembalikan string desimal (mis. "24000.00"), "0.00" bila tanpa detail, null bila transaksi tidak ada.
-     *
-     * @throws PDOException bila fungsi belum terpasang
+     * Total satu transaksi penjualan dari detail (jumlah × harga satuan).
+     * Null bila transaksi tidak ada, "0" bila transaksi belum punya detail.
      */
     public function totalPenjualan(int $idpenjualan): ?string
     {
-        $st = $this->pdo()->prepare('SELECT fn_hitung_total_penjualan(?) AS total');
-        $st->execute([$idpenjualan]);
-        $nilai = $st->fetchColumn();
-        $st->closeCursor();
+        $ada = DB::selectOne('SELECT 1 AS x FROM penjualan WHERE idpenjualan = ?', [$idpenjualan]);
 
-        return $nilai === false || $nilai === null ? null : (string) $nilai;
-    }
+        if ($ada === null) {
+            return null;
+        }
 
-    /** True bila galat berarti objek database belum dibuat (MySQL 1305: routine does not exist). */
-    public static function objekBelumTerpasang(PDOException $e): bool
-    {
-        return ($e->errorInfo[1] ?? null) === 1305 || ($e->errorInfo[1] ?? null) === '1305';
+        $total = DB::selectOne(
+            'SELECT COALESCE(SUM(subtotal), 0) AS total
+             FROM detail_penjualan
+             WHERE penjualan_idpenjualan = ?',
+            [$idpenjualan]
+        )->total;
+
+        return (string) $total;
     }
 }

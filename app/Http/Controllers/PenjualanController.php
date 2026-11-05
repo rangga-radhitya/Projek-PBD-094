@@ -6,7 +6,6 @@ use App\Services\PenggunaService;
 use App\Services\PenjualanService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use PDOException;
 
 class PenjualanController extends Controller
 {
@@ -34,16 +33,8 @@ class PenjualanController extends Controller
 
         abort_if($penjualan === null, 404);
 
-        $totalFungsi = null;
+        $totalDetail = $this->layanan->totalPenjualan($id);
 
-        try {
-            $totalFungsi = $this->layanan->totalPenjualan($id);
-        } catch (PDOException $e) {
-            if (! PenjualanService::objekBelumTerpasang($e)) {
-                report($e);
-            }
-        }
-
-        return view('penjualan.show', compact('penjualan', 'totalFungsi'));
+        return view('penjualan.show', compact('penjualan', 'totalDetail'));
     }
 }

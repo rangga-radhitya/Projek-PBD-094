@@ -84,7 +84,7 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="kode">ID</th><th>Nama barang</th><th>Jenis</th><th>Satuan</th><th class="angka">Harga</th><th>Status</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Nama barang</th><th>Jenis</th><th>Satuan</th><th class="angka">Harga</th><th class="angka">Stok</th><th>Status</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     <?php $__empty_1 = true; $__currentLoopData = $daftar; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
@@ -113,6 +113,7 @@
 <?php $component = $__componentOriginalb4e3971ce842b126bc6c4e68494cd6a3; ?>
 <?php unset($__componentOriginalb4e3971ce842b126bc6c4e68494cd6a3); ?>
 <?php endif; ?></td>
+        <td class="angka"><?php echo e($r->stok); ?></td>
         <td><?php if (isset($component)) { $__componentOriginal2ddbc40e602c342e508ac696e52f8719 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal2ddbc40e602c342e508ac696e52f8719 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.badge','data' => ['jenis' => $r->status == 1 ? 'sukses' : 'netral','teks' => $r->status == 1 ? 'Aktif' : 'Nonaktif']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -191,7 +192,7 @@
         </td>
       </tr>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-      <tr><td colspan="7" class="kosong"><?php echo e(($q !== '' || $jenis !== '' || $idsatuan !== '' || $status !== '') ? 'Tidak ada barang yang cocok dengan pencarian/filter.' : 'Belum ada data barang.'); ?></td></tr>
+      <tr><td colspan="8" class="kosong"><?php echo e(($q !== '' || $jenis !== '' || $idsatuan !== '' || $status !== '') ? 'Tidak ada barang yang cocok dengan pencarian/filter.' : 'Belum ada data barang.'); ?></td></tr>
     <?php endif; ?>
     </tbody>
   </table>

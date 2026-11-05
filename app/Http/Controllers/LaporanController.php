@@ -6,8 +6,7 @@ use App\Services\PenjualanService;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use InvalidArgumentException;
-use PDOException;
+use Throwable;
 
 class LaporanController extends Controller
 {
@@ -64,7 +63,7 @@ class LaporanController extends Controller
 
         $data = ['jenis' => $jenis, 'laporan' => self::LAPORAN[$jenis]];
 
-        // Hanya Laporan Penjualan yang sudah memakai objek database (sp_laporan_penjualan_periode).
+        // Hanya Laporan Penjualan yang sudah punya query rekap.
         if ($jenis === 'penjualan') {
             $data += $this->laporanPenjualan($request, $penjualan);
         }
@@ -73,14 +72,13 @@ class LaporanController extends Controller
     }
 
     /**
-     * Memanggil Stored Procedure bila kedua tanggal diisi. Aturan rentang (awal > akhir, kosong)
-     * ditegakkan oleh Stored Procedure; pesannya ditampilkan apa adanya.
+     * Menghitung rekap penjualan bila kedua tanggal diisi.
      */
     private function laporanPenjualan(Request $request, PenjualanService $penjualan): array
     {
         $dari = trim((string) $request->query('dari', ''));
         $sampai = trim((string) $request->query('sampai', ''));
-        $hasil = ['dari' => $dari, 'sampai' => $sampai, 'rincian' => null, 'rekap' => null, 'galat' => null, 'belumTerpasang' => false];
+        $hasil = ['dari' => $dari, 'sampai' => $sampai, 'rincian' => null, 'rekap' => null, 'galat' => null];
 
         if ($dari === '' && $sampai === '') {
             return $hasil; // belum mencari
@@ -101,19 +99,19 @@ class LaporanController extends Controller
             }
         }
 
+        if ($dari > $sampai) {
+            $hasil['galat'] = 'Tanggal awal tidak boleh lebih besar dari tanggal akhir.';
+
+            return $hasil;
+        }
+
         try {
             $laporan = $penjualan->laporanPeriode($dari, $sampai);
             $hasil['rincian'] = $laporan['rincian'];
             $hasil['rekap'] = $laporan['rekap'];
-        } catch (InvalidArgumentException $e) {
-            $hasil['galat'] = $e->getMessage();
-        } catch (PDOException $e) {
-            if (PenjualanService::objekBelumTerpasang($e)) {
-                $hasil['belumTerpasang'] = true;
-            } else {
-                report($e);
-                $hasil['galat'] = 'Laporan gagal dimuat. Periksa koneksi dan konfigurasi database.';
-            }
+        } catch (Throwable $e) {
+            report($e);
+            $hasil['galat'] = 'Laporan gagal dimuat. Periksa koneksi dan konfigurasi database.';
         }
 
         return $hasil;

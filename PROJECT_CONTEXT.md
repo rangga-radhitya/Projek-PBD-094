@@ -126,7 +126,15 @@ Catatan teknis: view memakai INNER JOIN, sehingga baris dengan FK `NULL` (semua 
 
 ### 4.6 Stored Procedure, Function, Trigger
 
-`dml_ddl.sql` dan `views.sql` tidak memuat satu pun (audit awal: nol hasil). Sejak tahap database programming, `database/sql/routines.sql` memuat **tepat tiga objek**: Function `fn_hitung_total_penjualan`, Stored Procedure `sp_laporan_penjualan_periode`, dan Trigger `trg_detail_penerimaan_after_insert` (detail: `DATABASE_OBJECTS_IMPLEMENTATION_REPORT.md`). Skema tabel tidak diubah; tidak ada index tambahan, UNIQUE, CHECK, maupun DEFAULT.
+`dml_ddl.sql` dan `views.sql` tidak memuat satu pun (audit awal: nol hasil). Sejak tahap database programming, `database/sql/routines.sql` memuat **tepat tiga objek** yang semuanya dipakai langsung oleh frontend (detail: `DATABASE_OBJECTS_IMPLEMENTATION_REPORT.md`):
+
+| Objek | Nama | Dipakai di |
+|---|---|---|
+| Function | `fn_stok_barang(idbarang)` | kolom **Stok** pada halaman Barang |
+| Stored Procedure | `sp_hapus_penerimaan(idpenerimaan)` | tombol **Hapus** pada halaman Penerimaan |
+| Trigger | `trg_detail_penerimaan_after_insert` | otomatis saat detail penerimaan dibuat (stok masuk) |
+
+Rekap penjualan dihitung dengan SQL biasa di `PenjualanService` (tidak lagi memakai SP/function database). Skema tabel tidak diubah; tidak ada index tambahan, UNIQUE, CHECK, maupun DEFAULT.
 
 ## 5. Arsitektur Laravel
 

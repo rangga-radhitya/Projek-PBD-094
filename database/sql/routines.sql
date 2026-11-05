@@ -1,133 +1,112 @@
 -- =====================================================
--- Daily Bun - Database objects (database projek_pbd_094)
--- Jalankan SETELAH dml_ddl.sql dan views.sql. Aman dijalankan ulang (DROP ... IF EXISTS).
--- Isi file ini TEPAT tiga objek:
---   1. FUNCTION  fn_hitung_total_penjualan
---   2. PROCEDURE sp_laporan_penjualan_periode
+-- Daily Bun - Objek database programming
+-- Jalankan di HeidiSQL (tab Query) SETELAH dml_ddl.sql dan views.sql.
+-- Aman dijalankan ulang (DROP ... IF EXISTS di awal).
+--
+-- Tepat tiga objek:
+--   1. FUNCTION  fn_stok_barang(idbarang)
+--        Stok terkini satu barang, dibaca dari baris kartu_stok terakhir.
+--        Dipakai halaman Barang (kolom Stok).
+--   2. PROCEDURE sp_hapus_penerimaan(idpenerimaan)
+--        Hapus penerimaan + detailnya, sekaligus mencatat koreksi stok
+--        (kartu_stok jenis 'K'). Menolak bila penerimaan sudah punya retur.
+--        Dipakai tombol Hapus di halaman Penerimaan.
 --   3. TRIGGER   trg_detail_penerimaan_after_insert
--- Tidak mengubah tabel, kolom, atau data. Memakai DELIMITER (HeidiSQL / klien mysql).
+--        Setiap detail penerimaan baru otomatis menambah stok
+--        (kartu_stok jenis 'M').
+--
+-- Catatan: penjualan dan retur TIDAK memakai objek di file ini.
 -- =====================================================
 USE projek_pbd_094;
 
 DROP TRIGGER   IF EXISTS trg_detail_penerimaan_after_insert;
-DROP PROCEDURE IF EXISTS sp_laporan_penjualan_periode;
-DROP FUNCTION  IF EXISTS fn_hitung_total_penjualan;
+DROP PROCEDURE IF EXISTS sp_hapus_penerimaan;
+DROP FUNCTION  IF EXISTS fn_stok_barang;
 
 DELIMITER $$
 
 -- -----------------------------------------------------
--- 1. FUNCTION fn_hitung_total_penjualan
---    Total satu transaksi penjualan = SUM(jumlah x harga_satuan) dari detail_penjualan.
---    - Memakai DECIMAL (bukan FLOAT) sehingga tidak ada kesalahan pembulatan.
---    - Transaksi ada tetapi tanpa detail  -> 0.00
---    - Transaksi tidak ada / parameter NULL -> NULL (dapat dibedakan dari 0.00)
---    - Tidak ada kolom diskon di skema; PPN tidak ikut (PPN tersimpan di penjualan.ppn).
+-- 1. FUNCTION fn_stok_barang
+--    - Tabel barang tidak punya kolom stok; stok = kolom kartu_stok.stock
+--      pada baris terakhir per barang (saldo berjalan).
+--    - Mengembalikan 0 bila barang belum punya pergerakan stok.
 -- -----------------------------------------------------
-CREATE FUNCTION fn_hitung_total_penjualan(p_idpenjualan INT)
-RETURNS DECIMAL(15,2)
+CREATE FUNCTION fn_stok_barang(p_idbarang INT)
+RETURNS INT
 READS SQL DATA
 BEGIN
-    DECLARE v_ada   INT DEFAULT 0;
-    DECLARE v_total DECIMAL(15,2) DEFAULT 0;
+    DECLARE v_stok INT DEFAULT 0;
 
-    IF p_idpenjualan IS NULL THEN
-        RETURN NULL;
-    END IF;
+    SELECT COALESCE(
+        (SELECT stock FROM kartu_stok
+          WHERE idbarang = p_idbarang
+          ORDER BY idkartu_stok DESC LIMIT 1), 0
+    ) INTO v_stok;
 
-    SELECT COUNT(*) INTO v_ada FROM penjualan WHERE idpenjualan = p_idpenjualan;
-    IF v_ada = 0 THEN
-        RETURN NULL;
-    END IF;
-
-    SELECT COALESCE(SUM(CAST(jumlah AS DECIMAL(15,2)) * CAST(harga_satuan AS DECIMAL(15,2))), 0)
-      INTO v_total
-      FROM detail_penjualan
-     WHERE penjualan_idpenjualan = p_idpenjualan;
-
-    RETURN v_total;
+    RETURN v_stok;
 END$$
 
 -- -----------------------------------------------------
--- 2. PROCEDURE sp_laporan_penjualan_periode
---    Rekap penjualan pada rentang tanggal (kedua ujung termasuk).
---    Mengembalikan DUA result set:
---      (1) rincian per transaksi
---      (2) rekap: jumlah_transaksi, total_pendapatan, total_ppn, total_nilai_tercatat
---    Aturan:
---      - Parameter NULL, tanggal 0000-00-00, atau awal > akhir -> SIGNAL SQLSTATE '45000'.
---      - Hanya transaksi yang punya minimal satu baris detail_penjualan yang dihitung
---        (header tanpa detail dianggap belum tercatat lengkap).
---      - total_pendapatan = jumlah fn_hitung_total_penjualan (sebelum PPN).
---        total_nilai_tercatat = jumlah penjualan.total_nilai (nilai yang tersimpan di header).
+-- 2. PROCEDURE sp_hapus_penerimaan
+--    - Tolak (SIGNAL 45000) bila penerimaan sudah memiliki retur.
+--    - Untuk tiap barang: catat kartu_stok jenis 'K' sebesar total diterima.
+--    - Hapus detail_penerimaan lalu penerimaan (satu transaksi dengan pemanggil).
 -- -----------------------------------------------------
-CREATE PROCEDURE sp_laporan_penjualan_periode(
-    IN p_tanggal_awal  DATE,
-    IN p_tanggal_akhir DATE
-)
-READS SQL DATA
+CREATE PROCEDURE sp_hapus_penerimaan(IN p_idpenerimaan BIGINT)
 BEGIN
-    IF p_tanggal_awal IS NULL OR p_tanggal_akhir IS NULL THEN
+    DECLARE v_ada_retur INT DEFAULT 0;
+    DECLARE v_idbarang INT DEFAULT NULL;
+    DECLARE v_total INT DEFAULT 0;
+    DECLARE v_saldo INT DEFAULT 0;
+    DECLARE selesai INT DEFAULT 0;
+
+    DECLARE kursor CURSOR FOR
+        SELECT barang_idbarang, SUM(jumlah_terima)
+          FROM detail_penerimaan
+         WHERE idpenerimaan = p_idpenerimaan
+         GROUP BY barang_idbarang;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET selesai = 1;
+
+    SELECT COUNT(*) INTO v_ada_retur FROM retur WHERE idpenerimaan = p_idpenerimaan;
+
+    IF v_ada_retur > 0 THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Tanggal awal dan tanggal akhir wajib diisi.';
+            SET MESSAGE_TEXT = 'Penerimaan tidak bisa dihapus karena sudah memiliki retur.';
     END IF;
 
-    IF YEAR(p_tanggal_awal) = 0 OR YEAR(p_tanggal_akhir) = 0 THEN
-        SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Tanggal tidak valid.';
-    END IF;
+    OPEN kursor;
 
-    IF p_tanggal_awal > p_tanggal_akhir THEN
-        SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Tanggal awal tidak boleh lebih besar dari tanggal akhir.';
-    END IF;
+    baca: LOOP
+        FETCH kursor INTO v_idbarang, v_total;
+        IF selesai = 1 THEN
+            LEAVE baca;
+        END IF;
 
-    -- (1) Rincian per transaksi
-    SELECT p.idpenjualan,
-           p.created_at,
-           u.username                                   AS kasir,
-           (SELECT COUNT(*) FROM detail_penjualan d
-             WHERE d.penjualan_idpenjualan = p.idpenjualan) AS jumlah_item,
-           fn_hitung_total_penjualan(p.idpenjualan)     AS subtotal_hitung,
-           p.ppn,
-           p.total_nilai
-      FROM penjualan p
-      LEFT JOIN `user` u ON u.iduser = p.iduser
-     WHERE p.created_at >= p_tanggal_awal
-       AND p.created_at <  DATE_ADD(p_tanggal_akhir, INTERVAL 1 DAY)
-       AND EXISTS (SELECT 1 FROM detail_penjualan d
-                    WHERE d.penjualan_idpenjualan = p.idpenjualan)
-     ORDER BY p.created_at, p.idpenjualan;
+        SELECT COALESCE(
+            (SELECT stock FROM kartu_stok
+              WHERE idbarang = v_idbarang
+              ORDER BY idkartu_stok DESC LIMIT 1), 0
+        ) INTO v_saldo;
 
-    -- (2) Rekap
-    SELECT COUNT(*)                              AS jumlah_transaksi,
-           COALESCE(SUM(t.subtotal_hitung), 0)   AS total_pendapatan,
-           COALESCE(SUM(t.ppn), 0)               AS total_ppn,
-           COALESCE(SUM(t.total_nilai), 0)       AS total_nilai_tercatat
-      FROM (SELECT fn_hitung_total_penjualan(p.idpenjualan) AS subtotal_hitung,
-                   p.ppn,
-                   p.total_nilai
-              FROM penjualan p
-             WHERE p.created_at >= p_tanggal_awal
-               AND p.created_at <  DATE_ADD(p_tanggal_akhir, INTERVAL 1 DAY)
-               AND EXISTS (SELECT 1 FROM detail_penjualan d
-                            WHERE d.penjualan_idpenjualan = p.idpenjualan)) t;
+        INSERT INTO kartu_stok (jenis_transaksi, masuk, keluar, stock, created_at, idtransaksi, idbarang)
+        VALUES ('K', 0, v_total, v_saldo - v_total, NOW(), p_idpenerimaan, v_idbarang);
+    END LOOP;
+
+    CLOSE kursor;
+
+    DELETE FROM detail_penerimaan WHERE idpenerimaan = p_idpenerimaan;
+    DELETE FROM penerimaan WHERE idpenerimaan = p_idpenerimaan;
 END$$
 
 -- -----------------------------------------------------
 -- 3. TRIGGER trg_detail_penerimaan_after_insert
---    Setiap baris baru di detail_penerimaan otomatis menambah stok lewat kartu_stok.
---    - Tabel barang TIDAK punya kolom stok; stok = kolom kartu_stok.stock baris terakhir
---      per barang (saldo berjalan). Trigger mencatat baris baru dengan
---      stock = saldo sebelumnya + jumlah_terima.
---    - jenis_transaksi = 'M' (masuk / penerimaan). Skema tidak mendefinisikan kode ini;
---      'M' adalah KEPUTUSAN yang perlu dikonfirmasi pemilik project.
---    - idtransaksi = idpenerimaan (identitas transaksi penerimaan).
---    - Baris dengan barang kosong atau jumlah_terima <= 0 DITOLAK (SIGNAL 45000), sehingga
---      INSERT detail-nya ikut dibatalkan dan tidak ada stok setengah jadi.
---    - Satu-satunya pihak yang mengisi kartu_stok untuk penerimaan. Aplikasi (Laravel)
---      TIDAK BOLEH menulis kartu_stok untuk penerimaan agar tidak terjadi stok ganda.
---    - Berjalan di transaksi yang sama dengan INSERT pemicunya: ROLLBACK membatalkan keduanya.
---    - Baris barang dikunci (FOR UPDATE) agar penghitungan saldo per barang berurutan.
+--    - Stok masuk otomatis saat detail penerimaan dibuat (jenis 'M').
+--    - Menolak barang kosong / jumlah_terima <= 0 (SIGNAL 45000), sehingga
+--      INSERT detail ikut dibatalkan dan tidak ada stok setengah jadi.
+--    - Baris barang dikunci (FOR UPDATE) agar saldo per barang berurutan.
+--    - Satu-satunya penulis kartu_stok untuk penerimaan; aplikasi tidak
+--      boleh menulis kartu_stok untuk penerimaan agar tidak dobel.
 -- -----------------------------------------------------
 CREATE TRIGGER trg_detail_penerimaan_after_insert
 AFTER INSERT ON detail_penerimaan
@@ -161,3 +140,14 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+-- Daftar objek setelah pemasangan: harus 1 function, 1 procedure, 1 trigger.
+SELECT ROUTINE_TYPE, ROUTINE_NAME
+  FROM information_schema.ROUTINES
+ WHERE ROUTINE_SCHEMA = 'projek_pbd_094'
+ ORDER BY ROUTINE_TYPE, ROUTINE_NAME;
+
+SELECT TRIGGER_NAME, EVENT_MANIPULATION, EVENT_OBJECT_TABLE
+  FROM information_schema.TRIGGERS
+ WHERE TRIGGER_SCHEMA = 'projek_pbd_094'
+ ORDER BY TRIGGER_NAME;

@@ -14,7 +14,9 @@ class BarangService
 {
     public function daftar(string $q, string $jenis, string $idsatuan, string $status, int $perHalaman, Request $request): LengthAwarePaginator
     {
-        $sql = 'SELECT idbarang, nama, jenis, jenis_teks, idsatuan, nama_satuan, harga, status FROM v_barang';
+        $sql = 'SELECT idbarang, nama, jenis, jenis_teks, idsatuan, nama_satuan, harga, status,
+                       fn_stok_barang(idbarang) AS stok
+                FROM v_barang';
         $where = [];
         $bind = [];
 

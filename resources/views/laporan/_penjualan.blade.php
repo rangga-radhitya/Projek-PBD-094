@@ -1,4 +1,4 @@
-{{-- Laporan Penjualan: data dari Stored Procedure sp_laporan_penjualan_periode (baca saja). --}}
+{{-- Laporan Penjualan: rekap dari tabel penjualan dan detail_penjualan (baca saja). --}}
 <x-filter-bar :reset="route('laporan.show', 'penjualan')">
   <div class="grup-filter">
     <label for="dari">Dari tanggal</label>
@@ -10,9 +10,7 @@
   </div>
 </x-filter-bar>
 
-@if ($belumTerpasang)
-  <x-catatan jenis="gagal">Stored Procedure <code>sp_laporan_penjualan_periode</code> belum terpasang di database. Jalankan <code>database/sql/routines.sql</code> terlebih dahulu.</x-catatan>
-@elseif ($galat)
+@if ($galat)
   <div class="peringatan gagal" role="alert">{{ $galat }}</div>
 @elseif ($rekap === null)
   <x-catatan>Pilih rentang tanggal lalu tekan <strong>Cari</strong> untuk menampilkan laporan penjualan.</x-catatan>
@@ -60,7 +58,7 @@
     </div>
     <x-catatan ringkas judul="Cara hitung" class="catatan-tabel">
       Hanya transaksi yang memiliki minimal satu detail barang yang dihitung.
-      Subtotal dihitung dari detail (jumlah × harga satuan) oleh fungsi <code>fn_hitung_total_penjualan</code>.
+      Subtotal dihitung dari detail (jumlah × harga satuan).
     </x-catatan>
   </section>
 @endif

@@ -21,7 +21,7 @@
   </div>
 
   <x-catatan ringkas judul="Status laporan" class="catatan-laporan">
-    Laporan Penjualan memakai stored procedure <code>sp_laporan_penjualan_periode</code>.
+    Laporan Penjualan sudah tersedia dan dihitung langsung dari tabel penjualan.
     Laporan lain menunggu query agregasi di backend.
   </x-catatan>
 @endsection

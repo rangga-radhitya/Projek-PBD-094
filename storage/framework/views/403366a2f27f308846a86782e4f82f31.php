@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#C4DAE8">
+  <meta name="theme-color" content="#EAF4FF">
   <meta name="color-scheme" content="light">
   <title><?php echo $__env->yieldContent('judul'); ?> - <?php echo e(config('app.name', 'Daily Bun')); ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +13,11 @@
   <script src="<?php echo e(asset('js/app.js')); ?>" defer></script>
 </head>
 <body>
+<div class="latar-holo" aria-hidden="true">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
 <?php
   // Menu dibaca dari config/menu.php (satu sumber untuk sidebar).
   $menu = config('menu', []);
@@ -99,7 +104,7 @@
             </ul>
           </details>
         <?php else: ?>
-          <a class="sisi-tunggal" href="<?php echo e($tautan($entri)); ?>" class="<?php echo \Illuminate\Support\Arr::toCssClasses(['aktif' => $menuAktif($entri)]); ?>" <?php if($menuAktif($entri)): ?> aria-current="page" <?php endif; ?>>
+          <a class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sisi-tunggal', 'aktif' => $menuAktif($entri)]); ?>" href="<?php echo e($tautan($entri)); ?>" <?php if($menuAktif($entri)): ?> aria-current="page" <?php endif; ?>>
             <?php if (isset($component)) { $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ikon','data' => ['nama' => $entri['ikon'] ?? 'kotak','ukuran' => 18]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>

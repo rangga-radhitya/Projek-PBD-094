@@ -49,7 +49,7 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="kode">ID</th><th>Nama barang</th><th>Jenis</th><th>Satuan</th><th class="angka">Harga</th><th>Status</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Nama barang</th><th>Jenis</th><th>Satuan</th><th class="angka">Harga</th><th class="angka">Stok</th><th>Status</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     @forelse ($daftar as $r)
@@ -59,6 +59,7 @@
         <td>{{ $r->jenis_teks }}</td>
         <td>{{ $r->nama_satuan ?? '-' }}</td>
         <td class="angka"><x-rp :nilai="$r->harga" /></td>
+        <td class="angka">{{ $r->stok }}</td>
         <td><x-badge :jenis="$r->status == 1 ? 'sukses' : 'netral'" :teks="$r->status == 1 ? 'Aktif' : 'Nonaktif'" /></td>
         <td class="aksi">
           <button type="button" class="tombol sekunder kecil" data-buka-form="m-form" data-judul="Edit Barang"
@@ -79,7 +80,7 @@
         </td>
       </tr>
     @empty
-      <tr><td colspan="7" class="kosong">{{ ($q !== '' || $jenis !== '' || $idsatuan !== '' || $status !== '') ? 'Tidak ada barang yang cocok dengan pencarian/filter.' : 'Belum ada data barang.' }}</td></tr>
+      <tr><td colspan="8" class="kosong">{{ ($q !== '' || $jenis !== '' || $idsatuan !== '' || $status !== '') ? 'Tidak ada barang yang cocok dengan pencarian/filter.' : 'Belum ada data barang.' }}</td></tr>
     @endforelse
     </tbody>
   </table>

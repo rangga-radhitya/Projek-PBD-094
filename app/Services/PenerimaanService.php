@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Support\Paginasi;
-use App\Support\Stok;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -11,9 +10,9 @@ use RuntimeException;
 
 /**
  * Penerimaan barang. Header + detail disimpan dalam satu transaksi aplikasi.
- * Stok masuk tetap dicatat otomatis oleh trigger
- * trg_detail_penerimaan_after_insert; penghapusan mengoreksi stok lewat
- * kartu_stok dari aplikasi.
+ * Stok masuk dicatat otomatis oleh trigger trg_detail_penerimaan_after_insert;
+ * penghapusan (termasuk koreksi stok) ditangani Stored Procedure
+ * sp_hapus_penerimaan.
  */
 class PenerimaanService
 {
@@ -220,34 +219,7 @@ class PenerimaanService
     public function hapus(int $id): void
     {
         DB::transaction(function () use ($id) {
-            $adaRetur = (int) DB::selectOne(
-                'SELECT COUNT(*) AS n FROM retur WHERE idpenerimaan = ?',
-                [$id]
-            )->n;
-
-            if ($adaRetur > 0) {
-                throw new RuntimeException('Penerimaan tidak bisa dihapus karena sudah memiliki retur.');
-            }
-
-            $baris = DB::select(
-                'SELECT barang_idbarang AS idbarang, SUM(jumlah_terima) AS total
-                 FROM detail_penerimaan
-                 WHERE idpenerimaan = ?
-                 GROUP BY barang_idbarang
-                 ORDER BY barang_idbarang',
-                [$id]
-            );
-
-            foreach ($baris as $b) {
-                $idbarang = $b->idbarang === null ? null : (int) $b->idbarang;
-                $total = (int) $b->total;
-                $saldo = $idbarang === null ? 0 : Stok::saldoTerakhir($idbarang);
-
-                Stok::catat('K', 0, $total, $saldo - $total, $id, $idbarang);
-            }
-
-            DB::delete('DELETE FROM detail_penerimaan WHERE idpenerimaan = ?', [$id]);
-            DB::delete('DELETE FROM penerimaan WHERE idpenerimaan = ?', [$id]);
+            DB::statement('CALL sp_hapus_penerimaan(?)', [$id]);
         });
     }
 

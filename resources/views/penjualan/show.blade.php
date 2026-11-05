@@ -52,13 +52,13 @@
       @endforelse
       </tbody>
       <tfoot>
-        @if ($totalFungsi !== null)
+        @if ($totalDetail !== null)
           <tr>
-            <td colspan="5" class="angka">Subtotal dihitung dari detail (fungsi database <code>fn_hitung_total_penjualan</code>)</td>
+            <td colspan="5" class="angka">Subtotal dihitung dari detail (jumlah × harga satuan)</td>
             <td class="angka">
-              <x-rp :nilai="$totalFungsi" />
+              <x-rp :nilai="$totalDetail" />
               @if ($penjualan->subtotal_nilai !== null)
-                <x-badge :jenis="(float) $totalFungsi === (float) $penjualan->subtotal_nilai ? 'sukses' : 'bahaya'" :teks="(float) $totalFungsi === (float) $penjualan->subtotal_nilai ? 'sesuai' : 'berbeda dari subtotal tercatat'" />
+                <x-badge :jenis="(float) $totalDetail === (float) $penjualan->subtotal_nilai ? 'sukses' : 'bahaya'" :teks="(float) $totalDetail === (float) $penjualan->subtotal_nilai ? 'sesuai' : 'berbeda dari subtotal tercatat'" />
               @endif
             </td>
           </tr>

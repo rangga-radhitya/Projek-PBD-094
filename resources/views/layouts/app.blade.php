@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#C4DAE8">
+  <meta name="theme-color" content="#EAF4FF">
   <meta name="color-scheme" content="light">
   <title>@yield('judul') - {{ config('app.name', 'Daily Bun') }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +13,11 @@
   <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 <body>
+<div class="latar-holo" aria-hidden="true">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
 @php
   // Menu dibaca dari config/menu.php (satu sumber untuk sidebar).
   $menu = config('menu', []);
@@ -61,7 +66,7 @@
             </ul>
           </details>
         @else
-          <a class="sisi-tunggal" href="{{ $tautan($entri) }}" @class(['aktif' => $menuAktif($entri)]) @if ($menuAktif($entri)) aria-current="page" @endif>
+          <a @class(['sisi-tunggal', 'aktif' => $menuAktif($entri)]) href="{{ $tautan($entri) }}" @if ($menuAktif($entri)) aria-current="page" @endif>
             <x-ikon :nama="$entri['ikon'] ?? 'kotak'" :ukuran="18" />
             <span>{{ $entri['label'] }}</span>
           </a>
