@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
  */
 class PenjualanService
 {
-    public function daftar(string $q, string $iduser, string $dari, string $sampai, int $perHalaman, Request $request): LengthAwarePaginator
+    public function daftar(string $q, int $perHalaman, Request $request): LengthAwarePaginator
     {
         $sql = "SELECT p.idpenjualan, p.subtotal_nilai, p.ppn, p.total_nilai,
                        DATE_FORMAT(p.created_at, '%d/%m/%Y %H:%i') AS tanggal,
@@ -24,24 +24,15 @@ class PenjualanService
         $where = [];
         $bind = [];
 
-        if ($q !== '' && ctype_digit($q)) {
-            $where[] = 'p.idpenjualan = ?';
-            $bind[] = (int) $q;
-        }
-
-        if ($iduser !== '' && ctype_digit($iduser)) {
-            $where[] = 'p.iduser = ?';
-            $bind[] = (int) $iduser;
-        }
-
-        if ($dari !== '') {
-            $where[] = 'p.created_at >= ?';
-            $bind[] = $dari.' 00:00:00';
-        }
-
-        if ($sampai !== '') {
-            $where[] = 'p.created_at <= ?';
-            $bind[] = $sampai.' 23:59:59';
+        if ($q !== '') {
+            if (ctype_digit($q)) {
+                $where[] = '(p.idpenjualan = ? OR u.username LIKE ?)';
+                $bind[] = (int) $q;
+                $bind[] = '%'.$q.'%';
+            } else {
+                $where[] = 'u.username LIKE ?';
+                $bind[] = '%'.$q.'%';
+            }
         }
 
         if ($where !== []) {

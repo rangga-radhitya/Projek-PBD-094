@@ -19,12 +19,11 @@ class UserController extends Controller
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
-        $idrole = (string) $request->query('idrole', '');
 
-        $daftar = $this->layanan->daftar($q, $idrole, 15, $request);
+        $daftar = $this->layanan->daftar($q, 15, $request);
         $daftarRole = $this->role->semua();
 
-        return view('user.index', compact('daftar', 'q', 'idrole', 'daftarRole'));
+        return view('user.index', compact('daftar', 'q', 'daftarRole'));
     }
 
     public function store(Request $request): RedirectResponse

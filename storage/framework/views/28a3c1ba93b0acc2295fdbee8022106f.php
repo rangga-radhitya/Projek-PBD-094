@@ -46,34 +46,8 @@
 <?php endif; ?>
 <?php $component->withAttributes(['reset' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('kartu_stok'))]); ?>
     <div class="grup-filter">
-      <label for="idbarang">Barang</label>
-      <select id="idbarang" name="idbarang">
-        <option value="">Semua barang</option>
-        <?php $__currentLoopData = $daftarBarang; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-          <option value="<?php echo e($b->idbarang); ?>" <?php if($idbarang === (string) $b->idbarang): echo 'selected'; endif; ?>><?php echo e($b->nama); ?></option>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="jenis">Jenis transaksi</label>
-      <select id="jenis" name="jenis">
-        <option value="">Semua jenis</option>
-        <?php $__currentLoopData = $daftarJenis; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-          <option value="<?php echo e($j); ?>" <?php if($jenis === (string) $j): echo 'selected'; endif; ?>><?php echo e($j); ?></option>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="q">ID transaksi</label>
-      <input type="search" id="q" name="q" value="<?php echo e($q); ?>" placeholder="ID transaksi">
-    </div>
-    <div class="grup-filter">
-      <label for="dari">Dari tanggal</label>
-      <input type="date" id="dari" name="dari" value="<?php echo e($dari); ?>">
-    </div>
-    <div class="grup-filter">
-      <label for="sampai">Sampai tanggal</label>
-      <input type="date" id="sampai" name="sampai" value="<?php echo e($sampai); ?>">
+      <label for="q">Cari nama / ID</label>
+      <input type="search" id="q" name="q" value="<?php echo e($q); ?>" placeholder="Nama barang atau ID transaksi">
     </div>
    <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
@@ -86,6 +60,7 @@
 <?php unset($__componentOriginale9f22847d79d6273acb27aff60f1f678); ?>
 <?php endif; ?>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -124,13 +99,14 @@
         <td class="kode"><?php echo e($r->idtransaksi ?? '-'); ?></td>
       </tr>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-      <tr><td colspan="7" class="kosong"><?php echo e(request()->hasAny(['q','idbarang','jenis','dari','sampai']) ? 'Tidak ada riwayat stok yang cocok dengan pencarian/filter.' : 'Belum ada riwayat stok (tabel kartu_stok masih kosong).'); ?></td></tr>
+      <tr><td colspan="7" class="kosong"><?php echo e($q !== '' ? 'Tidak ada riwayat stok yang cocok dengan pencarian.' : 'Belum ada riwayat stok (tabel kartu_stok masih kosong).'); ?></td></tr>
     <?php endif; ?>
     </tbody>
   </table>
   </div>
   <?php echo e($daftar->links('components.pagination')); ?>
 
+  </div>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\user\Documents\D4 Teknik Informatika\Semester 3\PBD\Project_Bakery\resources\views/kartu_stok/index.blade.php ENDPATH**/ ?>

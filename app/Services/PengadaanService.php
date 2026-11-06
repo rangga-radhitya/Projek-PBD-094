@@ -14,7 +14,7 @@ use RuntimeException;
  */
 class PengadaanService
 {
-    public function daftar(string $q, string $idvendor, string $status, string $dari, string $sampai, int $perHalaman, Request $request): LengthAwarePaginator
+    public function daftar(string $q, int $perHalaman, Request $request): LengthAwarePaginator
     {
         $sql = "SELECT p.idpengadaan, p.status, p.subtotal_nilai, p.ppn, p.total_nilai,
                        DATE_FORMAT(p.timestamp, '%d/%m/%Y %H:%i') AS tanggal,
@@ -27,32 +27,13 @@ class PengadaanService
 
         if ($q !== '') {
             if (ctype_digit($q)) {
-                $where[] = 'p.idpengadaan = ?';
+                $where[] = '(p.idpengadaan = ? OR v.nama_vendor LIKE ?)';
                 $bind[] = (int) $q;
+                $bind[] = '%'.$q.'%';
             } else {
                 $where[] = 'v.nama_vendor LIKE ?';
                 $bind[] = '%'.$q.'%';
             }
-        }
-
-        if ($idvendor !== '' && ctype_digit($idvendor)) {
-            $where[] = 'p.vendor_idvendor = ?';
-            $bind[] = (int) $idvendor;
-        }
-
-        if ($status !== '') {
-            $where[] = 'p.status = ?';
-            $bind[] = $status;
-        }
-
-        if ($dari !== '') {
-            $where[] = 'p.timestamp >= ?';
-            $bind[] = $dari.' 00:00:00';
-        }
-
-        if ($sampai !== '') {
-            $where[] = 'p.timestamp <= ?';
-            $bind[] = $sampai.' 23:59:59';
         }
 
         if ($where !== []) {
@@ -126,14 +107,6 @@ class PengadaanService
         }
 
         return $peta;
-    }
-
-    /** @return array<int, string> */
-    public function daftarStatus(): array
-    {
-        $baris = DB::select('SELECT DISTINCT status FROM pengadaan WHERE status IS NOT NULL ORDER BY status');
-
-        return array_map(fn ($r) => $r->status, $baris);
     }
 
     /**

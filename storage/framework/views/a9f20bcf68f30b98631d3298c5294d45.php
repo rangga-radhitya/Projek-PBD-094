@@ -39,25 +39,8 @@
 <?php endif; ?>
 <?php $component->withAttributes(['reset' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('retur.index'))]); ?>
     <div class="grup-filter">
-      <label for="q">Cari ID retur / penerimaan</label>
-      <input type="search" id="q" name="q" value="<?php echo e($q); ?>" placeholder="ID retur atau ID penerimaan">
-    </div>
-    <div class="grup-filter">
-      <label for="idvendor">Vendor</label>
-      <select id="idvendor" name="idvendor">
-        <option value="">Semua vendor</option>
-        <?php $__currentLoopData = $daftarVendor; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $v): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-          <option value="<?php echo e($v->idvendor); ?>" <?php if($idvendor === (string) $v->idvendor): echo 'selected'; endif; ?>><?php echo e($v->nama_vendor); ?></option>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="dari">Dari tanggal</label>
-      <input type="date" id="dari" name="dari" value="<?php echo e($dari); ?>">
-    </div>
-    <div class="grup-filter">
-      <label for="sampai">Sampai tanggal</label>
-      <input type="date" id="sampai" name="sampai" value="<?php echo e($sampai); ?>">
+      <label for="q">Cari nama / ID</label>
+      <input type="search" id="q" name="q" value="<?php echo e($q); ?>" placeholder="Nama vendor, ID retur, atau ID penerimaan">
     </div>
    <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
@@ -70,6 +53,7 @@
 <?php unset($__componentOriginale9f22847d79d6273acb27aff60f1f678); ?>
 <?php endif; ?>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -80,7 +64,7 @@
       <tr>
         <td class="kode"><?php echo e($r->idretur); ?></td>
         <td><?php echo e($r->tanggal ?? '-'); ?></td>
-        <td><?php if($r->idpenerimaan): ?><a href="<?php echo e(route('penerimaan.show', $r->idpenerimaan)); ?>">#<?php echo e($r->idpenerimaan); ?></a><?php else: ?> - <?php endif; ?></td>
+        <td><?php if($r->idpenerimaan): ?><a href="<?php echo e(route('penerimaan.show', $r->idpenerimaan)); ?>">ID <?php echo e($r->idpenerimaan); ?></a><?php else: ?> - <?php endif; ?></td>
         <td><?php echo e($r->nama_vendor ?? '-'); ?></td>
         <td><?php echo e($r->username ?? '-'); ?></td>
         <td class="angka"><?php echo e($r->detail_count); ?></td>
@@ -139,13 +123,14 @@
         </td>
       </tr>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-      <tr><td colspan="7" class="kosong"><?php echo e(request()->hasAny(['q','idvendor','dari','sampai']) ? 'Tidak ada retur yang cocok dengan pencarian/filter.' : 'Belum ada data retur.'); ?></td></tr>
+      <tr><td colspan="7" class="kosong"><?php echo e($q !== '' ? 'Tidak ada retur yang cocok dengan pencarian.' : 'Belum ada data retur.'); ?></td></tr>
     <?php endif; ?>
     </tbody>
   </table>
   </div>
   <?php echo e($daftar->links('components.pagination')); ?>
 
+  </div>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\user\Documents\D4 Teknik Informatika\Semester 3\PBD\Project_Bakery\resources\views/retur/index.blade.php ENDPATH**/ ?>

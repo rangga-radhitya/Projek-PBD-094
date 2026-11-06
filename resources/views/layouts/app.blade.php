@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#EAF4FF">
-  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#100D0B">
+  <meta name="color-scheme" content="dark">
   <title>@yield('judul') - {{ config('app.name', 'Daily Bun') }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,11 +13,6 @@
   <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 <body>
-<div class="latar-holo" aria-hidden="true">
-  <span></span>
-  <span></span>
-  <span></span>
-</div>
 @php
   // Menu dibaca dari config/menu.php (satu sumber untuk sidebar).
   $menu = config('menu', []);
@@ -102,11 +97,10 @@
       </nav>
 
       <div class="bar-kanan">
-        <div class="pengguna" title="Transaksi dicatat atas nama manajer01 (user id 1)">
+        <div class="pengguna" title="Transaksi dicatat atas nama manajer01">
           <span class="pengguna-avatar" aria-hidden="true">M</span>
           <span class="pengguna-teks">
             <strong>manajer01</strong>
-            <small>User ID 1</small>
           </span>
         </div>
       </div>

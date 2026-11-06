@@ -15,7 +15,7 @@ use RuntimeException;
  */
 class ReturService
 {
-    public function daftar(string $q, string $idvendor, string $dari, string $sampai, int $perHalaman, Request $request): LengthAwarePaginator
+    public function daftar(string $q, int $perHalaman, Request $request): LengthAwarePaginator
     {
         $sql = "SELECT r.idretur, r.idpenerimaan,
                        DATE_FORMAT(r.created_at, '%d/%m/%Y %H:%i') AS tanggal,
@@ -29,25 +29,16 @@ class ReturService
         $where = [];
         $bind = [];
 
-        if ($q !== '' && ctype_digit($q)) {
-            $where[] = '(r.idretur = ? OR r.idpenerimaan = ?)';
-            $bind[] = (int) $q;
-            $bind[] = (int) $q;
-        }
-
-        if ($idvendor !== '' && ctype_digit($idvendor)) {
-            $where[] = 'p.vendor_idvendor = ?';
-            $bind[] = (int) $idvendor;
-        }
-
-        if ($dari !== '') {
-            $where[] = 'r.created_at >= ?';
-            $bind[] = $dari.' 00:00:00';
-        }
-
-        if ($sampai !== '') {
-            $where[] = 'r.created_at <= ?';
-            $bind[] = $sampai.' 23:59:59';
+        if ($q !== '') {
+            if (ctype_digit($q)) {
+                $where[] = '(r.idretur = ? OR r.idpenerimaan = ? OR v.nama_vendor LIKE ?)';
+                $bind[] = (int) $q;
+                $bind[] = (int) $q;
+                $bind[] = '%'.$q.'%';
+            } else {
+                $where[] = 'v.nama_vendor LIKE ?';
+                $bind[] = '%'.$q.'%';
+            }
         }
 
         if ($where !== []) {

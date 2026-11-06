@@ -43,33 +43,6 @@
       <label for="q">Cari nama barang</label>
       <input type="search" id="q" name="q" value="<?php echo e($q); ?>" placeholder="Nama barang">
     </div>
-    <div class="grup-filter">
-      <label for="jenis">Jenis</label>
-      <select id="jenis" name="jenis">
-        <option value="">Semua jenis</option>
-        <option value="B" <?php if($jenis === 'B'): echo 'selected'; endif; ?>>Bread</option>
-        <option value="D" <?php if($jenis === 'D'): echo 'selected'; endif; ?>>Drink</option>
-        <option value="C" <?php if($jenis === 'C'): echo 'selected'; endif; ?>>Cake</option>
-        <option value="P" <?php if($jenis === 'P'): echo 'selected'; endif; ?>>Pastry</option>
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="idsatuan">Satuan</label>
-      <select id="idsatuan" name="idsatuan">
-        <option value="">Semua satuan</option>
-        <?php $__currentLoopData = $daftarSatuan; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-          <option value="<?php echo e($s->idsatuan); ?>" <?php if($idsatuan === (string) $s->idsatuan): echo 'selected'; endif; ?>><?php echo e($s->nama_satuan); ?></option>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="status">Status</label>
-      <select id="status" name="status">
-        <option value="">Semua status</option>
-        <option value="1" <?php if($status === '1'): echo 'selected'; endif; ?>>Aktif</option>
-        <option value="0" <?php if($status === '0'): echo 'selected'; endif; ?>>Nonaktif</option>
-      </select>
-    </div>
    <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginale9f22847d79d6273acb27aff60f1f678)): ?>
@@ -81,6 +54,7 @@
 <?php unset($__componentOriginale9f22847d79d6273acb27aff60f1f678); ?>
 <?php endif; ?>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -192,13 +166,14 @@
         </td>
       </tr>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-      <tr><td colspan="8" class="kosong"><?php echo e(($q !== '' || $jenis !== '' || $idsatuan !== '' || $status !== '') ? 'Tidak ada barang yang cocok dengan pencarian/filter.' : 'Belum ada data barang.'); ?></td></tr>
+      <tr><td colspan="8" class="kosong"><?php echo e($q !== '' ? 'Tidak ada barang yang cocok dengan pencarian.' : 'Belum ada data barang.'); ?></td></tr>
     <?php endif; ?>
     </tbody>
   </table>
   </div>
   <?php echo e($daftar->links('components.pagination')); ?>
 
+  </div>
 
   <?php $__env->startPush('modal'); ?>
     <?php echo $__env->make('partials.modal-form', ['id' => 'm-form', 'aksi' => route('barang.store'), 'judul' => 'Tambah Barang', 'fields' => [

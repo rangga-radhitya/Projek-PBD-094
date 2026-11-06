@@ -17,16 +17,9 @@
       <label for="q">Cari nama satuan</label>
       <input type="search" id="q" name="q" value="{{ $q }}" placeholder="Nama satuan">
     </div>
-    <div class="grup-filter">
-      <label for="status">Status</label>
-      <select id="status" name="status">
-        <option value="">Semua status</option>
-        <option value="1" @selected($status === '1')>Aktif</option>
-        <option value="0" @selected($status === '0')>Nonaktif</option>
-      </select>
-    </div>
   </x-filter-bar>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -57,12 +50,13 @@
         </td>
       </tr>
     @empty
-      <tr><td colspan="4" class="kosong">{{ ($q !== '' || $status !== '') ? 'Tidak ada satuan yang cocok dengan pencarian/filter.' : 'Belum ada data satuan.' }}</td></tr>
+      <tr><td colspan="4" class="kosong">{{ $q !== '' ? 'Tidak ada satuan yang cocok dengan pencarian.' : 'Belum ada data satuan.' }}</td></tr>
     @endforelse
     </tbody>
   </table>
   </div>
   {{ $daftar->links('components.pagination') }}
+  </div>
 
   @push('modal')
     @include('partials.modal-form', ['id' => 'm-form', 'aksi' => route('satuan.store'), 'judul' => 'Tambah Satuan', 'fields' => [

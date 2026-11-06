@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\PenerimaanService;
 use App\Services\ReturService;
-use App\Services\VendorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -16,21 +15,16 @@ class ReturController extends Controller
 {
     public function __construct(
         private ReturService $layanan,
-        private PenerimaanService $penerimaan,
-        private VendorService $vendor
+        private PenerimaanService $penerimaan
     ) {}
 
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
-        $idvendor = (string) $request->query('idvendor', '');
-        $dari = $this->tanggal($request, 'dari');
-        $sampai = $this->tanggal($request, 'sampai');
 
-        $daftar = $this->layanan->daftar($q, $idvendor, $dari, $sampai, 15, $request);
-        $daftarVendor = $this->vendor->semua();
+        $daftar = $this->layanan->daftar($q, 15, $request);
 
-        return view('retur.index', compact('daftar', 'q', 'idvendor', 'dari', 'sampai', 'daftarVendor'));
+        return view('retur.index', compact('daftar', 'q'));
     }
 
     public function show(int $id): View

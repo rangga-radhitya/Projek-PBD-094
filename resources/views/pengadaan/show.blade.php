@@ -84,7 +84,7 @@
     <h2>Penerimaan terkait</h2>
     <div class="tabel-bungkus">
     <table>
-      <thead><tr><th class="kode">ID penerimaan</th><th>Tanggal</th><th>Diterima oleh</th><th>Status</th><th class="aksi">Aksi</th></tr></thead>
+      <thead><tr><th class="kode">ID</th><th>Tanggal</th><th>Diterima oleh</th><th>Status</th><th class="aksi">Aksi</th></tr></thead>
       <tbody>
       @forelse ($pengadaan->penerimaan as $p)
         <tr>

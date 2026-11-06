@@ -43,14 +43,6 @@
       <label for="q">Cari nama satuan</label>
       <input type="search" id="q" name="q" value="<?php echo e($q); ?>" placeholder="Nama satuan">
     </div>
-    <div class="grup-filter">
-      <label for="status">Status</label>
-      <select id="status" name="status">
-        <option value="">Semua status</option>
-        <option value="1" <?php if($status === '1'): echo 'selected'; endif; ?>>Aktif</option>
-        <option value="0" <?php if($status === '0'): echo 'selected'; endif; ?>>Nonaktif</option>
-      </select>
-    </div>
    <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginale9f22847d79d6273acb27aff60f1f678)): ?>
@@ -62,6 +54,7 @@
 <?php unset($__componentOriginale9f22847d79d6273acb27aff60f1f678); ?>
 <?php endif; ?>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -150,13 +143,14 @@
         </td>
       </tr>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-      <tr><td colspan="4" class="kosong"><?php echo e(($q !== '' || $status !== '') ? 'Tidak ada satuan yang cocok dengan pencarian/filter.' : 'Belum ada data satuan.'); ?></td></tr>
+      <tr><td colspan="4" class="kosong"><?php echo e($q !== '' ? 'Tidak ada satuan yang cocok dengan pencarian.' : 'Belum ada data satuan.'); ?></td></tr>
     <?php endif; ?>
     </tbody>
   </table>
   </div>
   <?php echo e($daftar->links('components.pagination')); ?>
 
+  </div>
 
   <?php $__env->startPush('modal'); ?>
     <?php echo $__env->make('partials.modal-form', ['id' => 'm-form', 'aksi' => route('satuan.store'), 'judul' => 'Tambah Satuan', 'fields' => [

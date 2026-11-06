@@ -17,35 +17,9 @@
       <label for="q">Cari nama barang</label>
       <input type="search" id="q" name="q" value="{{ $q }}" placeholder="Nama barang">
     </div>
-    <div class="grup-filter">
-      <label for="jenis">Jenis</label>
-      <select id="jenis" name="jenis">
-        <option value="">Semua jenis</option>
-        <option value="B" @selected($jenis === 'B')>Bread</option>
-        <option value="D" @selected($jenis === 'D')>Drink</option>
-        <option value="C" @selected($jenis === 'C')>Cake</option>
-        <option value="P" @selected($jenis === 'P')>Pastry</option>
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="idsatuan">Satuan</label>
-      <select id="idsatuan" name="idsatuan">
-        <option value="">Semua satuan</option>
-        @foreach ($daftarSatuan as $s)
-          <option value="{{ $s->idsatuan }}" @selected($idsatuan === (string) $s->idsatuan)>{{ $s->nama_satuan }}</option>
-        @endforeach
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="status">Status</label>
-      <select id="status" name="status">
-        <option value="">Semua status</option>
-        <option value="1" @selected($status === '1')>Aktif</option>
-        <option value="0" @selected($status === '0')>Nonaktif</option>
-      </select>
-    </div>
   </x-filter-bar>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -80,12 +54,13 @@
         </td>
       </tr>
     @empty
-      <tr><td colspan="8" class="kosong">{{ ($q !== '' || $jenis !== '' || $idsatuan !== '' || $status !== '') ? 'Tidak ada barang yang cocok dengan pencarian/filter.' : 'Belum ada data barang.' }}</td></tr>
+      <tr><td colspan="8" class="kosong">{{ $q !== '' ? 'Tidak ada barang yang cocok dengan pencarian.' : 'Belum ada data barang.' }}</td></tr>
     @endforelse
     </tbody>
   </table>
   </div>
   {{ $daftar->links('components.pagination') }}
+  </div>
 
   @push('modal')
     @include('partials.modal-form', ['id' => 'm-form', 'aksi' => route('barang.store'), 'judul' => 'Tambah Barang', 'fields' => [

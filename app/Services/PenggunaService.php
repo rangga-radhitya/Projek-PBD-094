@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
  */
 class PenggunaService
 {
-    public function daftar(string $q, string $idrole, int $perHalaman, Request $request): LengthAwarePaginator
+    public function daftar(string $q, int $perHalaman, Request $request): LengthAwarePaginator
     {
         $sql = 'SELECT iduser, username, idrole, nama_role FROM v_user';
         $where = [];
@@ -23,11 +23,6 @@ class PenggunaService
         if ($q !== '') {
             $where[] = 'username LIKE ?';
             $bind[] = '%'.$q.'%';
-        }
-
-        if ($idrole !== '' && ctype_digit($idrole)) {
-            $where[] = 'idrole = ?';
-            $bind[] = (int) $idrole;
         }
 
         if ($where !== []) {

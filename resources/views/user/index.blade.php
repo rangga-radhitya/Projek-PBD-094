@@ -17,17 +17,9 @@
       <label for="q">Cari username</label>
       <input type="search" id="q" name="q" value="{{ $q }}" placeholder="Username">
     </div>
-    <div class="grup-filter">
-      <label for="idrole">Role</label>
-      <select id="idrole" name="idrole">
-        <option value="">Semua role</option>
-        @foreach ($daftarRole as $role)
-          <option value="{{ $role->idrole }}" @selected($idrole === (string) $role->idrole)>{{ $role->nama_role }}</option>
-        @endforeach
-      </select>
-    </div>
   </x-filter-bar>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -58,12 +50,13 @@
         </td>
       </tr>
     @empty
-      <tr><td colspan="4" class="kosong">{{ ($q !== '' || $idrole !== '') ? 'Tidak ada user yang cocok dengan pencarian/filter.' : 'Belum ada data user.' }}</td></tr>
+      <tr><td colspan="4" class="kosong">{{ $q !== '' ? 'Tidak ada user yang cocok dengan pencarian.' : 'Belum ada data user.' }}</td></tr>
     @endforelse
     </tbody>
   </table>
   </div>
   {{ $daftar->links('components.pagination') }}
+  </div>
 
   @php
     $opsiRole = [];

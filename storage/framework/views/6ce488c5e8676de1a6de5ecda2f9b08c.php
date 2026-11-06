@@ -28,7 +28,7 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
-<form class="filter" method="get" role="search">
+<form class="filter" method="get" role="search" data-cari-langsung>
   <div class="filter-isi">
     <?php echo e($slot); ?>
 

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\PenerimaanService;
 use App\Services\PengadaanService;
-use App\Services\VendorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -16,23 +15,16 @@ class PenerimaanController extends Controller
 {
     public function __construct(
         private PenerimaanService $layanan,
-        private PengadaanService $pengadaan,
-        private VendorService $vendor
+        private PengadaanService $pengadaan
     ) {}
 
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
-        $idvendor = (string) $request->query('idvendor', '');
-        $status = (string) $request->query('status', '');
-        $dari = $this->tanggal($request, 'dari');
-        $sampai = $this->tanggal($request, 'sampai');
 
-        $daftar = $this->layanan->daftar($q, $idvendor, $status, $dari, $sampai, 15, $request);
-        $daftarVendor = $this->vendor->semua();
-        $daftarStatus = $this->layanan->daftarStatus();
+        $daftar = $this->layanan->daftar($q, 15, $request);
 
-        return view('penerimaan.index', compact('daftar', 'q', 'idvendor', 'status', 'dari', 'sampai', 'daftarVendor', 'daftarStatus'));
+        return view('penerimaan.index', compact('daftar', 'q'));
     }
 
     public function show(int $id): View

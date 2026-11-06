@@ -54,6 +54,7 @@
 <?php unset($__componentOriginale9f22847d79d6273acb27aff60f1f678); ?>
 <?php endif; ?>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -128,6 +129,7 @@
   </div>
   <?php echo e($daftar->links('components.pagination')); ?>
 
+  </div>
 
   <?php $__env->startPush('modal'); ?>
     <?php echo $__env->make('partials.modal-form', ['id' => 'm-form', 'aksi' => route('role.store'), 'judul' => 'Tambah Role', 'fields' => [

@@ -19,11 +19,8 @@ class BarangController extends Controller
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
-        $jenis = (string) $request->query('jenis', '');
-        $idsatuan = (string) $request->query('idsatuan', '');
-        $status = (string) $request->query('status', '');
 
-        $daftar = $this->layanan->daftar($q, $jenis, $idsatuan, $status, 15, $request);
+        $daftar = $this->layanan->daftar($q, 15, $request);
         $daftarSatuan = $this->satuan->semua();
 
         $opsiSatuan = [];
@@ -31,7 +28,7 @@ class BarangController extends Controller
             $opsiSatuan[(string) $s->idsatuan] = $s->nama_satuan;
         }
 
-        return view('barang.index', compact('daftar', 'q', 'jenis', 'idsatuan', 'status', 'daftarSatuan', 'opsiSatuan'));
+        return view('barang.index', compact('daftar', 'q', 'daftarSatuan', 'opsiSatuan'));
     }
 
     public function store(Request $request): RedirectResponse

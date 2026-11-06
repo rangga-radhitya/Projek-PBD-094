@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
  */
 class VendorService
 {
-    public function daftar(string $q, string $badan, string $status, int $perHalaman, Request $request): LengthAwarePaginator
+    public function daftar(string $q, int $perHalaman, Request $request): LengthAwarePaginator
     {
         $sql = 'SELECT idvendor, nama_vendor, badan_hukum, badan_hukum_teks, status, status_teks FROM v_vendor';
         $where = [];
@@ -21,16 +21,6 @@ class VendorService
         if ($q !== '') {
             $where[] = 'nama_vendor LIKE ?';
             $bind[] = '%'.$q.'%';
-        }
-
-        if (in_array($badan, ['P', 'C', 'U'], true)) {
-            $where[] = 'badan_hukum = ?';
-            $bind[] = $badan;
-        }
-
-        if (in_array($status, ['A', 'N'], true)) {
-            $where[] = 'status = ?';
-            $bind[] = $status;
         }
 
         if ($where !== []) {

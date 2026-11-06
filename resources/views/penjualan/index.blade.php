@@ -10,28 +10,12 @@
 
   <x-filter-bar :reset="route('penjualan.index')">
     <div class="grup-filter">
-      <label for="q">Cari ID penjualan</label>
-      <input type="search" id="q" name="q" value="{{ $q }}" placeholder="ID penjualan">
-    </div>
-    <div class="grup-filter">
-      <label for="iduser">Kasir</label>
-      <select id="iduser" name="iduser">
-        <option value="">Semua user</option>
-        @foreach ($daftarUser as $u)
-          <option value="{{ $u->iduser }}" @selected($iduser === (string) $u->iduser)>{{ $u->username }}</option>
-        @endforeach
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="dari">Dari tanggal</label>
-      <input type="date" id="dari" name="dari" value="{{ $dari }}">
-    </div>
-    <div class="grup-filter">
-      <label for="sampai">Sampai tanggal</label>
-      <input type="date" id="sampai" name="sampai" value="{{ $sampai }}">
+      <label for="q">Cari nama / ID</label>
+      <input type="search" id="q" name="q" value="{{ $q }}" placeholder="Username kasir atau ID penjualan">
     </div>
   </x-filter-bar>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -54,10 +38,11 @@
         </a></td>
       </tr>
     @empty
-      <tr><td colspan="9" class="kosong">{{ request()->hasAny(['q','iduser','dari','sampai']) ? 'Tidak ada penjualan yang cocok dengan pencarian/filter.' : 'Belum ada data penjualan.' }}</td></tr>
+      <tr><td colspan="9" class="kosong">{{ $q !== '' ? 'Tidak ada penjualan yang cocok dengan pencarian.' : 'Belum ada data penjualan.' }}</td></tr>
     @endforelse
     </tbody>
   </table>
   </div>
   {{ $daftar->links('components.pagination') }}
+  </div>
 @endsection

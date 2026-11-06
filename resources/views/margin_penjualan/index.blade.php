@@ -29,6 +29,7 @@
     </div>
   </x-filter-bar>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -70,6 +71,7 @@
   </table>
   </div>
   {{ $daftar->links('components.pagination') }}
+  </div>
 
   @push('modal')
     @include('partials.modal-form', ['id' => 'm-form', 'aksi' => route('margin_penjualan.store'), 'judul' => 'Tambah Margin Penjualan', 'fields' => [

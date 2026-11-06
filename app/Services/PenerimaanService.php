@@ -16,7 +16,7 @@ use RuntimeException;
  */
 class PenerimaanService
 {
-    public function daftar(string $q, string $idvendor, string $status, string $dari, string $sampai, int $perHalaman, Request $request): LengthAwarePaginator
+    public function daftar(string $q, int $perHalaman, Request $request): LengthAwarePaginator
     {
         $sql = "SELECT pn.idpenerimaan, pn.status, pn.idpengadaan,
                        DATE_FORMAT(pn.created_at, '%d/%m/%Y %H:%i') AS tanggal,
@@ -31,33 +31,14 @@ class PenerimaanService
 
         if ($q !== '') {
             if (ctype_digit($q)) {
-                $where[] = '(pn.idpenerimaan = ? OR pn.idpengadaan = ?)';
+                $where[] = '(pn.idpenerimaan = ? OR pn.idpengadaan = ? OR v.nama_vendor LIKE ?)';
                 $bind[] = (int) $q;
                 $bind[] = (int) $q;
+                $bind[] = '%'.$q.'%';
             } else {
                 $where[] = 'v.nama_vendor LIKE ?';
                 $bind[] = '%'.$q.'%';
             }
-        }
-
-        if ($idvendor !== '' && ctype_digit($idvendor)) {
-            $where[] = 'p.vendor_idvendor = ?';
-            $bind[] = (int) $idvendor;
-        }
-
-        if ($status !== '') {
-            $where[] = 'pn.status = ?';
-            $bind[] = $status;
-        }
-
-        if ($dari !== '') {
-            $where[] = 'pn.created_at >= ?';
-            $bind[] = $dari.' 00:00:00';
-        }
-
-        if ($sampai !== '') {
-            $where[] = 'pn.created_at <= ?';
-            $bind[] = $sampai.' 23:59:59';
         }
 
         if ($where !== []) {
@@ -221,13 +202,5 @@ class PenerimaanService
         DB::transaction(function () use ($id) {
             DB::statement('CALL sp_hapus_penerimaan(?)', [$id]);
         });
-    }
-
-    /** @return array<int, string> */
-    public function daftarStatus(): array
-    {
-        $baris = DB::select('SELECT DISTINCT status FROM penerimaan WHERE status IS NOT NULL ORDER BY status');
-
-        return array_map(fn ($r) => $r->status, $baris);
     }
 }

@@ -23,16 +23,10 @@ class PengadaanController extends Controller
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
-        $idvendor = (string) $request->query('idvendor', '');
-        $status = (string) $request->query('status', '');
-        $dari = $this->tanggal($request, 'dari');
-        $sampai = $this->tanggal($request, 'sampai');
 
-        $daftar = $this->layanan->daftar($q, $idvendor, $status, $dari, $sampai, 15, $request);
-        $daftarVendor = $this->vendor->semua();
-        $daftarStatus = $this->layanan->daftarStatus();
+        $daftar = $this->layanan->daftar($q, 15, $request);
 
-        return view('pengadaan.index', compact('daftar', 'q', 'idvendor', 'status', 'dari', 'sampai', 'daftarVendor', 'daftarStatus'));
+        return view('pengadaan.index', compact('daftar', 'q'));
     }
 
     public function show(int $id): View

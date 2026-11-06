@@ -13,15 +13,9 @@ class KartuStokController extends Controller
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
-        $idbarang = (string) $request->query('idbarang', '');
-        $jenis = (string) $request->query('jenis', '');
-        $dari = $this->tanggal($request, 'dari');
-        $sampai = $this->tanggal($request, 'sampai');
 
-        $daftar = $this->layanan->daftar($q, $idbarang, $jenis, $dari, $sampai, 20, $request);
-        $daftarBarang = $this->layanan->daftarBarang();
-        $daftarJenis = $this->layanan->daftarJenis();
+        $daftar = $this->layanan->daftar($q, 20, $request);
 
-        return view('kartu_stok.index', compact('daftar', 'q', 'idbarang', 'jenis', 'dari', 'sampai', 'daftarBarang', 'daftarJenis'));
+        return view('kartu_stok.index', compact('daftar', 'q'));
     }
 }

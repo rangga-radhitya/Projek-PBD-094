@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
  */
 class BarangService
 {
-    public function daftar(string $q, string $jenis, string $idsatuan, string $status, int $perHalaman, Request $request): LengthAwarePaginator
+    public function daftar(string $q, int $perHalaman, Request $request): LengthAwarePaginator
     {
         $sql = 'SELECT idbarang, nama, jenis, jenis_teks, idsatuan, nama_satuan, harga, status,
                        fn_stok_barang(idbarang) AS stok
@@ -23,21 +23,6 @@ class BarangService
         if ($q !== '') {
             $where[] = 'nama LIKE ?';
             $bind[] = '%'.$q.'%';
-        }
-
-        if (in_array($jenis, ['B', 'D', 'C', 'P'], true)) {
-            $where[] = 'jenis = ?';
-            $bind[] = $jenis;
-        }
-
-        if ($idsatuan !== '' && ctype_digit($idsatuan)) {
-            $where[] = 'idsatuan = ?';
-            $bind[] = (int) $idsatuan;
-        }
-
-        if (in_array($status, ['0', '1'], true)) {
-            $where[] = 'status = ?';
-            $bind[] = (int) $status;
         }
 
         if ($where !== []) {

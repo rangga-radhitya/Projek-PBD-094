@@ -15,11 +15,10 @@ class SatuanController extends Controller
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
-        $status = (string) $request->query('status', '');
 
-        $daftar = $this->layanan->daftar($q, $status, 15, $request);
+        $daftar = $this->layanan->daftar($q, 15, $request);
 
-        return view('satuan.index', compact('daftar', 'q', 'status'));
+        return view('satuan.index', compact('daftar', 'q'));
     }
 
     public function store(Request $request): RedirectResponse

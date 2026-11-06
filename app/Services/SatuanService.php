@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
  */
 class SatuanService
 {
-    public function daftar(string $q, string $status, int $perHalaman, Request $request): LengthAwarePaginator
+    public function daftar(string $q, int $perHalaman, Request $request): LengthAwarePaginator
     {
         $sql = 'SELECT idsatuan, nama_satuan, status, status_teks FROM v_satuan';
         $where = [];
@@ -21,11 +21,6 @@ class SatuanService
         if ($q !== '') {
             $where[] = 'nama_satuan LIKE ?';
             $bind[] = '%'.$q.'%';
-        }
-
-        if (in_array($status, ['0', '1'], true)) {
-            $where[] = 'status = ?';
-            $bind[] = (int) $status;
         }
 
         if ($where !== []) {

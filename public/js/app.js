@@ -31,6 +31,69 @@
     if (window.innerWidth > 1024) tutupSisi();
   });
 
+  // Pencarian langsung: perbarui daftar hasil saat mengetik tanpa reload halaman.
+  var formCari = document.querySelector('[data-cari-langsung]');
+  var wadahHasil = document.querySelector('[data-hasil-daftar]');
+
+  if (formCari && wadahHasil && 'fetch' in window && 'DOMParser' in window) {
+    var timerCari = null;
+    var urutCari = 0;
+
+    var jalankanCari = function () {
+      var tujuan = new URL(formCari.action || window.location.href);
+      tujuan.search = '';
+
+      new FormData(formCari).forEach(function (nilai, kunci) {
+        if (nilai !== '') tujuan.searchParams.set(kunci, nilai);
+      });
+
+      var nomor = ++urutCari;
+      wadahHasil.setAttribute('aria-busy', 'true');
+
+      fetch(tujuan.toString(), {
+        credentials: 'same-origin',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+        .then(function (respons) {
+          if (!respons.ok) throw new Error('Pencarian gagal');
+          return respons.text();
+        })
+        .then(function (html) {
+          if (nomor !== urutCari) return;
+          var dokumen = new DOMParser().parseFromString(html, 'text/html');
+          var hasilBaru = dokumen.querySelector('[data-hasil-daftar]');
+          if (hasilBaru) wadahHasil.innerHTML = hasilBaru.innerHTML;
+          window.history.replaceState(null, '', tujuan.toString());
+        })
+        .catch(function () {
+          // Biarkan hasil sebelumnya tampil bila permintaan gagal.
+        })
+        .then(function () {
+          if (nomor === urutCari) wadahHasil.removeAttribute('aria-busy');
+        });
+    };
+
+    var jadwalkanCari = function (jeda) {
+      window.clearTimeout(timerCari);
+      timerCari = window.setTimeout(jalankanCari, jeda);
+    };
+
+    var inputCari = formCari.querySelector('input[type="search"], input[name="q"]');
+    if (inputCari) {
+      inputCari.addEventListener('input', function () { jadwalkanCari(300); });
+    }
+
+    formCari.querySelectorAll('select').forEach(function (pilihan) {
+      pilihan.addEventListener('change', function () { jadwalkanCari(0); });
+    });
+
+    formCari.addEventListener('submit', function (e) {
+      e.preventDefault();
+      window.clearTimeout(timerCari);
+      jalankanCari();
+    });
+  }
+
   var modalAktif = null;
   var pemicu = null;
   var formKonfirmasi = null;

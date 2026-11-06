@@ -17,25 +17,9 @@
       <label for="q">Cari nama vendor</label>
       <input type="search" id="q" name="q" value="{{ $q }}" placeholder="Nama vendor">
     </div>
-    <div class="grup-filter">
-      <label for="badan_hukum">Badan hukum</label>
-      <select id="badan_hukum" name="badan_hukum">
-        <option value="">Semua</option>
-        <option value="P" @selected($badan === 'P')>PT</option>
-        <option value="C" @selected($badan === 'C')>CV</option>
-        <option value="U" @selected($badan === 'U')>UD</option>
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="status">Status</label>
-      <select id="status" name="status">
-        <option value="">Semua status</option>
-        <option value="A" @selected($status === 'A')>Aktif</option>
-        <option value="N" @selected($status === 'N')>Nonaktif</option>
-      </select>
-    </div>
   </x-filter-bar>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -67,12 +51,13 @@
         </td>
       </tr>
     @empty
-      <tr><td colspan="5" class="kosong">{{ ($q !== '' || $badan !== '' || $status !== '') ? 'Tidak ada vendor yang cocok dengan pencarian/filter.' : 'Belum ada data vendor.' }}</td></tr>
+      <tr><td colspan="5" class="kosong">{{ $q !== '' ? 'Tidak ada vendor yang cocok dengan pencarian.' : 'Belum ada data vendor.' }}</td></tr>
     @endforelse
     </tbody>
   </table>
   </div>
   {{ $daftar->links('components.pagination') }}
+  </div>
 
   @push('modal')
     @include('partials.modal-form', ['id' => 'm-form', 'aksi' => route('vendor.store'), 'judul' => 'Tambah Vendor', 'fields' => [

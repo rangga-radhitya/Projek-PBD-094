@@ -19,37 +19,12 @@
 
   <x-filter-bar :reset="route('kartu_stok')">
     <div class="grup-filter">
-      <label for="idbarang">Barang</label>
-      <select id="idbarang" name="idbarang">
-        <option value="">Semua barang</option>
-        @foreach ($daftarBarang as $b)
-          <option value="{{ $b->idbarang }}" @selected($idbarang === (string) $b->idbarang)>{{ $b->nama }}</option>
-        @endforeach
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="jenis">Jenis transaksi</label>
-      <select id="jenis" name="jenis">
-        <option value="">Semua jenis</option>
-        @foreach ($daftarJenis as $j)
-          <option value="{{ $j }}" @selected($jenis === (string) $j)>{{ $j }}</option>
-        @endforeach
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="q">ID transaksi</label>
-      <input type="search" id="q" name="q" value="{{ $q }}" placeholder="ID transaksi">
-    </div>
-    <div class="grup-filter">
-      <label for="dari">Dari tanggal</label>
-      <input type="date" id="dari" name="dari" value="{{ $dari }}">
-    </div>
-    <div class="grup-filter">
-      <label for="sampai">Sampai tanggal</label>
-      <input type="date" id="sampai" name="sampai" value="{{ $sampai }}">
+      <label for="q">Cari nama / ID</label>
+      <input type="search" id="q" name="q" value="{{ $q }}" placeholder="Nama barang atau ID transaksi">
     </div>
   </x-filter-bar>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -71,10 +46,11 @@
         <td class="kode">{{ $r->idtransaksi ?? '-' }}</td>
       </tr>
     @empty
-      <tr><td colspan="7" class="kosong">{{ request()->hasAny(['q','idbarang','jenis','dari','sampai']) ? 'Tidak ada riwayat stok yang cocok dengan pencarian/filter.' : 'Belum ada riwayat stok (tabel kartu_stok masih kosong).' }}</td></tr>
+      <tr><td colspan="7" class="kosong">{{ $q !== '' ? 'Tidak ada riwayat stok yang cocok dengan pencarian.' : 'Belum ada riwayat stok (tabel kartu_stok masih kosong).' }}</td></tr>
     @endforelse
     </tbody>
   </table>
   </div>
   {{ $daftar->links('components.pagination') }}
+  </div>
 @endsection

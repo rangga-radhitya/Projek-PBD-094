@@ -15,12 +15,10 @@ class VendorController extends Controller
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
-        $badan = (string) $request->query('badan_hukum', '');
-        $status = (string) $request->query('status', '');
 
-        $daftar = $this->layanan->daftar($q, $badan, $status, 15, $request);
+        $daftar = $this->layanan->daftar($q, 15, $request);
 
-        return view('vendor.index', compact('daftar', 'q', 'badan', 'status'));
+        return view('vendor.index', compact('daftar', 'q'));
     }
 
     public function store(Request $request): RedirectResponse

@@ -43,15 +43,6 @@
       <label for="q">Cari username</label>
       <input type="search" id="q" name="q" value="<?php echo e($q); ?>" placeholder="Username">
     </div>
-    <div class="grup-filter">
-      <label for="idrole">Role</label>
-      <select id="idrole" name="idrole">
-        <option value="">Semua role</option>
-        <?php $__currentLoopData = $daftarRole; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-          <option value="<?php echo e($role->idrole); ?>" <?php if($idrole === (string) $role->idrole): echo 'selected'; endif; ?>><?php echo e($role->nama_role); ?></option>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-      </select>
-    </div>
    <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginale9f22847d79d6273acb27aff60f1f678)): ?>
@@ -63,6 +54,7 @@
 <?php unset($__componentOriginale9f22847d79d6273acb27aff60f1f678); ?>
 <?php endif; ?>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -131,13 +123,14 @@
         </td>
       </tr>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-      <tr><td colspan="4" class="kosong"><?php echo e(($q !== '' || $idrole !== '') ? 'Tidak ada user yang cocok dengan pencarian/filter.' : 'Belum ada data user.'); ?></td></tr>
+      <tr><td colspan="4" class="kosong"><?php echo e($q !== '' ? 'Tidak ada user yang cocok dengan pencarian.' : 'Belum ada data user.'); ?></td></tr>
     <?php endif; ?>
     </tbody>
   </table>
   </div>
   <?php echo e($daftar->links('components.pagination')); ?>
 
+  </div>
 
   <?php
     $opsiRole = [];

@@ -19,6 +19,7 @@
     </div>
   </x-filter-bar>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -54,6 +55,7 @@
   </table>
   </div>
   {{ $daftar->links('components.pagination') }}
+  </div>
 
   @push('modal')
     @include('partials.modal-form', ['id' => 'm-form', 'aksi' => route('role.store'), 'judul' => 'Tambah Role', 'fields' => [

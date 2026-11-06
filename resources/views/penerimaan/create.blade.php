@@ -47,7 +47,7 @@
         <option value="">— Pilih pengadaan —</option>
         @foreach ($daftarPengadaan as $p)
           <option value="{{ $p->idpengadaan }}" @selected((int) $idpengadaan === (int) $p->idpengadaan)>
-            #{{ $p->idpengadaan }} — {{ $p->nama_vendor }} ({{ $p->tanggal }}, sisa {{ $p->sisa }})
+            ID {{ $p->idpengadaan }} — {{ $p->nama_vendor }} ({{ $p->tanggal }}, sisa {{ $p->sisa }})
           </option>
         @endforeach
       </select>

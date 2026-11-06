@@ -1,6 +1,7 @@
 @props(['reset'])
-{{-- Bar pencarian/filter (GET). Isi field lewat slot; tombol Cari & Reset otomatis. --}}
-<form class="filter" method="get" role="search">
+{{-- Bar pencarian/filter (GET). Isi field lewat slot; tombol Cari & Reset otomatis.
+     Pencarian diterapkan otomatis saat mengetik (lihat public/js/app.js). --}}
+<form class="filter" method="get" role="search" data-cari-langsung>
   <div class="filter-isi">
     {{ $slot }}
   </div>

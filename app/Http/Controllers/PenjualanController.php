@@ -2,29 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PenggunaService;
 use App\Services\PenjualanService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PenjualanController extends Controller
 {
-    public function __construct(
-        private PenjualanService $layanan,
-        private PenggunaService $pengguna
-    ) {}
+    public function __construct(private PenjualanService $layanan) {}
 
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
-        $iduser = (string) $request->query('iduser', '');
-        $dari = $this->tanggal($request, 'dari');
-        $sampai = $this->tanggal($request, 'sampai');
 
-        $daftar = $this->layanan->daftar($q, $iduser, $dari, $sampai, 15, $request);
-        $daftarUser = $this->pengguna->semua();
+        $daftar = $this->layanan->daftar($q, 15, $request);
 
-        return view('penjualan.index', compact('daftar', 'q', 'iduser', 'dari', 'sampai', 'daftarUser'));
+        return view('penjualan.index', compact('daftar', 'q'));
     }
 
     public function show(int $id): View

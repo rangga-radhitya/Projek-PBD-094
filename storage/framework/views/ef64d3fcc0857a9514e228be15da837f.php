@@ -43,23 +43,6 @@
       <label for="q">Cari nama vendor</label>
       <input type="search" id="q" name="q" value="<?php echo e($q); ?>" placeholder="Nama vendor">
     </div>
-    <div class="grup-filter">
-      <label for="badan_hukum">Badan hukum</label>
-      <select id="badan_hukum" name="badan_hukum">
-        <option value="">Semua</option>
-        <option value="P" <?php if($badan === 'P'): echo 'selected'; endif; ?>>PT</option>
-        <option value="C" <?php if($badan === 'C'): echo 'selected'; endif; ?>>CV</option>
-        <option value="U" <?php if($badan === 'U'): echo 'selected'; endif; ?>>UD</option>
-      </select>
-    </div>
-    <div class="grup-filter">
-      <label for="status">Status</label>
-      <select id="status" name="status">
-        <option value="">Semua status</option>
-        <option value="A" <?php if($status === 'A'): echo 'selected'; endif; ?>>Aktif</option>
-        <option value="N" <?php if($status === 'N'): echo 'selected'; endif; ?>>Nonaktif</option>
-      </select>
-    </div>
    <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginale9f22847d79d6273acb27aff60f1f678)): ?>
@@ -71,6 +54,7 @@
 <?php unset($__componentOriginale9f22847d79d6273acb27aff60f1f678); ?>
 <?php endif; ?>
 
+  <div data-hasil-daftar>
   <div class="tabel-bungkus">
   <table>
     <thead>
@@ -160,13 +144,14 @@
         </td>
       </tr>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-      <tr><td colspan="5" class="kosong"><?php echo e(($q !== '' || $badan !== '' || $status !== '') ? 'Tidak ada vendor yang cocok dengan pencarian/filter.' : 'Belum ada data vendor.'); ?></td></tr>
+      <tr><td colspan="5" class="kosong"><?php echo e($q !== '' ? 'Tidak ada vendor yang cocok dengan pencarian.' : 'Belum ada data vendor.'); ?></td></tr>
     <?php endif; ?>
     </tbody>
   </table>
   </div>
   <?php echo e($daftar->links('components.pagination')); ?>
 
+  </div>
 
   <?php $__env->startPush('modal'); ?>
     <?php echo $__env->make('partials.modal-form', ['id' => 'm-form', 'aksi' => route('vendor.store'), 'judul' => 'Tambah Vendor', 'fields' => [
