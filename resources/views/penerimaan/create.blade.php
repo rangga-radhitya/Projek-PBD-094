@@ -77,13 +77,6 @@
       <h2>Informasi penerimaan</h2>
       <div class="pilih-baris">
         <div class="grup-filter">
-          <label for="status">Status <span class="wajib" aria-hidden="true">*</span></label>
-          <select id="status" name="status" required>
-            <option value="D" @selected(old('status', 'D') === 'D')>D — Draft</option>
-            <option value="S" @selected(old('status') === 'S')>S — Selesai</option>
-          </select>
-        </div>
-        <div class="grup-filter">
           <label>Diterima oleh</label>
           <input type="text" value="manajer01 (user id 1)" disabled>
         </div>

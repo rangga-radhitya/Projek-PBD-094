@@ -2,26 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\BarangService;
-use App\Services\SatuanService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class BarangController extends Controller
 {
-    public function __construct(
-        private BarangService $layanan,
-        private SatuanService $satuan
-    ) {}
-
     public function index(Request $request): View
     {
         $q = trim((string) $request->query('q', ''));
 
-        $daftar = $this->layanan->daftar($q, 15, $request);
-        $daftarSatuan = $this->satuan->semua();
+        $daftar = $this->daftar($q, 15, $request);
+        $daftarSatuan = $this->semuaSatuan();
 
         $opsiSatuan = [];
         foreach ($daftarSatuan as $s) {
@@ -35,16 +30,13 @@ class BarangController extends Controller
     {
         $data = $this->validasi($request);
 
-        if ($this->layanan->namaSudahAda($data['nama'])) {
+        if ($this->namaSudahAda($data['nama'])) {
             throw ValidationException::withMessages(['nama' => 'Nama barang sudah dipakai.']);
         }
 
-        $this->layanan->tambah(
-            $data['nama'],
-            $data['jenis'],
-            (int) $data['idsatuan'],
-            (int) $data['harga'],
-            (int) $data['status']
+        DB::insert(
+            'INSERT INTO barang (nama, jenis, idsatuan, harga, status) VALUES (?, ?, ?, ?, ?)',
+            [$data['nama'], $data['jenis'], (int) $data['idsatuan'], (int) $data['harga'], (int) $data['status']]
         );
 
         return redirect()->route('barang')->with('sukses', 'Barang berhasil ditambahkan.');
@@ -52,23 +44,19 @@ class BarangController extends Controller
 
     public function update(Request $request, int $id): RedirectResponse
     {
-        if ($this->layanan->cari($id) === null) {
+        if ($this->cari($id) === null) {
             return redirect()->route('barang')->with('gagal', 'Barang tidak ditemukan.');
         }
 
         $data = $this->validasi($request);
 
-        if ($this->layanan->namaSudahAda($data['nama'], $id)) {
+        if ($this->namaSudahAda($data['nama'], $id)) {
             throw ValidationException::withMessages(['nama' => 'Nama barang sudah dipakai.']);
         }
 
-        $this->layanan->ubah(
-            $id,
-            $data['nama'],
-            $data['jenis'],
-            (int) $data['idsatuan'],
-            (int) $data['harga'],
-            (int) $data['status']
+        DB::update(
+            'UPDATE barang SET nama = ?, jenis = ?, idsatuan = ?, harga = ?, status = ? WHERE idbarang = ?',
+            [$data['nama'], $data['jenis'], (int) $data['idsatuan'], (int) $data['harga'], (int) $data['status'], $id]
         );
 
         return redirect()->route('barang')->with('sukses', 'Barang berhasil diperbarui.');
@@ -76,29 +64,29 @@ class BarangController extends Controller
 
     public function status(int $id): RedirectResponse
     {
-        $barang = $this->layanan->cari($id);
+        $barang = $this->cari($id);
 
         if ($barang === null) {
             return redirect()->route('barang')->with('gagal', 'Barang tidak ditemukan.');
         }
 
         $baru = (int) $barang->status === 1 ? 0 : 1;
-        $this->layanan->ubahStatus($id, $baru);
+        DB::update('UPDATE barang SET status = ? WHERE idbarang = ?', [$baru, $id]);
 
         return redirect()->route('barang')->with('sukses', 'Status barang berhasil diubah menjadi '.($baru === 1 ? 'aktif' : 'nonaktif').'.');
     }
 
     public function destroy(int $id): RedirectResponse
     {
-        if ($this->layanan->cari($id) === null) {
+        if ($this->cari($id) === null) {
             return redirect()->route('barang')->with('gagal', 'Barang tidak ditemukan.');
         }
 
-        if ($this->layanan->dipakaiTransaksi($id)) {
+        if ($this->dipakaiTransaksi($id)) {
             return redirect()->route('barang')->with('gagal', 'Barang tidak bisa dihapus karena sudah dipakai pada transaksi atau kartu stok.');
         }
 
-        $this->layanan->hapus($id);
+        DB::delete('DELETE FROM barang WHERE idbarang = ?', [$id]);
 
         return redirect()->route('barang')->with('sukses', 'Barang berhasil dihapus.');
     }
@@ -124,10 +112,99 @@ class BarangController extends Controller
             ]
         );
 
-        if ($this->satuan->cari((int) $data['idsatuan']) === null) {
+        if ($this->cariSatuan((int) $data['idsatuan']) === null) {
             throw ValidationException::withMessages(['idsatuan' => 'Satuan yang dipilih tidak ada.']);
         }
 
         return $data;
+    }
+
+    private function daftar(string $q, int $perHalaman, Request $request): LengthAwarePaginator
+    {
+        $sql = 'SELECT idbarang, nama, jenis, jenis_teks, idsatuan, nama_satuan, harga, status,
+                       fn_stok_barang(idbarang) AS stok
+                FROM v_barang';
+        $where = [];
+        $bind = [];
+
+        if ($q !== '') {
+            $where[] = 'nama LIKE ?';
+            $bind[] = '%'.$q.'%';
+        }
+
+        if ($where !== []) {
+            $sql .= ' WHERE '.implode(' AND ', $where);
+        }
+
+        $sql .= ' ORDER BY idbarang';
+
+        $perHalaman = max(1, $perHalaman);
+        $total = (int) (DB::selectOne('SELECT COUNT(*) AS jumlah FROM ('.$sql.') AS hasil', $bind)->jumlah ?? 0);
+
+        $halaman = max(1, (int) LengthAwarePaginator::resolveCurrentPage());
+        $offset = ($halaman - 1) * $perHalaman;
+
+        $baris = $total === 0
+            ? []
+            : DB::select($sql.' LIMIT '.$perHalaman.' OFFSET '.$offset, $bind);
+
+        return new LengthAwarePaginator($baris, $total, $perHalaman, $halaman, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]);
+    }
+
+    /** @return array<int, object> */
+    private function semua(): array
+    {
+        return DB::select('SELECT idbarang, nama, harga, idsatuan, status FROM barang ORDER BY nama');
+    }
+
+    /** @return array<int, object> */
+    private function aktif(): array
+    {
+        return DB::select('SELECT idbarang, nama, harga FROM barang WHERE status = 1 ORDER BY nama');
+    }
+
+    /** @return array<int, object> */
+    private function semuaSatuan(): array
+    {
+        return DB::select('SELECT idsatuan, nama_satuan FROM satuan ORDER BY nama_satuan');
+    }
+
+    private function cari(int $id): ?object
+    {
+        return DB::selectOne('SELECT idbarang, nama, jenis, idsatuan, harga, status FROM barang WHERE idbarang = ?', [$id]);
+    }
+
+    private function cariSatuan(int $id): ?object
+    {
+        return DB::selectOne('SELECT idsatuan, nama_satuan, status FROM satuan WHERE idsatuan = ?', [$id]);
+    }
+
+    private function namaSudahAda(string $nama, ?int $kecuali = null): bool
+    {
+        $sql = 'SELECT COUNT(*) AS n FROM barang WHERE nama = ?';
+        $bind = [$nama];
+
+        if ($kecuali !== null) {
+            $sql .= ' AND idbarang <> ?';
+            $bind[] = $kecuali;
+        }
+
+        return (int) DB::selectOne($sql, $bind)->n > 0;
+    }
+
+    private function dipakaiTransaksi(int $id): bool
+    {
+        $n = (int) DB::selectOne(
+            'SELECT (SELECT COUNT(*) FROM detail_pengadaan WHERE idbarang = ?)
+                  + (SELECT COUNT(*) FROM detail_penerimaan WHERE barang_idbarang = ?)
+                  + (SELECT COUNT(*) FROM detail_penjualan WHERE idbarang = ?)
+                  + (SELECT COUNT(*) FROM kartu_stok WHERE idbarang = ?) AS n',
+            [$id, $id, $id, $id]
+        )->n;
+
+        return $n > 0;
     }
 }

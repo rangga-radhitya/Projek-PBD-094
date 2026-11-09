@@ -58,7 +58,7 @@ Diubah: `/` kini redirect ke `/dashboard` (sebelumnya `/role`). Semua route bert
 ## 6. Kendala yang Ditemukan
 
 1. **Versi PHP.** `vendor/` & `composer.lock` mensyaratkan **PHP ≥ 8.4.1** (kode vendor memakai sintaks 8.4), sedangkan `composer.json` menulis `"php": "^8.3"` dan README menyebut 8.3+. Aplikasi tidak akan jalan di PHP 8.3 (Laragon harus memakai PHP 8.4+). Perlu diselaraskan (composer.json/README) — tidak diubah karena menyangkut konfigurasi.
-2. **Tidak ada MySQL di lingkungan uji.** Pengujian memakai SQLite (skema dan view dibuat dari `dml_ddl.sql`/`views.sql` dengan konversi sintaks `IF()` → `iif()` hanya di salinan scratch). Perilaku query Eloquent sama, tetapi **belum diuji pada MySQL/MariaDB Anda**.
+2. **Tidak ada MySQL di lingkungan uji.** Pengujian memakai SQLite (skema dan view dibuat dari `dml_ddl.sql`/`views.sql` dengan konversi sintaks `IF()` → `iif()` hanya di salinan scratch). Perilaku query SQL yang sama, tetapi **belum diuji pada MySQL/MariaDB Anda**.
 3. **Arti kode belum ditetapkan.** `pengadaan.status`, `penerimaan.status`, `kartu_stok.jenis_transaksi` ditampilkan sebagai kode apa adanya dengan keterangan "arti kode belum ditetapkan"; kolom referensi kartu stok belum berupa tautan. Filter status/jenis memakai nilai yang benar-benar ada di data.
 4. **Zona waktu.** Aplikasi `UTC` (`config/app.php`); kartu "Penjualan hari ini" di dashboard memakai tanggal UTC dan mencantumkan hal itu. Belum diubah ke WIB.
 5. **View master memakai INNER JOIN**: baris dengan FK kosong tidak tampil di halaman master (mis. user tanpa role). Halaman transaksi memakai relasi dan menampilkan "-" untuk FK kosong (diuji).

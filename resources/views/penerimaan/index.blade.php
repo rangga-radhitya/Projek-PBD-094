@@ -22,7 +22,7 @@
   <div class="tabel-bungkus">
   <table>
     <thead>
-      <tr><th class="kode">ID</th><th>Tanggal</th><th>Pengadaan</th><th>Vendor</th><th>Diterima oleh</th><th>Status</th><th class="angka">Jumlah item</th><th class="aksi">Aksi</th></tr>
+      <tr><th class="kode">ID</th><th>Tanggal</th><th>Pengadaan</th><th>Vendor</th><th>Diterima oleh</th><th class="angka">Jumlah item</th><th class="aksi">Aksi</th></tr>
     </thead>
     <tbody>
     @forelse ($daftar as $r)
@@ -32,11 +32,6 @@
         <td>@if ($r->idpengadaan)<a href="{{ route('pengadaan.show', $r->idpengadaan) }}">ID {{ $r->idpengadaan }}</a>@else - @endif</td>
         <td>{{ $r->nama_vendor ?? '-' }}</td>
         <td>{{ $r->username ?? '-' }}</td>
-        <td>
-          <x-badge :jenis="$r->status === 'S' ? 'sukses' : 'netral'"
-                   :teks="$r->status ?? '-'"
-                   :title="$r->status === 'D' ? 'Draft' : ($r->status === 'S' ? 'Selesai' : 'Status belum diketahui')" />
-        </td>
         <td class="angka">{{ $r->detail_count }}</td>
         <td class="aksi">
           <a class="tombol sekunder kecil" href="{{ route('penerimaan.show', $r->idpenerimaan) }}">
@@ -55,7 +50,7 @@
         </td>
       </tr>
     @empty
-      <tr><td colspan="8" class="kosong">{{ $q !== '' ? 'Tidak ada penerimaan yang cocok dengan pencarian.' : 'Belum ada data penerimaan.' }}</td></tr>
+      <tr><td colspan="7" class="kosong">{{ $q !== '' ? 'Tidak ada penerimaan yang cocok dengan pencarian.' : 'Belum ada data penerimaan.' }}</td></tr>
     @endforelse
     </tbody>
   </table>

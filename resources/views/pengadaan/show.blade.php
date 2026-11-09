@@ -34,12 +34,6 @@
       <div><dt>Tanggal</dt><dd>{{ $pengadaan->tanggal ?? '-' }}</dd></div>
       <div><dt>Vendor</dt><dd>{{ $pengadaan->nama_vendor ?? '-' }}</dd></div>
       <div><dt>Dibuat oleh</dt><dd>{{ $pengadaan->username ?? '-' }}</dd></div>
-      <div><dt>Status</dt><dd>
-        <x-badge :jenis="$pengadaan->status === 'S' ? 'sukses' : 'netral'"
-                 :teks="$pengadaan->status ?? '-'"
-                 :title="$pengadaan->status === 'D' ? 'Draft' : ($pengadaan->status === 'S' ? 'Selesai' : 'Status belum diketahui')" />
-        <small class="hint">(D = draft, S = selesai)</small>
-      </dd></div>
     </dl>
   </section>
 
@@ -84,25 +78,20 @@
     <h2>Penerimaan terkait</h2>
     <div class="tabel-bungkus">
     <table>
-      <thead><tr><th class="kode">ID</th><th>Tanggal</th><th>Diterima oleh</th><th>Status</th><th class="aksi">Aksi</th></tr></thead>
+      <thead><tr><th class="kode">ID</th><th>Tanggal</th><th>Diterima oleh</th><th class="aksi">Aksi</th></tr></thead>
       <tbody>
       @forelse ($pengadaan->penerimaan as $p)
         <tr>
           <td class="kode">{{ $p->idpenerimaan }}</td>
           <td>{{ $p->tanggal ?? '-' }}</td>
           <td>{{ $p->username ?? '-' }}</td>
-          <td>
-            <x-badge :jenis="$p->status === 'S' ? 'sukses' : 'netral'"
-                     :teks="$p->status ?? '-'"
-                     :title="$p->status === 'D' ? 'Draft' : ($p->status === 'S' ? 'Selesai' : 'Status belum diketahui')" />
-          </td>
           <td class="aksi"><a class="tombol sekunder kecil" href="{{ route('penerimaan.show', $p->idpenerimaan) }}">
             <x-ikon nama="info" :ukuran="14" />
             Detail
           </a></td>
         </tr>
       @empty
-        <tr><td colspan="5" class="kosong">Belum ada penerimaan untuk pengadaan ini.</td></tr>
+        <tr><td colspan="4" class="kosong">Belum ada penerimaan untuk pengadaan ini.</td></tr>
       @endforelse
       </tbody>
     </table>

@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'laravel/laravel',
-        'pretty_version' => 'v13.11.0',
-        'version' => '13.11.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '425701c16cfdd99abfbf19083d5c4efc07c108f8',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -27,6 +27,15 @@
             'install_path' => __DIR__ . '/../carbonphp/carbon-doctrine-types',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'composer/semver' => array(
+            'pretty_version' => '3.6.0',
+            'version' => '3.6.0.0',
+            'reference' => 'd92543b7ede9c4ec6b59853cefb061e39866d2cf',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/./semver',
+            'aliases' => array(),
+            'dev_requirement' => true,
         ),
         'cordoval/hamcrest-php' => array(
             'dev_requirement' => true,
@@ -403,6 +412,15 @@
             'aliases' => array(),
             'dev_requirement' => true,
         ),
+        'laravel/boost' => array(
+            'pretty_version' => 'v2.10.4',
+            'version' => '2.10.4.0',
+            'reference' => '9cd5e7d81300b5dee4c8b1619ec4b36f4a6367fd',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../laravel/boost',
+            'aliases' => array(),
+            'dev_requirement' => true,
+        ),
         'laravel/framework' => array(
             'pretty_version' => 'v13.38.0',
             'version' => '13.38.0.0',
@@ -413,9 +431,9 @@
             'dev_requirement' => false,
         ),
         'laravel/laravel' => array(
-            'pretty_version' => 'v13.11.0',
-            'version' => '13.11.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '425701c16cfdd99abfbf19083d5c4efc07c108f8',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -1292,6 +1310,15 @@
             'install_path' => __DIR__ . '/../symfony/var-dumper',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'symfony/yaml' => array(
+            'pretty_version' => 'v8.1.11',
+            'version' => '8.1.11.0',
+            'reference' => 'e8266f55160f674f290a5f567cb55e11e21f921b',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../symfony/yaml',
+            'aliases' => array(),
+            'dev_requirement' => true,
         ),
         'theseer/tokenizer' => array(
             'pretty_version' => '2.0.1',

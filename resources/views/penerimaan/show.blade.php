@@ -36,12 +36,6 @@
       <div><dt>Pengadaan asal</dt><dd>@if ($penerimaan->idpengadaan)<a href="{{ route('pengadaan.show', $penerimaan->idpengadaan) }}">Pengadaan #{{ $penerimaan->idpengadaan }}</a>@else - @endif</dd></div>
       <div><dt>Vendor</dt><dd>{{ $penerimaan->nama_vendor ?? '-' }}</dd></div>
       <div><dt>Diterima oleh</dt><dd>{{ $penerimaan->username ?? '-' }}</dd></div>
-      <div><dt>Status</dt><dd>
-        <x-badge :jenis="$penerimaan->status === 'S' ? 'sukses' : 'netral'"
-                 :teks="$penerimaan->status ?? '-'"
-                 :title="$penerimaan->status === 'D' ? 'Draft' : ($penerimaan->status === 'S' ? 'Selesai' : 'Status belum diketahui')" />
-        <small class="hint">(D = draft, S = selesai)</small>
-      </dd></div>
     </dl>
   </section>
 
