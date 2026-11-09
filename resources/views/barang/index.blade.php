@@ -59,7 +59,9 @@
     </tbody>
   </table>
   </div>
-  {{ $daftar->links('components.pagination') }}
+  @if ($daftar->hasPages())
+    {{ $daftar->links('components.pagination') }}
+  @endif
   </div>
 
   @push('modal')

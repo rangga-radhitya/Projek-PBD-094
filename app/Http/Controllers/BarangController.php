@@ -15,7 +15,7 @@ class BarangController extends Controller
     {
         $q = trim((string) $request->query('q', ''));
 
-        $daftar = $this->daftar($q, 15, $request);
+        $daftar = $this->daftar($q, 25, $request);
         $daftarSatuan = $this->semuaSatuan();
 
         $opsiSatuan = [];

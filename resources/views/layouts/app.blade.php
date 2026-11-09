@@ -43,12 +43,8 @@
     <nav>
       @foreach ($menu as $entri)
         @if (isset($entri['items']))
-          @php $terbuka = collect($entri['items'])->contains(fn ($i) => $menuAktif($i)); @endphp
-          <details class="grup" @if ($terbuka) open @endif>
-            <summary>
-              <span>{{ $entri['label'] }}</span>
-              <x-ikon nama="bawah" :ukuran="14" />
-            </summary>
+          <div class="grup">
+            <p class="grup-judul">{{ $entri['label'] }}</p>
             <ul>
               @foreach ($entri['items'] as $item)
                 <li>
@@ -59,7 +55,7 @@
                 </li>
               @endforeach
             </ul>
-          </details>
+          </div>
         @else
           <a @class(['sisi-tunggal', 'aktif' => $menuAktif($entri)]) href="{{ $tautan($entri) }}" @if ($menuAktif($entri)) aria-current="page" @endif>
             <x-ikon :nama="$entri['ikon'] ?? 'kotak'" :ukuran="18" />

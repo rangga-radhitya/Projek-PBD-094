@@ -7,7 +7,8 @@
  * - 'params' : parameter route (opsional).
  * - 'match'  : pola path untuk penanda menu aktif (request()->is()).
  * - 'ikon'   : nama ikon di resources/views/components/ikon.blade.php.
- * - Entri tanpa 'items' adalah menu tunggal; entri dengan 'items' adalah grup.
+ * - Entri tanpa 'items' adalah menu tunggal; entri dengan 'items' adalah grup
+ *   (ditampilkan sebagai judul bagian + daftar menu, bukan dropdown).
  *
  * Halaman "Detail ..." tidak masuk sidebar: dibuka dari baris pada halaman daftar.
  * Halaman laporan sengaja tidak ditampilkan di sidebar pada tahap ini.

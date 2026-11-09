@@ -171,8 +171,10 @@
     </tbody>
   </table>
   </div>
-  <?php echo e($daftar->links('components.pagination')); ?>
+  <?php if($daftar->hasPages()): ?>
+    <?php echo e($daftar->links('components.pagination')); ?>
 
+  <?php endif; ?>
   </div>
 
   <?php $__env->startPush('modal'); ?>

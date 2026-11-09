@@ -43,31 +43,8 @@
     <nav>
       <?php $__currentLoopData = $menu; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $entri): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <?php if(isset($entri['items'])): ?>
-          <?php $terbuka = collect($entri['items'])->contains(fn ($i) => $menuAktif($i)); ?>
-          <details class="grup" <?php if($terbuka): ?> open <?php endif; ?>>
-            <summary>
-              <span><?php echo e($entri['label']); ?></span>
-              <?php if (isset($component)) { $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ikon','data' => ['nama' => 'bawah','ukuran' => 14]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('ikon'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['nama' => 'bawah','ukuran' => 14]); ?>
-<?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
-<?php $attributes = $__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
-<?php unset($__attributesOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09)): ?>
-<?php $component = $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09; ?>
-<?php unset($__componentOriginal8d917d15c7538e1421c51d0f23f3fc09); ?>
-<?php endif; ?>
-            </summary>
+          <div class="grup">
+            <p class="grup-judul"><?php echo e($entri['label']); ?></p>
             <ul>
               <?php $__currentLoopData = $entri['items']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <li>
@@ -97,7 +74,7 @@
                 </li>
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </ul>
-          </details>
+          </div>
         <?php else: ?>
           <a class="<?php echo \Illuminate\Support\Arr::toCssClasses(['sisi-tunggal', 'aktif' => $menuAktif($entri)]); ?>" href="<?php echo e($tautan($entri)); ?>" <?php if($menuAktif($entri)): ?> aria-current="page" <?php endif; ?>>
             <?php if (isset($component)) { $__componentOriginal8d917d15c7538e1421c51d0f23f3fc09 = $component; } ?>
