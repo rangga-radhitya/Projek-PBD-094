@@ -3,13 +3,6 @@
 @section('judul', 'Data Retur')
 @section('grup', 'Transaksi')
 
-@section('aksi')
-  <a class="tombol" href="{{ route('retur.create') }}">
-    <x-ikon nama="tambah" :ukuran="16" />
-    Tambah Retur
-  </a>
-@endsection
-
 @section('isi')
   <x-filter-bar :reset="route('retur.index')">
     <div class="grup-filter">

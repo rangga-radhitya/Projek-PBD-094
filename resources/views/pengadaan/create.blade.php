@@ -37,7 +37,7 @@
       <div class="grup-filter">
         <label for="idvendor">Vendor <span class="wajib" aria-hidden="true">*</span></label>
         <select id="idvendor" name="idvendor" required>
-          <option value="">— Pilih vendor —</option>
+          <option value="">Pilih vendor</option>
           @foreach ($daftarVendor as $v)
             <option value="{{ $v->idvendor }}" @selected((string) old('idvendor') === (string) $v->idvendor)>{{ $v->nama_vendor }}</option>
           @endforeach
@@ -45,7 +45,7 @@
       </div>
       <div class="grup-filter">
         <label>Dibuat oleh</label>
-        <input type="text" value="manajer01 (user id 1)" disabled>
+        <input type="text" value="manajer01" disabled>
       </div>
     </div>
   </section>
@@ -75,7 +75,7 @@
             <td class="kolom-aksi">{{ $i + 1 }}</td>
             <td>
               <select name="items[{{ $i }}][idbarang]" required>
-                <option value="">— Pilih barang —</option>
+                <option value="">Pilih barang</option>
                 @foreach ($daftarBarang as $br)
                   <option value="{{ $br->idbarang }}" data-harga="{{ $br->harga }}" @selected($idb === (string) $br->idbarang)>{{ $br->nama }}</option>
                 @endforeach
@@ -106,7 +106,6 @@
       <div><dt>PPN ({{ \App\Http\Controllers\Controller::PPN_PERSEN }}%)</dt><dd><output id="ringkas-ppn">0</output></dd></div>
       <div><dt>Total</dt><dd><output id="ringkas-total">0</output></dd></div>
     </dl>
-    <p class="hint">Nilai di atas hanya perkiraan tampilan. Angka final dihitung ulang oleh stored procedure saat data disimpan.</p>
   </section>
 </form>
 
@@ -115,7 +114,7 @@
     <td class="kolom-aksi">__NO__</td>
     <td>
       <select name="items[__INDEX__][idbarang]" required>
-        <option value="">— Pilih barang —</option>
+        <option value="">Pilih barang</option>
         @foreach ($daftarBarang as $br)
           <option value="{{ $br->idbarang }}" data-harga="{{ $br->harga }}">{{ $br->nama }}</option>
         @endforeach

@@ -44,7 +44,7 @@
     <div class="grup-filter">
       <label for="pilih-pengadaan">Pengadaan</label>
       <select id="pilih-pengadaan">
-        <option value="">— Pilih pengadaan —</option>
+        <option value="">Pilih pengadaan</option>
         @foreach ($daftarPengadaan as $p)
           <option value="{{ $p->idpengadaan }}" @selected((int) $idpengadaan === (int) $p->idpengadaan)>
             ID {{ $p->idpengadaan }} — {{ $p->nama_vendor }} ({{ $p->tanggal }}, sisa {{ $p->sisa }})

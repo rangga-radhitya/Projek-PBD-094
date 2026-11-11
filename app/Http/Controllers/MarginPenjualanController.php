@@ -82,10 +82,7 @@ class MarginPenjualanController extends Controller
             return redirect()->route('margin_penjualan')->with('gagal', 'Margin penjualan tidak ditemukan.');
         }
 
-        DB::transaction(function () use ($id) {
-            DB::update('UPDATE margin_penjualan SET status = 0 WHERE status = 1');
-            DB::update('UPDATE margin_penjualan SET status = 1, updated_at = NOW() WHERE idmargin_penjualan = ?', [$id]);
-        });
+        DB::select('CALL sp_aktifkan_margin_penjualan(?)', [$id]);
 
         return redirect()->route('margin_penjualan')->with('sukses', 'Margin penjualan diaktifkan.');
     }

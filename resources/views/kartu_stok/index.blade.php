@@ -1,13 +1,9 @@
 @extends('layouts.app')
 
 @section('judul', 'Kartu Stok')
-@section('grup', 'Persediaan')
+@section('grup', 'Transaksi')
 
 @section('isi')
-  <x-catatan ringkas judul="Arti kode jenis transaksi">
-    <p><strong>M</strong> = stok masuk (penerimaan atau pembatalan retur). <strong>K</strong> = stok keluar/koreksi (pembatalan penerimaan). <strong>R</strong> = retur ke vendor.</p>
-    <p>Saldo (<code>stock</code>) adalah saldo berjalan per barang.</p>
-  </x-catatan>
 
   @php
     $lencanaJenis = [

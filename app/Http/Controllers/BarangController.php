@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -15,7 +14,7 @@ class BarangController extends Controller
     {
         $q = trim((string) $request->query('q', ''));
 
-        $daftar = $this->daftar($q, 25, $request);
+        $daftar = $this->daftar($q);
         $daftarSatuan = $this->semuaSatuan();
 
         $opsiSatuan = [];
@@ -119,39 +118,25 @@ class BarangController extends Controller
         return $data;
     }
 
-    private function daftar(string $q, int $perHalaman, Request $request): LengthAwarePaginator
+    /** @return array<int, object> */
+    private function daftar(string $q): array
     {
-        $sql = 'SELECT idbarang, nama, jenis, jenis_teks, idsatuan, nama_satuan, harga, status,
-                       fn_stok_barang(idbarang) AS stok
-                FROM v_barang';
-        $where = [];
+        $sql = 'SELECT vb.idbarang, vb.nama, vb.jenis, vb.jenis_teks, vb.idsatuan, vb.nama_satuan,
+                       vb.harga, vb.status,
+                       COALESCE((SELECT ks.stock FROM kartu_stok ks
+                                  WHERE ks.idbarang = vb.idbarang
+                                  ORDER BY ks.idkartu_stok DESC LIMIT 1), 0) AS stok
+                FROM v_barang vb';
         $bind = [];
 
         if ($q !== '') {
-            $where[] = 'nama LIKE ?';
+            $sql .= ' WHERE vb.nama LIKE ?';
             $bind[] = '%'.$q.'%';
         }
 
-        if ($where !== []) {
-            $sql .= ' WHERE '.implode(' AND ', $where);
-        }
+        $sql .= ' ORDER BY vb.idbarang';
 
-        $sql .= ' ORDER BY idbarang';
-
-        $perHalaman = max(1, $perHalaman);
-        $total = (int) (DB::selectOne('SELECT COUNT(*) AS jumlah FROM ('.$sql.') AS hasil', $bind)->jumlah ?? 0);
-
-        $halaman = max(1, (int) LengthAwarePaginator::resolveCurrentPage());
-        $offset = ($halaman - 1) * $perHalaman;
-
-        $baris = $total === 0
-            ? []
-            : DB::select($sql.' LIMIT '.$perHalaman.' OFFSET '.$offset, $bind);
-
-        return new LengthAwarePaginator($baris, $total, $perHalaman, $halaman, [
-            'path' => $request->url(),
-            'query' => $request->query(),
-        ]);
+        return DB::select($sql, $bind);
     }
 
     /** @return array<int, object> */

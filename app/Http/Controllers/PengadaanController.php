@@ -249,10 +249,17 @@ class PengadaanController extends Controller
                     throw new RuntimeException('Harga satuan tidak boleh negatif.');
                 }
 
+                // Sub total dihitung oleh function database
+                // fn_hitung_subtotal(harga_satuan, jumlah).
+                $subTotal = (int) DB::selectOne(
+                    'SELECT fn_hitung_subtotal(?, ?) AS sub_total',
+                    [$harga, $jumlah]
+                )->sub_total;
+
                 DB::insert(
                     'INSERT INTO detail_pengadaan (harga_satuan, jumlah, sub_total, idbarang, idpengadaan)
                      VALUES (?, ?, ?, ?, ?)',
-                    [$harga, $jumlah, $harga * $jumlah, (int) $item['idbarang'], $id]
+                    [$harga, $jumlah, $subTotal, (int) $item['idbarang'], $id]
                 );
             }
 
@@ -261,6 +268,7 @@ class PengadaanController extends Controller
                 [$id]
             )->total;
 
+            // PPN dihitung di PHP; function database dipakai untuk sub total.
             $ppn = (int) round($subtotal * $ppnPersen / 100);
 
             DB::update(

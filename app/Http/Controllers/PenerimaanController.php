@@ -107,12 +107,42 @@ class PenerimaanController extends Controller
 
         try {
             DB::transaction(function () use ($id) {
-                DB::statement('CALL sp_hapus_penerimaan(?)', [$id]);
+                $adaRetur = (int) DB::selectOne(
+                    'SELECT COUNT(*) AS n FROM retur WHERE idpenerimaan = ?',
+                    [$id]
+                )->n;
+
+                if ($adaRetur > 0) {
+                    throw new RuntimeException('Penerimaan tidak bisa dihapus karena sudah memiliki retur.');
+                }
+
+                $baris = DB::select(
+                    'SELECT barang_idbarang AS idbarang, SUM(jumlah_terima) AS total
+                     FROM detail_penerimaan
+                     WHERE idpenerimaan = ?
+                     GROUP BY barang_idbarang',
+                    [$id]
+                );
+
+                foreach ($baris as $b) {
+                    $idbarang = $b->idbarang === null ? null : (int) $b->idbarang;
+                    $total = (int) $b->total;
+                    $saldo = $idbarang === null ? 0 : $this->saldoTerakhir($idbarang);
+
+                    DB::insert(
+                        'INSERT INTO kartu_stok (jenis_transaksi, masuk, keluar, stock, created_at, idtransaksi, idbarang)
+                         VALUES (?, ?, ?, ?, NOW(), ?, ?)',
+                        ['K', 0, $total, $saldo - $total, $id, $idbarang]
+                    );
+                }
+
+                DB::delete('DELETE FROM detail_penerimaan WHERE idpenerimaan = ?', [$id]);
+                DB::delete('DELETE FROM penerimaan WHERE idpenerimaan = ?', [$id]);
             });
-        } catch (PDOException $e) {
-            return redirect()->route('penerimaan.index')->with('gagal', $e->errorInfo[2] ?? 'Penerimaan gagal dihapus.');
         } catch (RuntimeException $e) {
             return redirect()->route('penerimaan.index')->with('gagal', $e->getMessage());
+        } catch (PDOException $e) {
+            return redirect()->route('penerimaan.index')->with('gagal', $e->errorInfo[2] ?? 'Penerimaan gagal dihapus.');
         }
 
         return redirect()->route('penerimaan.index')->with('sukses', 'Penerimaan dihapus dan stok dikoreksi.');
@@ -163,6 +193,22 @@ class PenerimaanController extends Controller
             'path' => $request->url(),
             'query' => $request->query(),
         ]);
+    }
+
+    /**
+     * Saldo stok terakhir satu barang. Baris barang dikunci lebih dulu agar
+     * perhitungan saldo berurutan dan tidak saling menimpa.
+     */
+    private function saldoTerakhir(int $idbarang): int
+    {
+        DB::selectOne('SELECT idbarang FROM barang WHERE idbarang = ? FOR UPDATE', [$idbarang]);
+
+        $baris = DB::selectOne(
+            'SELECT stock FROM kartu_stok WHERE idbarang = ? ORDER BY idkartu_stok DESC LIMIT 1',
+            [$idbarang]
+        );
+
+        return $baris === null ? 0 : (int) $baris->stock;
     }
 
     private function cari(int $id): ?object

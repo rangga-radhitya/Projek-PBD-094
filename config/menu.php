@@ -38,12 +38,7 @@ return [
             ['label' => 'Penerimaan', 'route' => 'penerimaan.index', 'match' => ['penerimaan', 'penerimaan/*'], 'ikon' => 'penerimaan'],
             ['label' => 'Penjualan',  'route' => 'penjualan.index',  'match' => ['penjualan', 'penjualan/*'],   'ikon' => 'penjualan'],
             ['label' => 'Retur',      'route' => 'retur.index',      'match' => ['retur', 'retur/*'],           'ikon' => 'retur'],
-        ],
-    ],
-    [
-        'label' => 'Persediaan',
-        'items' => [
-            ['label' => 'Kartu Stok', 'route' => 'kartu_stok', 'match' => ['kartu_stok', 'kartu_stok/*'], 'ikon' => 'kartu_stok'],
+            ['label' => 'Kartu Stok', 'route' => 'kartu_stok',      'match' => ['kartu_stok', 'kartu_stok/*'], 'ikon' => 'kartu_stok'],
         ],
     ],
 ];

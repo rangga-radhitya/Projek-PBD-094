@@ -4,9 +4,6 @@
 @section('grup', 'Transaksi')
 
 @section('isi')
-  <x-catatan ringkas judul="Catatan">
-    Pembuatan transaksi penjualan (kasir) belum tersedia pada tahap ini.
-  </x-catatan>
 
   <x-filter-bar :reset="route('penjualan.index')">
     <div class="grup-filter">

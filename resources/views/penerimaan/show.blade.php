@@ -62,7 +62,7 @@
       </tbody>
       @if (! empty($penerimaan->detail))
       <tfoot>
-        <tr><td colspan="5" class="angka">Total (dijumlahkan dari sub total terima)</td><td class="angka"><x-rp :nilai="$totalTerima" /></td></tr>
+        <tr><td colspan="5" class="angka">Total</td><td class="angka"><x-rp :nilai="$totalTerima" /></td></tr>
       </tfoot>
       @endif
     </table>
