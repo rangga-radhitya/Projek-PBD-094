@@ -48,7 +48,6 @@ class PengadaanController extends Controller
                 'idvendor' => ['required', 'integer'],
                 'items' => ['required', 'array', 'min:1'],
                 'items.*.idbarang' => ['required', 'integer'],
-                'items.*.harga_satuan' => ['required', 'integer', 'min:0'],
                 'items.*.jumlah' => ['required', 'integer', 'min:1'],
             ],
             [],
@@ -56,7 +55,6 @@ class PengadaanController extends Controller
                 'idvendor' => 'vendor',
                 'items' => 'daftar barang',
                 'items.*.idbarang' => 'barang',
-                'items.*.harga_satuan' => 'harga satuan',
                 'items.*.jumlah' => 'jumlah',
             ]
         );
@@ -71,10 +69,21 @@ class PengadaanController extends Controller
             throw ValidationException::withMessages(['items' => 'Satu barang tidak boleh dipilih lebih dari sekali.']);
         }
 
-        foreach ($idBarang as $idb) {
-            if ($this->cariBarang($idb) === null) {
-                throw ValidationException::withMessages(['items' => 'Ada barang yang tidak ditemukan.']);
+        // Harga satuan tidak diambil dari form: selalu pakai harga master barang
+        // agar tidak bisa diubah manual maupun lewat manipulasi request.
+        $items = [];
+        foreach ($data['items'] as $item) {
+            $barang = $this->cariBarang((int) $item['idbarang']);
+
+            if ($barang === null || (int) $barang->status !== 1) {
+                throw ValidationException::withMessages(['items' => 'Ada barang yang tidak ditemukan atau sudah nonaktif.']);
             }
+
+            $items[] = [
+                'idbarang' => (int) $barang->idbarang,
+                'harga_satuan' => (int) $barang->harga,
+                'jumlah' => (int) $item['jumlah'],
+            ];
         }
 
         try {
@@ -82,7 +91,7 @@ class PengadaanController extends Controller
                 self::ID_USER_DEFAULT,
                 (int) $data['idvendor'],
                 'D',
-                $data['items'],
+                $items,
                 self::PPN_PERSEN
             );
         } catch (PDOException $e) {
@@ -249,7 +258,6 @@ class PengadaanController extends Controller
                     throw new RuntimeException('Harga satuan tidak boleh negatif.');
                 }
 
-                // Sub total dihitung oleh function database
                 // fn_hitung_subtotal(harga_satuan, jumlah).
                 $subTotal = (int) DB::selectOne(
                     'SELECT fn_hitung_subtotal(?, ?) AS sub_total',
@@ -268,7 +276,6 @@ class PengadaanController extends Controller
                 [$id]
             )->total;
 
-            // PPN dihitung di PHP; function database dipakai untuk sub total.
             $ppn = (int) round($subtotal * $ppnPersen / 100);
 
             DB::update(

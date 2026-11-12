@@ -26,6 +26,12 @@
 @php
   $barisLama = old('items', []);
   $barisLama = is_array($barisLama) && $barisLama !== [] ? array_values($barisLama) : [['idbarang' => '', 'harga_satuan' => '', 'jumlah' => 1]];
+
+  // Harga selalu diambil dari master barang, bukan dari old input.
+  $hargaMaster = [];
+  foreach ($daftarBarang as $br) {
+      $hargaMaster[(string) $br->idbarang] = (string) $br->harga;
+  }
 @endphp
 
 <form id="form-pengadaan" class="form-transaksi" method="POST" action="{{ route('pengadaan.store') }}">
@@ -68,7 +74,7 @@
         @foreach ($barisLama as $i => $b)
           @php
             $idb = (string) ($b['idbarang'] ?? '');
-            $harga = (string) ($b['harga_satuan'] ?? '');
+            $harga = $hargaMaster[$idb] ?? '';
             $jumlah = (string) ($b['jumlah'] ?? '1');
           @endphp
           <tr>
@@ -81,7 +87,7 @@
                 @endforeach
               </select>
             </td>
-            <td><input type="number" name="items[{{ $i }}][harga_satuan]" value="{{ $harga }}" min="0" step="1" required></td>
+            <td><input type="number" name="items[{{ $i }}][harga_satuan]" value="{{ $harga }}" min="0" step="1" readonly tabindex="-1" aria-readonly="true" required></td>
             <td><input type="number" name="items[{{ $i }}][jumlah]" value="{{ $jumlah }}" min="1" step="1" required></td>
             <td class="angka"><output data-subtotal>0</output></td>
             <td class="kolom-aksi">
@@ -120,7 +126,7 @@
         @endforeach
       </select>
     </td>
-    <td><input type="number" name="items[__INDEX__][harga_satuan]" value="" min="0" step="1" required></td>
+    <td><input type="number" name="items[__INDEX__][harga_satuan]" value="" min="0" step="1" readonly tabindex="-1" aria-readonly="true" required></td>
     <td><input type="number" name="items[__INDEX__][jumlah]" value="1" min="1" step="1" required></td>
     <td class="angka"><output data-subtotal>0</output></td>
     <td class="kolom-aksi">
@@ -183,8 +189,8 @@
       var opt = el.options[el.selectedIndex];
       var harga = opt ? opt.getAttribute('data-harga') : null;
       var inputHarga = el.closest('tr').querySelector('[name$="[harga_satuan]"]');
-      if (harga !== null && inputHarga && inputHarga.value === '') {
-        inputHarga.value = harga;
+      if (inputHarga) {
+        inputHarga.value = harga !== null && harga !== '' ? harga : '';
       }
     }
     hitung();

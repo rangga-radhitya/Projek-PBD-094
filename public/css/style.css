@@ -1086,6 +1086,11 @@ tfoot td {
   min-height: 36px;
   padding: 0 10px;
 }
+.form-transaksi table input[readonly] {
+  color: var(--teks-samar);
+  background: rgba(255, 255, 255, .03);
+  cursor: not-allowed;
+}
 .form-transaksi td,
 .form-transaksi th { padding: 9px 12px; }
 .form-transaksi td.aksi { text-align: center; }
